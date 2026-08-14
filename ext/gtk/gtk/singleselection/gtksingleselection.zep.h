@@ -1,0 +1,35 @@
+
+extern zend_class_entry *gtk_gtk_singleselection_gtksingleselection_ce;
+
+ZEPHIR_INIT_CLASS(Gtk_GTK_SingleSelection_GtkSingleSelection);
+
+PHP_METHOD(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionNew);
+PHP_METHOD(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionSetSelected);
+PHP_METHOD(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionGetSelected);
+PHP_METHOD(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionGetModel);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectionnew, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, model, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectionsetselected, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, selection, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectiongetselected, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, selection, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectiongetmodel, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, selection, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(gtk_gtk_singleselection_gtksingleselection_method_entry) {
+	PHP_ME(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionNew, arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectionnew, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionSetSelected, arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectionsetselected, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionGetSelected, arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectiongetselected, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_SingleSelection_GtkSingleSelection, gtkSingleSelectionGetModel, arginfo_gtk_gtk_singleselection_gtksingleselection_gtksingleselectiongetmodel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

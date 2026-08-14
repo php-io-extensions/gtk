@@ -1,0 +1,48 @@
+
+extern zend_class_entry *gtk_gtk_togglebutton_gtktogglebutton_ce;
+
+ZEPHIR_INIT_CLASS(Gtk_GTK_ToggleButton_GtkToggleButton);
+
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonNew);
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonNewWithLabel);
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonSetActive);
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonGetActive);
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonSetLabel);
+PHP_METHOD(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonGetLabel);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonnew, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonnewwithlabel, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonsetactive, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, button, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, active, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttongetactive, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, button, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonsetlabel, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, button, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttongetlabel, 0, 1, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, button, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(gtk_gtk_togglebutton_gtktogglebutton_method_entry) {
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonNew, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonnew, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonNewWithLabel, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonnewwithlabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonSetActive, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonsetactive, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonGetActive, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttongetactive, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonSetLabel, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttonsetlabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ToggleButton_GtkToggleButton, gtkToggleButtonGetLabel, arginfo_gtk_gtk_togglebutton_gtktogglebutton_gtktogglebuttongetlabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

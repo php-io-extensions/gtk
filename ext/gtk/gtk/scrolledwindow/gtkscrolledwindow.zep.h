@@ -1,0 +1,53 @@
+
+extern zend_class_entry *gtk_gtk_scrolledwindow_gtkscrolledwindow_ce;
+
+ZEPHIR_INIT_CLASS(Gtk_GTK_ScrolledWindow_GtkScrolledWindow);
+
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowNew);
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetChild);
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowGetChild);
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetPolicy);
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetMinContentHeight);
+PHP_METHOD(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetMinContentWidth);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindownew, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetchild, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, scrolled, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, child, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowgetchild, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, scrolled, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetpolicy, 0, 3, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, scrolled, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, hscrollbar, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, vscrollbar, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetmincontentheight, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, scrolled, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetmincontentwidth, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, scrolled, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(gtk_gtk_scrolledwindow_gtkscrolledwindow_method_entry) {
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowNew, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindownew, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetChild, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetchild, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowGetChild, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowgetchild, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetPolicy, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetpolicy, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetMinContentHeight, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetmincontentheight, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_GTK_ScrolledWindow_GtkScrolledWindow, gtkScrolledWindowSetMinContentWidth, arginfo_gtk_gtk_scrolledwindow_gtkscrolledwindow_gtkscrolledwindowsetmincontentwidth, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

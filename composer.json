@@ -1,0 +1,31 @@
+{
+    "name": "php-io-extensions/gtk",
+    "type": "php-ext",
+    "description": "PHP-Controllable GTK4 Toolkit Extension",
+    "license": "MIT",
+    "version": "0.7.0",
+    "authors": [
+        {
+            "name": "Project Saturn Studios, LLC",
+            "email": "info@projectsaturnstudios.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "php-ext": {
+        "extension-name": "gtk",
+        "priority": 30,
+        "build-path": "ext",
+        "support-zts": true,
+        "support-nts": true,
+        "os-families-exclude": ["windows"],
+        "configure-options": [
+            {
+                "name": "enable-gtk",
+                "description": "Enable the gtk extension",
+                "needs-value": false
+            }
+        ]
+    }
+}
