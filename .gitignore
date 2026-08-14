@@ -1,0 +1,62 @@
+# ── OS & editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+
+# ── Zephir compiler ───────────────────────────────────────────────────────────
+.zephir/
+.temp/
+zephir.phar
+zephir-*.phar
+
+# ── Composer / PHP tooling ────────────────────────────────────────────────────
+vendor/
+composer.lock
+
+# ── ext/ build artifacts ──────────────────────────────────────────────────────
+# C sources, config.m4, kernel/ are committed after `scripts/prepare-ext.sh` on Linux.
+ext/Makefile
+ext/Makefile.fragments
+ext/Makefile.global
+ext/Makefile.objects
+ext/acinclude.m4
+ext/aclocal.m4
+ext/autom4te.cache/
+ext/build/
+ext/config.guess
+ext/config.h
+ext/config.h.in
+ext/config.h.in~
+ext/config.log
+ext/config.nice
+ext/config.status
+ext/config.sub
+ext/configure
+ext/configure~
+ext/configure.ac
+ext/configure.in
+ext/install-sh
+ext/libtool
+ext/ltmain.sh
+ext/missing
+ext/mkinstalldirs
+ext/modules/
+ext/run-tests.php
+ext/.libs/
+ext/gtk.la
+ext/gtk.lo
+ext/gtk.o
+ext/gtk.dep
+
+*.o
+*.lo
+*.la
+*.loT
+*.dep
+*.gch
+*.dSYM
+
+build.log
+*.log
