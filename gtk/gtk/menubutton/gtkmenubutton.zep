@@ -62,6 +62,17 @@ class GtkMenuButton
         }%
     }
 
+    public static function gtkMenuButtonSetMenuModel(int button, int menuModel) -> void
+    {
+        %{
+            GtkMenuButton *mb = GTK_MENU_BUTTON((void *)(uintptr_t) button);
+            GMenuModel *model = (GMenuModel *)(uintptr_t) menuModel;
+            if (mb != NULL && model != NULL) {
+                gtk_menu_button_set_menu_model(mb, model);
+            }
+        }%
+    }
+
     public static function gtkMenuButtonGetPopover(int button) -> int
     {
         int handle;

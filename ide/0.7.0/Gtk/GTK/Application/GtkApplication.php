@@ -6,6 +6,8 @@ class GtkApplication
 {
     public static function gtkApplicationNew(string $applicationId, int $flags): int {}
 
+    public static function gtkApplicationRegister(int $app): bool {}
+
     public static function gtkApplicationRun(int $app): int {}
 
     public static function gtkApplicationQuit(int $app): void {}

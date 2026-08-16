@@ -60,7 +60,11 @@ No PHP class constants. Flag ints live in the app or a future microscrap enum (F
 | ----- | --------- |
 | `Gtk\GTK\Gtk` | `gtk_init_check`, version getters |
 | `Gtk\GTK\GtkError` | last bind-layer failure string |
-| `Gtk\GTK\Application\GtkApplication` | `gtk_application_new`, `g_application_run`, `g_application_quit` |
+| `Gtk\GTK\Application\GtkApplication` | `gtk_application_new`, `g_application_run`, `g_application_quit`, `gtk_application_set_menubar`, `gtk_application_set_accels_for_action` |
+| `Gtk\GTK\GMenu\GMenu` | `g_menu_new`, append / section / submenu / freeze |
+| `Gtk\GTK\GSimpleAction\GSimpleAction` | `g_simple_action_new`, `g_action_map_add_action`, enable |
+| `Gtk\GTK\PopoverMenu\GtkPopoverMenu` | `gtk_popover_menu_new_from_model` |
+| `Gtk\GTK\PopoverMenuBar\GtkPopoverMenuBar` | `gtk_popover_menu_bar_new_from_model` |
 | `Gtk\GTK\Window\GtkWindow` | window / application-window, title, size, child, present, close |
 | `Gtk\GTK\Widget\GtkWidget` | visible, expand, size request, queue draw |
 | `Gtk\GTK\Button\GtkButton` | button + label |
@@ -81,7 +85,7 @@ No PHP class constants. Flag ints live in the app or a future microscrap enum (F
 | `Gtk\GTK\DropDown\GtkDropDown` | string drop-down |
 | `Gtk\GTK\SearchEntry\GtkSearchEntry` | search field |
 | `Gtk\GTK\HeaderBar\GtkHeaderBar` | header bar (use `gtkWindowSetTitlebar`) |
-| `Gtk\GTK\MenuButton\GtkMenuButton` | menu button + popover |
+| `Gtk\GTK\MenuButton\GtkMenuButton` | menu button + popover + `set_menu_model` |
 | `Gtk\GTK\Popover\GtkPopover` | popover + child |
 | `Gtk\GTK\ScrolledWindow\GtkScrolledWindow` | scroll child |
 | `Gtk\GTK\Notebook\GtkNotebook` | tabs |
@@ -98,7 +102,7 @@ No PHP class constants. Flag ints live in the app or a future microscrap enum (F
 | `Gtk\GTK\FontDialog\GtkFontDialog` | font choose |
 | `Gtk\GTK\Box\GtkBox` | box + append/remove |
 | `Gtk\GTK\GLArea\GtkGLArea` | GPU view widget (does not create a window) |
-| `Gtk\GTK\GtkGLib` | `g_object_ref` / `unref`, `g_signal_connect` |
+| `Gtk\GTK\GtkGLib` | `g_object_ref` / `unref`, `g_signal_connect`, `g_main_context_default`, `g_main_context_iteration` |
 
 `g_application_run` **blocks** the PHP thread. That is the GTK Application run loop.
 

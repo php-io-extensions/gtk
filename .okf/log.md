@@ -1,5 +1,22 @@
 # OKF log — php-io-extensions/gtk
 
+## 2026-08-15 (g_application_register + gSimpleActionNew fix)
+
+- `GtkApplication::gtkApplicationRegister` — required before menubar when PocketFlow owns the loop (not `gtkApplicationRun`).
+- `gSimpleActionNew` parameter-type check moved into C (`Z_STRLEN_P`); Zephir `length()` was emitting broken runtime code.
+
+## 2026-08-15 (GMainContext poll)
+
+- `GtkGLib::gMainContextDefault`, `gMainContextIteration` — cooperative event pump (`g_main_context_default` + `g_main_context_iteration`). `context` handle `0` maps to NULL (default context).
+
+## 2026-08-15 (GMenu / menubar binds)
+
+- Added `GMenu`, `GSimpleAction`, `GtkPopoverMenu`, `GtkPopoverMenuBar` Zephir classes.
+- Extended `GtkApplication` with `gtkApplicationSetMenubar`, `gtkApplicationSetAccelsForAction`.
+- Extended `GtkMenuButton` with `gtkMenuButtonSetMenuModel`.
+- `scripts/patch-config-m4.py` updated for new compile units.
+- Demo: `examples/proof_menubar.php` (File → Close via `app.close` action).
+
 ## 2026-08-14 (ext/ PIE-ready)
 
 - Mac `ext/` replaced with a clean Pi `prepare-ext.sh` generate: 45 `*.zep.c` = 45 `ZEPHIR_INIT`, no `*.lo`/`*.o`/`modules`/`.libs`. `config.m4` requires gtk4 ≥ 4.10.0.

@@ -66,4 +66,24 @@ class GtkGLib
         }%
         return handlerId;
     }
+
+    public static function gMainContextDefault() -> int
+    {
+        int handle;
+        %{
+            GMainContext *ctx = g_main_context_default();
+            handle = ctx ? (zend_long)(uintptr_t) ctx : 0;
+        }%
+        return handle;
+    }
+
+    public static function gMainContextIteration(int context, bool mayBlock) -> bool
+    {
+        bool result;
+        %{
+            GMainContext *ctx = context ? (GMainContext *)(uintptr_t) context : NULL;
+            result = g_main_context_iteration(ctx, mayBlock ? TRUE : FALSE) ? true : false;
+        }%
+        return result;
+    }
 }
