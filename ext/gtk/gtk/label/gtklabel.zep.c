@@ -110,3 +110,23 @@ PHP_METHOD(Gtk_GTK_Label_GtkLabel, gtkLabelGetText)
 	RETURN_CTORW(&result);
 }
 
+PHP_METHOD(Gtk_GTK_Label_GtkLabel, gtkLabelSetXalign)
+{
+	double xalign;
+	zval *label_param = NULL, *xalign_param = NULL;
+	zend_long label;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(label)
+		Z_PARAM_ZVAL(xalign_param)
+	ZEND_PARSE_PARAMETERS_END();
+	zephir_fetch_params_without_memory_grow(2, 0, &label_param, &xalign_param);
+	xalign = zephir_get_doubleval(xalign_param);
+	
+            GtkLabel *lbl = GTK_LABEL((void *)(uintptr_t) label);
+            if (lbl != NULL) {
+                gtk_label_set_xalign(lbl, (float) xalign);
+            }
+        
+}
+

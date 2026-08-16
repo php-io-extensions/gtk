@@ -8,7 +8,7 @@ extern void php_gtk_set_last_error(const char *msg);
 }%
 
 /**
- * GtkCheckButton — new, label get/set, active get/set.
+ * GtkCheckButton — new, label, active, group (GTK4 radio = grouped check).
  */
 class GtkCheckButton
 {
@@ -90,5 +90,19 @@ class GtkCheckButton
             active = (btn != NULL && gtk_check_button_get_active(btn)) ? true : false;
         }%
         return active;
+    }
+
+    /**
+     * Join a radio-style group. Pass group handle 0 to leave the group.
+     */
+    public static function gtkCheckButtonSetGroup(int button, int group) -> void
+    {
+        %{
+            GtkCheckButton *btn = GTK_CHECK_BUTTON((void *)(uintptr_t) button);
+            GtkCheckButton *grp = group ? GTK_CHECK_BUTTON((void *)(uintptr_t) group) : NULL;
+            if (btn != NULL) {
+                gtk_check_button_set_group(btn, grp);
+            }
+        }%
     }
 }

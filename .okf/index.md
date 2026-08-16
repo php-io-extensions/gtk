@@ -34,6 +34,7 @@ This is the **native extension** (`ext-gtk`). Downstream PHP wrappers (future `m
 * [Gtk\\GTK\\GtkSwitch\\GtkSwitch](api/gtkswitch.md) - switch + active
 * [Native widget family](api/native-widgets.md) - display, input, chrome, dialogs
 * [Gtk\\GTK\\Box\\GtkBox](api/box.md) - box append/remove
+* [Gtk\\GTK\\Fixed\\GtkFixed](api/fixed.md) - x/y child placement
 * [Gtk\\GTK\\GLArea\\GtkGLArea](api/glarea.md) - GPU view (no window create)
 * [Gtk\\GTK\\GpuPane\\GtkGpuPane](api/gpupane.md) - X11 child pane for foreign WSI (not GtkVulkanArea)
 * [Gtk\\GTK\\GtkGLib](api/gobject.md) - ref/unref/signal connect

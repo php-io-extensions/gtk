@@ -53,4 +53,14 @@ class GtkLabel
         }%
         return result;
     }
+
+    public static function gtkLabelSetXalign(int label, double xalign) -> void
+    {
+        %{
+            GtkLabel *lbl = GTK_LABEL((void *)(uintptr_t) label);
+            if (lbl != NULL) {
+                gtk_label_set_xalign(lbl, (float) xalign);
+            }
+        }%
+    }
 }

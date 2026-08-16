@@ -60,6 +60,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/dropdown/gtkdropdown.zep.c
 	gtk/gtk/entry/gtkentry.zep.c
 	gtk/gtk/filedialog/gtkfiledialog.zep.c
+	gtk/gtk/fixed/gtkfixed.zep.c
 	gtk/gtk/fontdialog/gtkfontdialog.zep.c
 	gtk/gtk/glarea/gtkglarea.zep.c
 	gtk/gtk/gmenu/gmenu.zep.c
@@ -101,7 +102,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/window/gtkwindow.zep.c "
 	PHP_NEW_EXTENSION(gtk, $gtk_sources, $ext_shared,, $PHP_GTK4_INCS )
 	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])
-	for dir in "gtk/gtk" "gtk/gtk/alertdialog" "gtk/gtk/application" "gtk/gtk/box" "gtk/gtk/button" "gtk/gtk/centerbox" "gtk/gtk/checkbutton" "gtk/gtk/colordialog" "gtk/gtk/dropdown" "gtk/gtk/entry" "gtk/gtk/filedialog" "gtk/gtk/fontdialog" "gtk/gtk/glarea" "gtk/gtk/gmenu" "gtk/gtk/gpupane" "gtk/gtk/grid" "gtk/gtk/gsimpleaction" "gtk/gtk/gtkswitch" "gtk/gtk/headerbar" "gtk/gtk/image" "gtk/gtk/label" "gtk/gtk/listbox" "gtk/gtk/listitem" "gtk/gtk/listview" "gtk/gtk/menubutton" "gtk/gtk/notebook" "gtk/gtk/overlay" "gtk/gtk/paned" "gtk/gtk/passwordentry" "gtk/gtk/picture" "gtk/gtk/popover" "gtk/gtk/popovermenu" "gtk/gtk/popovermenubar" "gtk/gtk/progressbar" "gtk/gtk/scale" "gtk/gtk/scrolledwindow" "gtk/gtk/searchentry" "gtk/gtk/separator" "gtk/gtk/singleselection" "gtk/gtk/spinbutton" "gtk/gtk/spinner" "gtk/gtk/stack" "gtk/gtk/stringlist" "gtk/gtk/textview" "gtk/gtk/togglebutton" "gtk/gtk/widget" "gtk/gtk/window"; do
+	for dir in "gtk/gtk" "gtk/gtk/alertdialog" "gtk/gtk/application" "gtk/gtk/box" "gtk/gtk/button" "gtk/gtk/centerbox" "gtk/gtk/checkbutton" "gtk/gtk/colordialog" "gtk/gtk/dropdown" "gtk/gtk/entry" "gtk/gtk/filedialog" "gtk/gtk/fixed" "gtk/gtk/fontdialog" "gtk/gtk/glarea" "gtk/gtk/gmenu" "gtk/gtk/gpupane" "gtk/gtk/grid" "gtk/gtk/gsimpleaction" "gtk/gtk/gtkswitch" "gtk/gtk/headerbar" "gtk/gtk/image" "gtk/gtk/label" "gtk/gtk/listbox" "gtk/gtk/listitem" "gtk/gtk/listview" "gtk/gtk/menubutton" "gtk/gtk/notebook" "gtk/gtk/overlay" "gtk/gtk/paned" "gtk/gtk/passwordentry" "gtk/gtk/picture" "gtk/gtk/popover" "gtk/gtk/popovermenu" "gtk/gtk/popovermenubar" "gtk/gtk/progressbar" "gtk/gtk/scale" "gtk/gtk/scrolledwindow" "gtk/gtk/searchentry" "gtk/gtk/separator" "gtk/gtk/singleselection" "gtk/gtk/spinbutton" "gtk/gtk/spinner" "gtk/gtk/stack" "gtk/gtk/stringlist" "gtk/gtk/textview" "gtk/gtk/togglebutton" "gtk/gtk/widget" "gtk/gtk/window"; do
 		PHP_ADD_BUILD_DIR([$ext_builddir/$dir])
 	done
 

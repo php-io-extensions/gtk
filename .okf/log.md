@@ -1,5 +1,17 @@
 # OKF log — php-io-extensions/gtk
 
+## 2026-08-16 (GtkLabel set_xalign)
+
+- Added `GtkLabel::gtkLabelSetXalign` → `gtk_label_set_xalign`. 0.0 left, 0.5 center, 1.0 right. Generate + compile on Linux only.
+
+## 2026-08-16 (GtkCheckButton set_group)
+
+- Added `GtkCheckButton::gtkCheckButtonSetGroup` → `gtk_check_button_set_group`. GTK4 radio = grouped `GtkCheckButton`. Pass group handle `0` to leave the group. Generate + compile on Linux only.
+
+## 2026-08-16 (GtkFixed)
+
+- Added `Gtk\\GTK\\Fixed\\GtkFixed`: `gtkFixedNew` / `Put` / `Move` / `Remove` / `GetChildPosition`. x/y are PHP ints cast to GTK4 double. Child w/h stays `gtk_widget_set_size_request`. `scripts/patch-config-m4.py` lists `gtk/gtk/fixed/gtkfixed.zep.c`. Generate + compile on Linux only.
+
 ## 2026-08-15 (g_application_register + gSimpleActionNew fix)
 
 - `GtkApplication::gtkApplicationRegister` — required before menubar when PocketFlow owns the loop (not `gtkApplicationRun`).

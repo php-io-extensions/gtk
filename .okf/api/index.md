@@ -12,6 +12,7 @@
 * [gtkswitch.md](gtkswitch.md)
 * [native-widgets.md](native-widgets.md)
 * [box.md](box.md)
+* [fixed.md](fixed.md)
 * [glarea.md](glarea.md)
 * [gpupane.md](gpupane.md)
 * [gobject.md](gobject.md)
