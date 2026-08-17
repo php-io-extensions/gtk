@@ -154,4 +154,23 @@ class GtkWidget
         }%
         return handlerId;
     }
+
+    public static function gtkWidgetApplyCss(int widget, string css) -> void
+    {
+        %{
+            GtkWidget *w = GTK_WIDGET((void *)(uintptr_t) widget);
+            if (w != NULL && Z_STRLEN(css) > 0) {
+                GtkCssProvider *provider = gtk_css_provider_new();
+                char *sheet = g_strdup_printf("* { %s }", Z_STRVAL(css));
+                gtk_css_provider_load_from_string(provider, sheet);
+                g_free(sheet);
+                gtk_style_context_add_provider(
+                    gtk_widget_get_style_context(w),
+                    GTK_STYLE_PROVIDER(provider),
+                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+                );
+                g_object_unref(provider);
+            }
+        }%
+    }
 }

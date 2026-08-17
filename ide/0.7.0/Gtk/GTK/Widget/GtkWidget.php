@@ -29,4 +29,6 @@ class GtkWidget
     public static function gtkWidgetQueueDraw(int $widget): void {}
 
     public static function gtkWidgetAddTickCallback(int $widget, callable $callback): int {}
+
+    public static function gtkWidgetApplyCss(int $widget, string $css): void {}
 }

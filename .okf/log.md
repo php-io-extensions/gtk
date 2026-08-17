@@ -1,5 +1,9 @@
 # OKF log — php-io-extensions/gtk
 
+## 2026-08-16 (GtkWidget apply_css)
+
+- Added `GtkWidget::gtkWidgetApplyCss` → per-widget CSS via `gtk_css_provider_load_from_string` + `gtk_style_context_add_provider` at `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION`. Pass property declarations (e.g. `font-size: 24pt; font-weight: 700;`); the bind wraps `* { … }`. Generate + compile on Linux only.
+
 ## 2026-08-16 (GtkLabel set_xalign)
 
 - Added `GtkLabel::gtkLabelSetXalign` → `gtk_label_set_xalign`. 0.0 left, 0.5 center, 1.0 right. Generate + compile on Linux only.

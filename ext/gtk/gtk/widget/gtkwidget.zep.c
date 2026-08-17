@@ -274,3 +274,37 @@ PHP_METHOD(Gtk_GTK_Widget_GtkWidget, gtkWidgetAddTickCallback)
 	RETURN_LONG(handlerId);
 }
 
+PHP_METHOD(Gtk_GTK_Widget_GtkWidget, gtkWidgetApplyCss)
+{
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zval css;
+	zval *widget_param = NULL, *css_param = NULL;
+	zend_long widget;
+
+	ZVAL_UNDEF(&css);
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(widget)
+		Z_PARAM_ZVAL(css_param)
+	ZEND_PARSE_PARAMETERS_END();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 2, 0, &widget_param, &css_param);
+	zephir_get_strval(&css, css_param);
+	
+            GtkWidget *w = GTK_WIDGET((void *)(uintptr_t) widget);
+            if (w != NULL && Z_STRLEN(css) > 0) {
+                GtkCssProvider *provider = gtk_css_provider_new();
+                char *sheet = g_strdup_printf("* { %s }", Z_STRVAL(css));
+                gtk_css_provider_load_from_string(provider, sheet);
+                g_free(sheet);
+                gtk_style_context_add_provider(
+                    gtk_widget_get_style_context(w),
+                    GTK_STYLE_PROVIDER(provider),
+                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+                );
+                g_object_unref(provider);
+            }
+        
+	ZEPHIR_MM_RESTORE();
+}
+
