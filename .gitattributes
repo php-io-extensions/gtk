@@ -1,2 +1,10 @@
+# Kept out of the Composer/PIE dist tarball. PIE builds from `ext/`
+# (composer.json "build-path"), so everything below is development-only:
+# knowledge bundle, agent rules, the generation/audit toolchain with its
+# vendored gir XML, the seat proofs, and the Pi build wrapper. Cloning the
+# repo still gets all of it — export-ignore only affects `git archive`.
 .okf/ export-ignore
 AGENTS.md export-ignore
+scripts/ export-ignore
+examples/ export-ignore
+build-linux.sh export-ignore

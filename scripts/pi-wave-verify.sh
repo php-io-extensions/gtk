@@ -22,8 +22,6 @@ trap 'rm -f "${tmp}"' EXIT
     COPYFILE_DISABLE=1 tar czf "${tmp}" \
         --exclude '._*' \
         --exclude '.git' \
-        --exclude '.unlazy' \
-        --exclude 'GATES.md' \
         --exclude 'ext/.libs' \
         --exclude 'ext/modules' \
         --exclude 'ext/autom4te.cache' \

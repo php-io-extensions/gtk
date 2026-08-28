@@ -47,6 +47,11 @@ ext/mkinstalldirs
 ext/run-tests.php
 ext/aclocal.m4
 ext/acinclude.m4
+
+# zephir's own phpize wrappers — regenerated on every `zephir generate`,
+# stripped by prepare-ext.sh. build-linux.sh is the only supported build path.
+ext/install
+ext/clean
 ext/gtk.la
 ext/gtk.lo
 ext/gtk.o

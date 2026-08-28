@@ -183,12 +183,17 @@ echo "prepare-ext: rewrote ${register_fixed} registration site(s)"
 # ------------------------------------------------------- clear phpize leftovers
 # Generated .zep.c and the staged src/ tree are deliberately kept. Nothing
 # host-absolute may remain: PIE ships this directory.
+#
+# `install` and `clean` are zephir's own phpize wrappers, rewritten on every
+# generate. They hardcode a toolchain (gcc, -flto, sudo make install) that has
+# nothing to do with how this extension is built — build-linux.sh is the only
+# supported path — so they are stripped rather than shipped.
 cd "$EXT_DIR"
 rm -rf Makefile Makefile.fragments Makefile.objects Makefile.global modules .libs \
     autom4te.cache build configure configure.ac 'configure~' config.h config.h.in \
     'config.h.in~' config.log config.status config.nice libtool run-tests.php \
     install-sh missing mkinstalldirs config.guess config.sub ltmain.sh aclocal.m4 \
-    acinclude.m4 2>/dev/null || true
+    acinclude.m4 install clean 2>/dev/null || true
 find . \( -name '*.lo' -o -name '*.o' -o -name '*.dep' -o -name '*.la' -o -name '*.so' \) \
     -delete 2>/dev/null || true
 find . \( -name '.libs' -o -name '*.dSYM' \) -type d -exec rm -rf {} + 2>/dev/null || true
