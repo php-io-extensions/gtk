@@ -1,9 +1,9 @@
 {
     "name": "php-io-extensions/gtk",
     "type": "php-ext",
-    "description": "PHP-Controllable GTK4 Toolkit Extension",
+    "description": "GTK4 bound 1:1 into PHP (Zephir extension, Linux only)",
     "license": "MIT",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "authors": [
         {
             "name": "Project Saturn Studios, LLC",
@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.4"
     },
     "php-ext": {
         "extension-name": "gtk",
@@ -19,11 +19,11 @@
         "build-path": "ext",
         "support-zts": true,
         "support-nts": true,
-        "os-families-exclude": ["windows"],
+        "os-families": ["linux"],
         "configure-options": [
             {
                 "name": "enable-gtk",
-                "description": "Enable the gtk extension",
+                "description": "Enable the gtk extension (Linux only)",
                 "needs-value": false
             }
         ]

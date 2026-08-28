@@ -1,55 +1,58 @@
 <?php
-/**
- * gtk extension — one GtkApplication, one window, one button.
+/*
+ * Window proof: init GTK, put a titled window with a label-carrying button
+ * on screen for two seconds, then close it. Needs the box's logged-in
+ * Wayland/X11 seat (over ssh, export the seat env first).
  *
- * Needs a logged-in Wayland or X11 seat (same as any GTK app).
- *
- * Usage:
- *   php examples/proof_window.php
+ * Run on the Linux box: php examples/proof_window.php
  */
 
 declare(strict_types=1);
 
-use Gtk\GTK\Application\GtkApplication;
-use Gtk\GTK\Button\GtkButton;
-use Gtk\GTK\GtkGLib;
-use Gtk\GTK\Gtk;
-use Gtk\GTK\GtkError;
-use Gtk\GTK\Window\GtkWindow;
+use Gtk\Bridge\Bridge;
+use Gtk\Gtk\GtkBox\GtkBox;
+use Gtk\Gtk\GtkButton\GtkButton;
+use Gtk\Gtk\GtkWidget\GtkWidget;
+use Gtk\Gtk\GtkWindow\GtkWindow;
 
-if (! extension_loaded('gtk')) {
-    fwrite(STDERR, "gtk extension is not loaded\n");
+if (!extension_loaded('gtk')) {
+    fwrite(STDERR, "proof_window: the gtk extension is not loaded\n");
     exit(1);
 }
 
-if (! Gtk::gtkInitCheck()) {
-    fwrite(STDERR, "gtk_init_check failed (no display?). ".GtkError::gtkLastMessage()."\n");
+if (!Bridge::init()) {
+    fwrite(STDERR, "proof_window: gtk_init_check failed — no display? Run from the logged-in seat.\n");
     exit(1);
 }
 
-const G_APPLICATION_DEFAULT_FLAGS = 0;
+$win = GtkWindow::new_();
+GtkWindow::setTitle($win, 'gtk ' . phpversion('gtk') . ' — proof window');
+GtkWindow::setDefaultSize($win, 420, 260);
 
-$app = GtkApplication::gtkApplicationNew('org.scrapyardio.gtk.proof', G_APPLICATION_DEFAULT_FLAGS);
-if ($app === 0) {
-    fwrite(STDERR, "gtk_application_new failed: ".GtkError::gtkLastMessage()."\n");
+$box = GtkBox::new_(1, 12); // GTK_ORIENTATION_VERTICAL
+GtkWidget::setMarginTop($box, 20);
+GtkWidget::setMarginBottom($box, 20);
+GtkWidget::setMarginStart($box, 20);
+GtkWidget::setMarginEnd($box, 20);
+GtkWindow::setChild($win, $box);
+
+$btn = GtkButton::newWithLabel('PHP drives this window');
+GtkBox::append($box, $btn);
+
+GtkWindow::present($win);
+
+$deadline = microtime(true) + 2.0;
+while (microtime(true) < $deadline) {
+    Bridge::pump(50);
+}
+
+$visible = GtkWidget::getVisible($win);
+GtkWindow::close($win);
+Bridge::pump(200);
+
+if (!$visible) {
+    fwrite(STDERR, "proof_window: window never became visible\n");
     exit(1);
 }
 
-GtkGLib::gSignalConnect($app, 'activate', static function (int $application): void {
-    $window = GtkWindow::gtkApplicationWindowNew($application);
-    GtkWindow::gtkWindowSetTitle($window, 'ext-gtk proof');
-    GtkWindow::gtkWindowSetDefaultSize($window, 400, 240);
-
-    $button = GtkButton::gtkButtonNewWithLabel('Close');
-    GtkGLib::gSignalConnect($button, 'clicked', static function () use ($window): void {
-        GtkWindow::gtkWindowClose($window);
-    });
-
-    GtkWindow::gtkWindowSetChild($window, $button);
-    GtkWindow::gtkWindowPresent($window);
-});
-
-$status = GtkApplication::gtkApplicationRun($app);
-GtkGLib::gObjectUnref($app);
-
-exit($status);
+echo "PROOF_WINDOW_OK\n";

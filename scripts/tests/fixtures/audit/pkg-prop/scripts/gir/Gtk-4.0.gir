@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<repository version="1.2"
+            xmlns="http://www.gtk.org/introspection/core/1.0"
+            xmlns:c="http://www.gtk.org/introspection/c/1.0"
+            xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <namespace name="Gtk" version="4.0">
+    <class name="Widget" c:type="GtkWidget" glib:type-name="GtkWidget" abstract="1">
+      <constructor name="new" c:identifier="gtk_widget_new"/>
+      <method name="get_visible" c:identifier="gtk_widget_get_visible"/>
+      <method name="set_visible" c:identifier="gtk_widget_set_visible"/>
+      <method name="extra_thing" c:identifier="gtk_widget_extra_thing"/>
+      <property name="visible" readable="1" writable="1" getter="get_visible" setter="set_visible"/>
+      <glib:signal name="destroy"/>
+    </class>
+    <class name="Gadget" c:type="GtkGadget" glib:type-name="GtkGadget">
+      <constructor name="new" c:identifier="gtk_gadget_new"/>
+      <method name="ping" c:identifier="gtk_gadget_ping"/>
+    </class>
+    <interface name="Orientable" c:type="GtkOrientable" glib:type-name="GtkOrientable">
+      <method name="get_orientation" c:identifier="gtk_orientable_get_orientation"/>
+      <method name="set_orientation" c:identifier="gtk_orientable_set_orientation"/>
+    </interface>
+    <class name="Orphan" c:type="GtkOrphan" glib:type-name="GtkOrphan">
+      <method name="ping" c:identifier="gtk_orphan_ping"/>
+      <property name="orphan" readable="1" writable="1"/>
+    </class>
+    <class name="Thing" c:type="GtkThing" glib:type-name="GtkThing">
+      <method name="ping" c:identifier="gtk_thing_ping"/>
+    </class>
+  </namespace>
+</repository>

@@ -80,7 +80,7 @@ version_ge() {
     return 0
 }
 
-MIN_GTK4_VERSION="4.10.0"
+MIN_GTK4_VERSION="4.18.0"
 
 ensure_gtk4() {
     step "📚 Checking GTK4 dependency (minimum ${MIN_GTK4_VERSION})..."
@@ -134,16 +134,46 @@ ensure_php_dev() {
     ok "phpize ready: $(command -v phpize)"
 }
 
+# SHA-256 over every generation input. Must stay in lockstep with
+# compute_gen_stamp in scripts/prepare-ext.sh.
+compute_gen_stamp() {
+    local hasher
+    if command -v sha256sum >/dev/null 2>&1; then
+        hasher="sha256sum"
+    else
+        hasher="shasum -a 256"
+    fi
+    (
+        cd "$SCRIPT_DIR"
+        find src gtk optimizers -type f \
+            \( -name '*.h' -o -name '*.c' -o -name '*.zep' -o -name '*.php' \) 2>/dev/null \
+            | LC_ALL=C sort \
+            | while IFS= read -r f; do
+                  $hasher "$f"
+              done \
+            | $hasher \
+            | awk '{print $1}'
+    )
+}
+
 ensure_generated_ext() {
+    local want have
     if [ -f "${EXT_SRC}/gtk.c" ] && [ -f "${EXT_SRC}/config.m4" ]; then
-        ok "Committed/generated ext/ present"
-        return
+        # Stale-build trap: a committed ext/ that no longer matches the
+        # sources it was generated from must never be silently compiled.
+        want="$(compute_gen_stamp)"
+        have="$(cat "${EXT_SRC}/.gen-stamp" 2>/dev/null || echo missing)"
+        if [ "$want" = "$have" ]; then
+            ok "Committed/generated ext/ present and matches .gen-stamp"
+            return
+        fi
+        step "⚠️  ext/ is stale (.gen-stamp ${have} != sources ${want}) — regenerating..."
+    else
+        step "⚙️  ext/ not generated — running scripts/prepare-ext.sh (needs Zephir)..."
     fi
 
-    step "⚙️  ext/ not generated — running scripts/prepare-ext.sh (needs Zephir)..."
-    require_cmd python3
     bash "${SCRIPT_DIR}/scripts/prepare-ext.sh" >>"$LOG_FILE" 2>&1 \
-        || { show_failure_logs; die "zephir generate / prepare-ext.sh failed. Install Zephir or set ZEPHIR_BIN."; }
+        || { show_failure_logs; die "zephir generate / prepare-ext.sh failed. ext/ is missing or stale; regenerate on the dev machine (scripts/prepare-ext.sh needs Zephir) and copy the repo over again."; }
 
     [ -f "${EXT_SRC}/gtk.c" ] || die "prepare-ext.sh finished but ext/gtk.c is missing."
     ok "ext/ generated"
