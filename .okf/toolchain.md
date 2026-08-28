@@ -125,5 +125,28 @@ php examples/smoke.php             # SMOKE_OK
   gen-stamp (so `build-linux.sh` declares `ext/` stale), and Zephir then
   crashes trying to parse `gtk/bridge/._bridge.zep`. Always
   `COPYFILE_DISABLE=1 tar czf … --exclude '._*'`.
+- **`build-linux.sh` passing is not the same as `pie install` passing.**
+  `build-linux.sh` exports `-Wno-error=incompatible-pointer-types`, so it
+  compiled clean while `pie install` died at `kernel/require.lo` under GCC
+  14, which promotes `-Wincompatible-pointer-types` to an error by default.
+  Two separate Zephir codegen defects hid behind that flag:
+  1. `kernel/require.c` / `kernel/file.c` free a `zend_string` with
+     `zval_ptr_dtor()` (wants a `zval*`). Genuinely wrong; the correct call
+     is `zend_string_release()`. `prepare-ext.sh` reapplies this after every
+     generate (`fix_kernel_zend_string_release`), same as
+     `fix_register_macro` — the kernel is regenerated each time.
+  2. Generated `.zep.c` emits `Z_PARAM_STR`/`Z_PARAM_ARRAY` against a `zval`
+     instead of a `zend_string**`, then does the real fetch through
+     `zephir_fetch_params` + `zephir_get_strval` on the next lines, so the
+     bad write is overwritten before anything reads it. Benign at runtime,
+     but it spans every string/array parameter in every method — not
+     patchable per site. `config.json` `extra-cflags` therefore carries
+     `-Wno-error=incompatible-pointer-types` into the generated
+     `ext/config.m4`, where PIE, a manual `phpize` build, and
+     `build-linux.sh` all inherit it.
+
+  When touching the build, verify the *strict* path too: copy `ext/` to the
+  Pi and run `phpize && ./configure --with-php-config=… --enable-gtk &&
+  make -j4` with no extra CFLAGS. That is what PIE does.
 
 See [binding-rules.md](/binding-rules.md) for what the generator emits.

@@ -7,7 +7,7 @@
     "package-dependencies": {
         "gtk4": ">=4.18.0"
     },
-    "extra-cflags": "",
+    "extra-cflags": "-Wno-error=incompatible-pointer-types",
     "extra-libs": "",
     "extra-sources": [
         "src/phpgtk-support.c",
