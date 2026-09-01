@@ -19,6 +19,7 @@
         "src/gtk-orientable.c",
         "src/gtk-application.c",
         "src/gio-gapplication.c",
+        "src/gio-gsimpleactiongroup.c",
         "src/gtk-adjustment.c",
         "src/gtk-editable.c",
         "src/gtk-entry-buffer.c",
@@ -85,7 +86,12 @@
         "src/gtk-text-tag.c",
         "src/gtk-text-tag-table.c",
         "src/gtk-text-mark.c",
-        "src/gtk-text-view.c"
+        "src/gtk-text-view.c",
+        "src/gtk-css-provider.c",
+        "src/gtk-style-context.c",
+        "src/gtk-media-stream.c",
+        "src/gtk-media-file.c",
+        "src/gtk-video.c"
     ],
     "optimizer-dirs": [
         "optimizers"

@@ -1,5 +1,37 @@
 # Change log
 
+## 2026-08-31 (video wave)
+* **Binding**: `GtkVideo` (17/17), `GtkMediaFile` (12/12) and `GtkMediaStream` (27 bound,
+  7 reserved: deprecated 4.4 names, printf/GError raisers, `get_error`) land in `src/`.
+  `GtkMediaStream` is abstract — added to the audit's OBTAIN_ONLY list (obtained from
+  `GtkMediaFile` ctors or `GtkVideo::getMediaStream`). PARITY_OK, AUDIT_OK, TESTS_OK;
+  built and reflected on the Pi. Runtime playback needs `libgtk-4-media-gstreamer`
+  (now installed on the Pi) or the widget shows a broken-media icon.
+
+## 2026-08-31
+* **Packaging**: `ext/` re-scanned against the official
+  `scripts/prepare-ext.sh` leftover list before deploy. Zero phpize /
+  autoconf / libtool artifacts (`Makefile`, `configure`, `modules/`,
+  `.libs/`, `*.lo`/`*.so`, `install`, `clean`). Ship-ready C intact:
+  78 `.zep.c` / 78 `.zep.h`, 158 `src/*.{c,h}`, 40 kernel files,
+  portable `config.m4`, `.gen-stamp`, `php_gtk.h` at 0.8.0. Did not
+  regenerate.
+
+## 2026-08-30 (css)
+* **Binding**: `Gtk\GtkCssProvider` (new, loadFromString, loadFromPath, toString; GBytes/
+  GFile/resource/named/deprecated-data reserved) and `Gtk\GtkStyleContext`'s two
+  non-deprecated statics `addProviderForDisplay` / `removeProviderForDisplay` (the whole
+  deprecated instance API reserved; class whitelisted OBTAIN_ONLY — nothing constructs
+  it). AUDIT_OK, TESTS_OK, built + REFLECTION_OK on the Pi.
+
+## 2026-08-30
+* **Binding**: `Gio\GSimpleActionGroup` — Wave B2 pattern, `new()` bound, the four
+  deprecated group methods reserved (supported surface is the generic `GActionMap`,
+  already bound). One constructor completes the menu-activation chain:
+  GSimpleAction + GSimpleActionGroup + GActionMap::addAction +
+  GtkWidget::insertActionGroup. All gates green Mac-side; built, REFLECTION_OK (76
+  classes) and smoke-tested on the Pi.
+
 ## 2026-08-28
 
 - Wave B closed. `examples/wave_b.php` landed: every Wave B class proven

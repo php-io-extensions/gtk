@@ -46,6 +46,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gio/gmenuitem/gmenuitem.zep.c
 	gtk/gio/gmenumodel/gmenumodel.zep.c
 	gtk/gio/gsimpleaction/gsimpleaction.zep.c
+	gtk/gio/gsimpleactiongroup/gsimpleactiongroup.zep.c
 	gtk/gtk/gtkaboutdialog/gtkaboutdialog.zep.c
 	gtk/gtk/gtkactionable/gtkactionable.zep.c
 	gtk/gtk/gtkadjustment/gtkadjustment.zep.c
@@ -56,6 +57,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/gtkbutton/gtkbutton.zep.c
 	gtk/gtk/gtkcenterbox/gtkcenterbox.zep.c
 	gtk/gtk/gtkcheckbutton/gtkcheckbutton.zep.c
+	gtk/gtk/gtkcssprovider/gtkcssprovider.zep.c
 	gtk/gtk/gtkdropdown/gtkdropdown.zep.c
 	gtk/gtk/gtkeditable/gtkeditable.zep.c
 	gtk/gtk/gtkentry/gtkentry.zep.c
@@ -72,6 +74,8 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/gtklevelbar/gtklevelbar.zep.c
 	gtk/gtk/gtklistbox/gtklistbox.zep.c
 	gtk/gtk/gtklistboxrow/gtklistboxrow.zep.c
+	gtk/gtk/gtkmediafile/gtkmediafile.zep.c
+	gtk/gtk/gtkmediastream/gtkmediastream.zep.c
 	gtk/gtk/gtknotebook/gtknotebook.zep.c
 	gtk/gtk/gtknotebookpage/gtknotebookpage.zep.c
 	gtk/gtk/gtkorientable/gtkorientable.zep.c
@@ -99,6 +103,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/gtkstackswitcher/gtkstackswitcher.zep.c
 	gtk/gtk/gtkstringlist/gtkstringlist.zep.c
 	gtk/gtk/gtkstringobject/gtkstringobject.zep.c
+	gtk/gtk/gtkstylecontext/gtkstylecontext.zep.c
 	gtk/gtk/gtkswitch/gtkswitch.zep.c
 	gtk/gtk/gtktext/gtktext.zep.c
 	gtk/gtk/gtktextbuffer/gtktextbuffer.zep.c
@@ -107,6 +112,7 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/gtktexttagtable/gtktexttagtable.zep.c
 	gtk/gtk/gtktextview/gtktextview.zep.c
 	gtk/gtk/gtktogglebutton/gtktogglebutton.zep.c
+	gtk/gtk/gtkvideo/gtkvideo.zep.c
 	gtk/gtk/gtkviewport/gtkviewport.zep.c
 	gtk/gtk/gtkwidget/gtkwidget.zep.c
 	gtk/gtk/gtkwindow/gtkwindow.zep.c
@@ -119,6 +125,7 @@ if test "$PHP_GTK" = "yes"; then
 	src/gtk-orientable.c
 	src/gtk-application.c
 	src/gio-gapplication.c
+	src/gio-gsimpleactiongroup.c
 	src/gtk-adjustment.c
 	src/gtk-editable.c
 	src/gtk-entry-buffer.c
@@ -185,10 +192,15 @@ if test "$PHP_GTK" = "yes"; then
 	src/gtk-text-tag.c
 	src/gtk-text-tag-table.c
 	src/gtk-text-mark.c
-	src/gtk-text-view.c"
+	src/gtk-text-view.c
+	src/gtk-css-provider.c
+	src/gtk-style-context.c
+	src/gtk-media-stream.c
+	src/gtk-media-file.c
+	src/gtk-video.c"
 	PHP_NEW_EXTENSION(gtk, $gtk_sources, $ext_shared,, -Wno-error=incompatible-pointer-types $PHP_GTK4_INCS )
 	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])
-	for dir in "gtk/bridge gtk/gio/gaction gtk/gio/gactionmap gtk/gio/gapplication gtk/gio/glistmodel gtk/gio/gliststore gtk/gio/gmenu gtk/gio/gmenuitem gtk/gio/gmenumodel gtk/gio/gsimpleaction gtk/gtk/gtkaboutdialog gtk/gtk/gtkactionable gtk/gtk/gtkadjustment gtk/gtk/gtkapplication gtk/gtk/gtkapplicationwindow gtk/gtk/gtkaspectframe gtk/gtk/gtkbox gtk/gtk/gtkbutton gtk/gtk/gtkcenterbox gtk/gtk/gtkcheckbutton gtk/gtk/gtkdropdown gtk/gtk/gtkeditable gtk/gtk/gtkentry gtk/gtk/gtkentrybuffer gtk/gtk/gtkexpander gtk/gtk/gtkfixed gtk/gtk/gtkflowbox gtk/gtk/gtkflowboxchild gtk/gtk/gtkframe gtk/gtk/gtkgrid gtk/gtk/gtkheaderbar gtk/gtk/gtkimage gtk/gtk/gtklabel gtk/gtk/gtklevelbar gtk/gtk/gtklistbox gtk/gtk/gtklistboxrow gtk/gtk/gtknotebook gtk/gtk/gtknotebookpage gtk/gtk/gtkorientable gtk/gtk/gtkoverlay gtk/gtk/gtkpaned gtk/gtk/gtkpasswordentry gtk/gtk/gtkpicture gtk/gtk/gtkpopover gtk/gtk/gtkpopovermenu gtk/gtk/gtkpopovermenubar gtk/gtk/gtkprogressbar gtk/gtk/gtkrange gtk/gtk/gtkrevealer gtk/gtk/gtkscale gtk/gtk/gtkscrollable gtk/gtk/gtkscrollbar gtk/gtk/gtkscrolledwindow gtk/gtk/gtksearchentry gtk/gtk/gtkseparator gtk/gtk/gtkspinbutton gtk/gtk/gtkspinner gtk/gtk/gtkstack gtk/gtk/gtkstackpage gtk/gtk/gtkstacksidebar gtk/gtk/gtkstackswitcher gtk/gtk/gtkstringlist gtk/gtk/gtkstringobject gtk/gtk/gtkswitch gtk/gtk/gtktext gtk/gtk/gtktextbuffer gtk/gtk/gtktextmark gtk/gtk/gtktexttag gtk/gtk/gtktexttagtable gtk/gtk/gtktextview gtk/gtk/gtktogglebutton gtk/gtk/gtkviewport gtk/gtk/gtkwidget gtk/gtk/gtkwindow gtk/gtk/gtkwindowcontrols"; do
+	for dir in "gtk/bridge gtk/gio/gaction gtk/gio/gactionmap gtk/gio/gapplication gtk/gio/glistmodel gtk/gio/gliststore gtk/gio/gmenu gtk/gio/gmenuitem gtk/gio/gmenumodel gtk/gio/gsimpleaction gtk/gio/gsimpleactiongroup gtk/gtk/gtkaboutdialog gtk/gtk/gtkactionable gtk/gtk/gtkadjustment gtk/gtk/gtkapplication gtk/gtk/gtkapplicationwindow gtk/gtk/gtkaspectframe gtk/gtk/gtkbox gtk/gtk/gtkbutton gtk/gtk/gtkcenterbox gtk/gtk/gtkcheckbutton gtk/gtk/gtkcssprovider gtk/gtk/gtkdropdown gtk/gtk/gtkeditable gtk/gtk/gtkentry gtk/gtk/gtkentrybuffer gtk/gtk/gtkexpander gtk/gtk/gtkfixed gtk/gtk/gtkflowbox gtk/gtk/gtkflowboxchild gtk/gtk/gtkframe gtk/gtk/gtkgrid gtk/gtk/gtkheaderbar gtk/gtk/gtkimage gtk/gtk/gtklabel gtk/gtk/gtklevelbar gtk/gtk/gtklistbox gtk/gtk/gtklistboxrow gtk/gtk/gtkmediafile gtk/gtk/gtkmediastream gtk/gtk/gtknotebook gtk/gtk/gtknotebookpage gtk/gtk/gtkorientable gtk/gtk/gtkoverlay gtk/gtk/gtkpaned gtk/gtk/gtkpasswordentry gtk/gtk/gtkpicture gtk/gtk/gtkpopover gtk/gtk/gtkpopovermenu gtk/gtk/gtkpopovermenubar gtk/gtk/gtkprogressbar gtk/gtk/gtkrange gtk/gtk/gtkrevealer gtk/gtk/gtkscale gtk/gtk/gtkscrollable gtk/gtk/gtkscrollbar gtk/gtk/gtkscrolledwindow gtk/gtk/gtksearchentry gtk/gtk/gtkseparator gtk/gtk/gtkspinbutton gtk/gtk/gtkspinner gtk/gtk/gtkstack gtk/gtk/gtkstackpage gtk/gtk/gtkstacksidebar gtk/gtk/gtkstackswitcher gtk/gtk/gtkstringlist gtk/gtk/gtkstringobject gtk/gtk/gtkstylecontext gtk/gtk/gtkswitch gtk/gtk/gtktext gtk/gtk/gtktextbuffer gtk/gtk/gtktextmark gtk/gtk/gtktexttag gtk/gtk/gtktexttagtable gtk/gtk/gtktextview gtk/gtk/gtktogglebutton gtk/gtk/gtkvideo gtk/gtk/gtkviewport gtk/gtk/gtkwidget gtk/gtk/gtkwindow gtk/gtk/gtkwindowcontrols"; do
 		PHP_ADD_BUILD_DIR([$ext_builddir/$dir])
 	done
 	PHP_SUBST(GTK_SHARED_LIBADD)

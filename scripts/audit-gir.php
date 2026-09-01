@@ -66,11 +66,13 @@ const GIR_MAP = [
  * rather than construct. Exempt from the construction-path check.
  */
 const OBTAIN_ONLY = [
+    'Gtk\\GtkStyleContext', // deprecated instance API; only its two statics are bound
     'Gtk\\GtkSettings',
     'Gdk\\GdkDisplay',
     'Gtk\\GtkRange',
     'Gtk\\GtkNotebookPage',
     'Gtk\\GtkStackPage',
+    'Gtk\\GtkMediaStream', // abstract; obtained from GtkMediaFile or GtkVideo::getMediaStream
 ];
 
 function fail(string $msg): never
