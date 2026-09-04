@@ -82,7 +82,8 @@ zend_long phpgtk_gtktextbuffer_get_selection_bound(zval *handle);
 /*@reserved Gtk\GtkTextBuffer gtk_text_buffer_get_start_iter(GtkTextIter* iter) — GtkTextIter* / stack boxed */
 /*@zep Gtk\GtkTextBuffer getTagTable(int handle) -> int */
 zend_long phpgtk_gtktextbuffer_get_tag_table(zval *handle);
-/*@reserved Gtk\GtkTextBuffer gtk_text_buffer_get_text(const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) — GtkTextIter* / stack boxed */
+/*@zep Gtk\GtkTextBuffer getText(int handle, int startOffset, int endOffset, bool includeHiddenChars) -> var */
+void phpgtk_gtktextbuffer_get_text(zval *return_value, zval *handle, zval *startOffset, zval *endOffset, zval *includeHiddenChars);
 /*@reserved Gtk\GtkTextBuffer gtk_text_buffer_insert(GtkTextIter* iter, const char* text, int len) — GtkTextIter* / stack boxed */
 /*@zep Gtk\GtkTextBuffer insertAtCursor(int handle, string text, int len) -> void */
 void phpgtk_gtktextbuffer_insert_at_cursor(zval *handle, zval *text, zval *len);

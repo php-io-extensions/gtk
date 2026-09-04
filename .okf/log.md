@@ -1,5 +1,20 @@
 # Change log
 
+## 2026-09-04 (text-buffer read-back)
+* **Binding**: `gtk_text_buffer_get_text` unreserved as
+  `GtkTextBuffer::getText(handle, startOffset, endOffset, includeHiddenChars)`.
+  New marshalling doctrine ([binding-rules](/binding-rules.md)): a
+  `GtkTextIter*` parameter crosses as an int character offset;
+  `phpgtk_arg_text_iter` in phpgtk-support.h mints the stack iter through
+  `gtk_text_buffer_get_iter_at_offset` (pure read, -1 = end iterator), so
+  the binding body still makes exactly one bound native call and
+  check-parity's composite gate stays honest. Return is transfer-full →
+  `phpgtk_ret_string_take`. Pipeline green end to end (GEN/PARITY/AUDIT/
+  TESTS/PREPARE on the Mac; build + REFLECTION_OK + live read-back smoke
+  on the Pi, gtk4 4.18.6). Consumed upstream: jovian/gtk regenerated,
+  venusian-gtk's GTKTextArea now reads its buffer back on every edit —
+  the "GTK text areas can't read back" gap is closed.
+
 ## 2026-08-31 (video wave)
 * **Binding**: `GtkVideo` (17/17), `GtkMediaFile` (12/12) and `GtkMediaStream` (27 bound,
   7 reserved: deprecated 4.4 names, printf/GError raisers, `get_error`) land in `src/`.

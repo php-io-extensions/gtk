@@ -144,6 +144,15 @@ class GtkTextBuffer
         return gtktextbuffer_get_tag_table(handle);
     }
 
+    public static function getText(int handle, int startOffset, int endOffset, bool includeHiddenChars) -> var
+    {
+        var result;
+
+        let result = gtktextbuffer_get_text(handle, startOffset, endOffset, includeHiddenChars);
+
+        return result;
+    }
+
     public static function insertAtCursor(int handle, string text, int len) -> void
     {
         gtktextbuffer_insert_at_cursor(handle, text, len);
@@ -222,7 +231,6 @@ class GtkTextBuffer
     // @reserved gtk_text_buffer_get_selection_content(void) — GdkContentProvider*
     // @reserved gtk_text_buffer_get_slice(const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) — GtkTextIter* / stack boxed
     // @reserved gtk_text_buffer_get_start_iter(GtkTextIter* iter) — GtkTextIter* / stack boxed
-    // @reserved gtk_text_buffer_get_text(const GtkTextIter* start, const GtkTextIter* end, gboolean include_hidden_chars) — GtkTextIter* / stack boxed
     // @reserved gtk_text_buffer_insert(GtkTextIter* iter, const char* text, int len) — GtkTextIter* / stack boxed
     // @reserved gtk_text_buffer_insert_child_anchor(GtkTextIter* iter, GtkTextChildAnchor* anchor) — GtkTextIter* / stack boxed
     // @reserved gtk_text_buffer_insert_interactive(GtkTextIter* iter, const char* text, int len, gboolean default_editable) — GtkTextIter* / stack boxed

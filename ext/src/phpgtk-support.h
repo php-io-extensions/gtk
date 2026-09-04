@@ -128,6 +128,19 @@ static inline gpointer phpgtk_arg_typed(zval *z, GType type)
     return (o != NULL && g_type_check_instance_is_a((GTypeInstance *) o, type)) ? o : NULL;
 }
 
+/*
+ * GtkTextIter marshalling. An iter is a stack-boxed cursor into one
+ * buffer, so its PHP representation is the character offset that mints
+ * it — the same doctrine as structs crossing by components. -1 (or any
+ * offset past the end) resolves to the end iterator, which is GTK's own
+ * gtk_text_buffer_get_iter_at_offset contract. Pure read, no GTK-side
+ * effect: this is marshalling, not a second bound call.
+ */
+static inline void phpgtk_arg_text_iter(GtkTextBuffer *buffer, GtkTextIter *iter, zval *offset)
+{
+    gtk_text_buffer_get_iter_at_offset(buffer, iter, (gint) phpgtk_arg_long(offset));
+}
+
 /* ---- returns: write into return_value ---- */
 
 /* transfer-none string return: copy, never free. NULL -> null. */

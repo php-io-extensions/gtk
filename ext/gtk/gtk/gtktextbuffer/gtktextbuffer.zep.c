@@ -391,6 +391,36 @@ PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getTagTable)
 	RETURN_LONG(phpgtk_gtktextbuffer_get_tag_table(&_0));
 }
 
+PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getText)
+{
+	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;
+	zend_bool includeHiddenChars;
+	zval *handle_param = NULL, *startOffset_param = NULL, *endOffset_param = NULL, *includeHiddenChars_param = NULL, result, _0, _1, _2, _3;
+	zend_long handle, startOffset, endOffset;
+
+	ZVAL_UNDEF(&result);
+	ZVAL_UNDEF(&_0);
+	ZVAL_UNDEF(&_1);
+	ZVAL_UNDEF(&_2);
+	ZVAL_UNDEF(&_3);
+	ZEND_PARSE_PARAMETERS_START(4, 4)
+		Z_PARAM_LONG(handle)
+		Z_PARAM_LONG(startOffset)
+		Z_PARAM_LONG(endOffset)
+		Z_PARAM_BOOL(includeHiddenChars)
+	ZEND_PARSE_PARAMETERS_END();
+	ZEPHIR_METHOD_GLOBALS_PTR = pecalloc(1, sizeof(zephir_method_globals), 0);
+	zephir_memory_grow_stack(ZEPHIR_METHOD_GLOBALS_PTR, __func__);
+	zephir_fetch_params(1, 4, 0, &handle_param, &startOffset_param, &endOffset_param, &includeHiddenChars_param);
+	ZEPHIR_INIT_VAR(&result);
+	ZVAL_LONG(&_0, handle);
+	ZVAL_LONG(&_1, startOffset);
+	ZVAL_LONG(&_2, endOffset);
+	ZVAL_BOOL(&_3, (includeHiddenChars ? 1 : 0));
+	phpgtk_gtktextbuffer_get_text(&result, &_0, &_1, &_2, &_3);
+	RETURN_CCTOR(&result);
+}
+
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, insertAtCursor)
 {
 	zephir_method_globals *ZEPHIR_METHOD_GLOBALS_PTR = NULL;

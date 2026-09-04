@@ -26,6 +26,7 @@ PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getMaxUndoLevels);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getModified);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getSelectionBound);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getTagTable);
+PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getText);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, insertAtCursor);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, insertInteractiveAtCursor);
 PHP_METHOD(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, redo);
@@ -147,6 +148,13 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtktextbuffer_gtktextbuf
 	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_gettext, 0, 0, 4)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, startOffset, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, endOffset, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, includeHiddenChars, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_insertatcursor, 0, 3, IS_VOID, 0)
 
 	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
@@ -232,6 +240,7 @@ ZEPHIR_INIT_FUNCS(gtk_gtk_gtktextbuffer_gtktextbuffer_method_entry) {
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getModified, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_getmodified, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getSelectionBound, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_getselectionbound, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getTagTable, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_gettagtable, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, getText, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_gettext, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, insertAtCursor, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_insertatcursor, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, insertInteractiveAtCursor, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_insertinteractiveatcursor, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	PHP_ME(Gtk_Gtk_GtkTextBuffer_GtkTextBuffer, redo, arginfo_gtk_gtk_gtktextbuffer_gtktextbuffer_redo, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)

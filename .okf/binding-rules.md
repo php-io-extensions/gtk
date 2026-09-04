@@ -49,6 +49,7 @@ the translation table whitelisted (`g_free`, `g_strfreev`, list frees,
 | `char**` / `GStrv` | array of strings (`phpgtk_zval_to_strv` / `phpgtk_ret_strv`) |
 | `GList*` / `GSList*` of objects | array of handles, list freed per transfer mode |
 | `GError**`, varargs, non-signal callbacks (`GtkTickCallback`, `GAsyncReadyCallback`, sort funcs), `GtkTextIter*` / stack boxed, `GVariant*`, deprecated | not bound; kept as a commented `@reserved` signature (nothing silently omitted) |
+| `GtkTextIter*` parameter, selectively unreserved | int character offset in; `phpgtk_arg_text_iter` (phpgtk-support.h) mints the stack iter via `gtk_text_buffer_get_iter_at_offset` — pure-read marshalling like the struct rows above, so the binding still makes one bound call. `-1` = end iterator, GTK's own offset contract. First user: `gtk_text_buffer_get_text` → `getText(handle, startOffset, endOffset, includeHiddenChars)`. Remaining iter members stay `@reserved` until asked for |
 | property with C accessors | covered by the bound getter/setter (audit resolves gir `getter=`/`setter=` attributes, falling back to `get_x`/`is_x`/`has_x`/`set_x` name mapping) |
 | property without C accessors | `/*@reserved <class> property "x" — …*/` + generic `Bridge::getProperty`/`setProperty`; property-only reservations do **not** count toward the member sum |
 | signals | Bridge territory only (`Bridge::connect`) — GTK's analogue of appkit's delegates/notifications; gir `<glib:signal>` rows are informational in the audit |

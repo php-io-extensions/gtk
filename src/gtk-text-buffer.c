@@ -255,6 +255,22 @@ zend_long phpgtk_gtktextbuffer_get_tag_table(zval *handle)
     return phpgtk_handle_register(gtk_text_buffer_get_tag_table(self));
 }
 
+void phpgtk_gtktextbuffer_get_text(zval *return_value, zval *handle, zval *startOffset, zval *endOffset, zval *includeHiddenChars)
+{
+    GtkTextBuffer *self = PHPGTK_ARG_AS(GtkTextBuffer, GTK_TYPE_TEXT_BUFFER, handle);
+    GtkTextIter start;
+    GtkTextIter end;
+
+    if (self == NULL) {
+        ZVAL_NULL(return_value); return;
+    }
+
+    phpgtk_arg_text_iter(self, &start, startOffset);
+    phpgtk_arg_text_iter(self, &end, endOffset);
+
+    phpgtk_ret_string_take(return_value, gtk_text_buffer_get_text(self, &start, &end, phpgtk_arg_bool(includeHiddenChars)));
+}
+
 void phpgtk_gtktextbuffer_insert_at_cursor(zval *handle, zval *text, zval *len)
 {
     GtkTextBuffer *self = PHPGTK_ARG_AS(GtkTextBuffer, GTK_TYPE_TEXT_BUFFER, handle);
