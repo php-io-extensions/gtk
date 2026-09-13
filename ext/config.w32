@@ -9,8 +9,9 @@ if (PHP_GTK != "no") {
     ADD_EXTENSION_DEP("gtk", "json");
     AC_DEFINE("ZEPHIR_USE_PHP_JSON", 1, "Whether PHP json extension is present at compile time");
   }
-  ADD_SOURCES(configure_module_dirname + "/src", "phpgtk-support.c phpgtk-bridge.c gtk-widget.c gtk-window.c gtk-button.c gtk-box.c gtk-orientable.c gtk-application.c gio-gapplication.c gio-gsimpleactiongroup.c gtk-adjustment.c gtk-editable.c gtk-entry-buffer.c gtk-entry.c gtk-text.c gtk-password-entry.c gtk-search-entry.c gtk-toggle-button.c gtk-check-button.c gtk-switch.c gtk-range.c gtk-scale.c gtk-scrollbar.c gtk-spin-button.c gtk-label.c gtk-image.c gtk-picture.c gtk-spinner.c gtk-progress-bar.c gtk-level-bar.c gtk-separator.c gtk-frame.c gtk-aspect-frame.c gtk-center-box.c gtk-grid.c gtk-fixed.c gtk-overlay.c gtk-scrollable.c gtk-viewport.c gtk-scrolled-window.c gtk-expander.c gtk-revealer.c gio-glistmodel.c gio-gliststore.c gtk-string-object.c gtk-string-list.c gio-gaction.c gio-gactionmap.c gio-gsimpleaction.c gio-gmenumodel.c gio-gmenu.c gio-gmenuitem.c gtk-actionable.c gtk-drop-down.c gtk-list-box.c gtk-list-box-row.c gtk-flow-box.c gtk-flow-box-child.c gtk-notebook.c gtk-notebook-page.c gtk-stack.c gtk-stack-page.c gtk-stack-switcher.c gtk-stack-sidebar.c gtk-paned.c gtk-header-bar.c gtk-window-controls.c gtk-application-window.c gtk-about-dialog.c gtk-popover.c gtk-popover-menu.c gtk-popover-menu-bar.c gtk-text-buffer.c gtk-text-tag.c gtk-text-tag-table.c gtk-text-mark.c gtk-text-view.c gtk-css-provider.c gtk-style-context.c gtk-media-stream.c gtk-media-file.c gtk-video.c", "gtk");
+  ADD_SOURCES(configure_module_dirname + "/src", "phpgtk-support.c phpgtk-bridge.c gtk-widget.c gtk-window.c gtk-button.c gtk-box.c gtk-orientable.c gtk-application.c gio-gapplication.c gio-gsimpleactiongroup.c gtk-adjustment.c gtk-editable.c gtk-entry-buffer.c gtk-entry.c gtk-text.c gtk-password-entry.c gtk-search-entry.c gtk-toggle-button.c gtk-check-button.c gtk-switch.c gtk-range.c gtk-scale.c gtk-scrollbar.c gtk-spin-button.c gtk-label.c gtk-image.c gtk-picture.c gtk-spinner.c gtk-progress-bar.c gtk-level-bar.c gtk-separator.c gtk-frame.c gtk-aspect-frame.c gtk-center-box.c gtk-grid.c gtk-fixed.c gtk-overlay.c gtk-scrollable.c gtk-viewport.c gtk-scrolled-window.c gtk-expander.c gtk-revealer.c gio-glistmodel.c gio-gliststore.c gtk-string-object.c gtk-string-list.c gio-gaction.c gio-gactionmap.c gio-gsimpleaction.c gio-gmenumodel.c gio-gmenu.c gio-gmenuitem.c gtk-actionable.c gtk-drop-down.c gtk-list-box.c gtk-list-box-row.c gtk-flow-box.c gtk-flow-box-child.c gtk-notebook.c gtk-notebook-page.c gtk-stack.c gtk-stack-page.c gtk-stack-switcher.c gtk-stack-sidebar.c gtk-paned.c gtk-header-bar.c gtk-window-controls.c gtk-application-window.c gtk-about-dialog.c gtk-popover.c gtk-popover-menu.c gtk-popover-menu-bar.c gtk-text-buffer.c gtk-text-tag.c gtk-text-tag-table.c gtk-text-mark.c gtk-text-view.c gtk-css-provider.c gtk-style-context.c gtk-media-stream.c gtk-media-file.c gtk-video.c gtk-calendar.c gtk-column-view.c gtk-column-view-column.c gtk-signal-list-item-factory.c gtk-list-item.c gtk-selection-model.c gtk-single-selection.c gtk-no-selection.c gtk-gl-area.c gdk-gl-context.c", "gtk");
   ADD_SOURCES(configure_module_dirname + "/gtk/bridge", "bridge.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gdk/gdkglcontext", "gdkglcontext.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gio/gaction", "gaction.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gio/gactionmap", "gactionmap.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gio/gapplication", "gapplication.zep.c", "gtk");
@@ -29,8 +30,11 @@ if (PHP_GTK != "no") {
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkaspectframe", "gtkaspectframe.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkbox", "gtkbox.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkbutton", "gtkbutton.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcalendar", "gtkcalendar.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcenterbox", "gtkcenterbox.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcheckbutton", "gtkcheckbutton.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcolumnview", "gtkcolumnview.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcolumnviewcolumn", "gtkcolumnviewcolumn.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkcssprovider", "gtkcssprovider.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkdropdown", "gtkdropdown.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkeditable", "gtkeditable.zep.c", "gtk");
@@ -41,6 +45,7 @@ if (PHP_GTK != "no") {
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkflowbox", "gtkflowbox.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkflowboxchild", "gtkflowboxchild.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkframe", "gtkframe.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkglarea", "gtkglarea.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkgrid", "gtkgrid.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkheaderbar", "gtkheaderbar.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkimage", "gtkimage.zep.c", "gtk");
@@ -48,8 +53,10 @@ if (PHP_GTK != "no") {
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtklevelbar", "gtklevelbar.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtklistbox", "gtklistbox.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtklistboxrow", "gtklistboxrow.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtklistitem", "gtklistitem.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkmediafile", "gtkmediafile.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkmediastream", "gtkmediastream.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtknoselection", "gtknoselection.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtknotebook", "gtknotebook.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtknotebookpage", "gtknotebookpage.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkorientable", "gtkorientable.zep.c", "gtk");
@@ -68,7 +75,10 @@ if (PHP_GTK != "no") {
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkscrollbar", "gtkscrollbar.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkscrolledwindow", "gtkscrolledwindow.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtksearchentry", "gtksearchentry.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkselectionmodel", "gtkselectionmodel.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkseparator", "gtkseparator.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtksignallistitemfactory", "gtksignallistitemfactory.zep.c", "gtk");
+	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtksingleselection", "gtksingleselection.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkspinbutton", "gtkspinbutton.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkspinner", "gtkspinner.zep.c", "gtk");
 	ADD_SOURCES(configure_module_dirname + "/gtk/gtk/gtkstack", "gtkstack.zep.c", "gtk");

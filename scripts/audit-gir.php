@@ -73,6 +73,7 @@ const OBTAIN_ONLY = [
     'Gtk\\GtkNotebookPage',
     'Gtk\\GtkStackPage',
     'Gtk\\GtkMediaStream', // abstract; obtained from GtkMediaFile or GtkVideo::getMediaStream
+    'Gtk\\GtkListItem', // obtained from GtkSignalListItemFactory setup/bind
 ];
 
 function fail(string $msg): never

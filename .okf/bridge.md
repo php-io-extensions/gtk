@@ -50,7 +50,11 @@ main loop. Nothing here decides anything about how GTK is used. **No other
   the underscore-vs-dash case where GLib silently connects a handler that
   never fires. The closure (`PhpGtkClosure` in `phpgtk-support.c`) marshals
   GValues both ways **with return-value writeback**, so a
-  `GtkWindow::close-request` handler can return true to veto the close.
+  `GtkWindow::close-request` handler can return true to veto the close,
+  and a `GtkGLArea::render` handler can return true to tell GTK it has
+  drawn the frame itself. `phpgtk_zval_to_gvalue`'s first branch is
+  `G_TYPE_BOOLEAN`, so a bool-returning signal needs nothing added here —
+  the GL wave used this path unchanged.
   Signal parameters that are GObjects are registered on the way in, so a
   handler receives handles it can pass straight back into bindings.
   `disconnect` checks `g_signal_handler_is_connected` first so a bogus id

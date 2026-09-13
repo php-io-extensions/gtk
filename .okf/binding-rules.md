@@ -9,7 +9,7 @@ tags: [binding, zephir, gtk4, gir]
 status: draft
 generated:
   by: cursor-grok-4.6/cursor
-  at: 2026-08-28T10:00:00Z
+  at: 2026-09-12T19:20:00Z
 ---
 
 # GTK4 binding rules
@@ -252,6 +252,67 @@ the translation table whitelisted (`g_free`, `g_strfreev`, list frees,
   property-only reservation (`im-module`).
   `buffer_to_window_coords` / `window_to_buffer_coords` /
   `get_visible_offset` return assoc arrays of the C out-param names.
+
+## Worked examples (Wave C, GTK 4.18.6 gir counts)
+
+- [`src/gtk-calendar.{h,c}`](src/gtk-calendar.h) — `gir=19 bound=17 reserved=2`
+  (`get_date` / `select_day` are `GDateTime*`). Int `get/set_year/month/day`
+  cover the day-picker; month is 0-based, as GTK reports it. `day-selected`
+  is Bridge territory.
+- [`src/gtk-column-view.{h,c}`](src/gtk-column-view.h) — `gir=26 bound=24 reserved=2`
+  (`get_sorter` is `GtkSorter*`; `scroll_to` is `GtkScrollInfo*`).
+  `new(model)` takes a transfer-full `GtkSelectionModel`, same pattern as
+  `GtkDropDown::new`.
+- [`src/gtk-column-view-column.{h,c}`](src/gtk-column-view-column.h) — `gir=20 bound=18 reserved=2`
+  (`get_sorter` / `set_sorter` are `GtkSorter*`). Constructor is
+  transfer-full and takes a transfer-full factory. `get_id` / `get_title`
+  are nullable (`var`).
+- [`src/gtk-signal-list-item-factory.{h,c}`](src/gtk-signal-list-item-factory.h) —
+  `gir=1 bound=1 reserved=0`. Constructor is transfer-full. `setup` / `bind`
+  / `unbind` / `teardown` arrive through `Bridge::connect` and marshal the
+  `GtkListItem` to a handle.
+- [`src/gtk-list-item.{h,c}`](src/gtk-list-item.h) — `gir=15 bound=15 reserved=0`.
+  Obtain-only (`OBTAIN_ONLY`): GTK mints these and hands them to the factory
+  closures. `getPosition` is the PHP-side cell-lookup key.
+- [`src/gtk-selection-model.{h,c}`](src/gtk-selection-model.h) — interface,
+  `gir=11 bound=8 reserved=3` (`GtkBitset*` get/set selection members).
+- [`src/gtk-single-selection.{h,c}`](src/gtk-single-selection.h) — `gir=10 bound=10 reserved=0`,
+  plus 2 property-only reservations (`item-type` / `n-items`; getters live
+  on GListModel). Constructor is transfer-full.
+- [`src/gtk-no-selection.{h,c}`](src/gtk-no-selection.h) — `gir=3 bound=3 reserved=0`,
+  plus 2 property-only reservations (`item-type` / `n-items`). Constructor
+  is transfer-full.
+- `GtkListItemFactory` is `gir=0` (no constructors, methods, or functions).
+  There is no C surface to bind; `GtkSignalListItemFactory` is the
+  constructible factory.
+
+## Worked examples (GL wave, GTK 4.18.6 / Gdk 4.18.6 gir counts)
+
+- [`src/gtk-gl-area.{h,c}`](src/gtk-gl-area.h) — `gir=20 bound=16 reserved=4`
+  (`get_error` / `set_error` are `GError*`; the `use_es` pair is deprecated
+  since 4.12 in favour of the bound `get/set_allowed_apis`). All 7
+  properties are accessor-covered. `get_required_version` returns
+  `{major, minor}`. `GdkGLAPI` is a flags enum, so it crosses as an int.
+  The `render` / `create-context` / `resize` signals are Bridge territory;
+  `render` returns gboolean and a PHP handler returning `true` reaches GTK
+  through the closure's existing return writeback (see [bridge.md](/bridge.md)).
+- [`src/gdk-gl-context.{h,c}`](src/gdk-gl-context.h) — **the first `Gdk\`
+  class in this extension** — `gir=21 bound=19 reserved=2`
+  (`get_shared_context` deprecated 4.4; `realize` is gir `throws="1"`, so
+  its C signature takes a `GError**`). All 3 properties accessor-covered.
+  Abstract, so no construction path: obtain one from
+  `GtkGLArea::getContext` or the static `getCurrent`. `get_version` and
+  `get_required_version` return `{major, minor}`; `set_use_es` takes GDK's
+  tri-state int (-1 decide / 0 no / 1 yes), not a bool.
+  The library segment alone routed it — `gen-zep.php` emitted
+  `Gtk\Gdk\GdkGLContext\GdkGLContext` into
+  `gtk/gdk/gdkglcontext/gdkglcontext.zep`, `audit-gir.php` already mapped
+  `Gdk` → `Gdk-4.0`, and `gdk_` was already a counted native prefix.
+  Its parent `GdkDrawContext` (gir=6) is deliberately **not** bound: no
+  GtkGLArea member returns one, and inherited methods bind on the
+  declaring class only. `getDisplay` / `getSurface` hand back
+  `GdkDisplay` / `GdkSurface` handles whose classes are also unbound —
+  legal, because handles are untyped ints.
 
 ## Mechanics
 

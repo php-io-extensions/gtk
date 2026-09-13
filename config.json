@@ -91,7 +91,17 @@
         "src/gtk-style-context.c",
         "src/gtk-media-stream.c",
         "src/gtk-media-file.c",
-        "src/gtk-video.c"
+        "src/gtk-video.c",
+        "src/gtk-calendar.c",
+        "src/gtk-column-view.c",
+        "src/gtk-column-view-column.c",
+        "src/gtk-signal-list-item-factory.c",
+        "src/gtk-list-item.c",
+        "src/gtk-selection-model.c",
+        "src/gtk-single-selection.c",
+        "src/gtk-no-selection.c",
+        "src/gtk-gl-area.c",
+        "src/gdk-gl-context.c"
     ],
     "optimizer-dirs": [
         "optimizers"

@@ -1,5 +1,68 @@
 # Change log
 
+## 2026-09-13 (GL wave — GtkGLArea and the first Gdk class)
+
+* **Binding**: `GtkGLArea` (`src/gtk-gl-area.{h,c}`, gir=20 bound=16
+  reserved=4 — `get_error`/`set_error` are `GError*`, the `use_es` pair is
+  deprecated 4.12 in favour of the bound allowed-apis pair; all 7
+  properties accessor-covered) and `GdkGLContext`
+  (`src/gdk-gl-context.{h,c}`, gir=21 bound=19 reserved=2 —
+  `get_shared_context` deprecated 4.4, `realize` is `throws=1` so it takes
+  a `GError**`; all 3 properties accessor-covered). Version 0.8.0 → 0.8.1.
+* **First Gdk class.** `GdkGLContext` is the first `Gdk\` annotation in
+  this extension. Nothing in the pipeline needed changing: `audit-gir.php`
+  already mapped `Gdk` → `Gdk-4.0`, `check-parity.php` already counted
+  `gdk_` as a native prefix, and `gen-zep.php` emitted
+  `Gtk\Gdk\GdkGLContext\GdkGLContext` into
+  `gtk/gdk/gdkglcontext/gdkglcontext.zep` from the library segment alone.
+  It is gir `abstract="1"`, so it needs no construction path — you obtain
+  one from `GtkGLArea::getContext` or the static `getCurrent`.
+  **Scope decision**: its parent `GdkDrawContext` (gir=6) was *not* bound.
+  Inherited methods bind once on the declaring class and nothing in the
+  GtkGLArea surface returns a bare `GdkDrawContext`, so binding it would
+  have been scope the wave did not need. `getDisplay` / `getSurface`
+  return `GdkDisplay` / `GdkSurface` handles whose classes are likewise
+  unbound — handles are untyped ints, so those values stay usable when a
+  later wave binds them.
+* **Signal returns needed no Bridge change.** `render` must return TRUE to
+  stop GTK's default handling. `phpgtk_closure_marshal` already writes a
+  PHP handler's return into the signal's return GValue via
+  `phpgtk_zval_to_gvalue`, whose first branch is `G_TYPE_BOOLEAN` — the
+  same path `GtkWindow::close-request` uses. Returning `true` from PHP is
+  all it takes; see [bridge.md](/bridge.md).
+* **Proof**: `examples/proof_glarea.php` — a GtkWindow holding a
+  GtkGLArea, with the render handler calling **ext-opengl** against the
+  area's own framebuffer (VAO/VBO triangle, shader pair, `glReadPixels`
+  centre+corner into an OpenGL Bridge buffer, byte-checked on the first
+  rendered frame), then ~2s of real frames driven by `Bridge::pump`. On
+  the Pi seat: 119 frames, centre RGBA `255,128,64,255`, corner
+  `0,0,0,255`, PROOF_GLAREA_OK. GL constants are inline ints citing
+  ext-opengl's vendored `scripts/khronos/glcorearb.h` by line, because
+  constants live in jovian/ogx.
+* **Trap found and recorded**: on the Pi, GDK can only give a GtkGLArea a
+  **GLES** context — see
+  [traps/glarea-is-gles-on-the-pi.md](/traps/glarea-is-gles-on-the-pi.md).
+* Mac: GEN_OK, PARITY_OK, AUDIT_OK, TESTS_OK (surface checks added for
+  both classes), PREPARE_EXT_OK. Pi (`/home/angel/gtk`): build,
+  REFLECTION_OK (91 classes), PROOF_GLAREA_OK.
+
+## 2026-09-12 (Wave C — calendar and column view)
+
+* **Binding**: `GtkCalendar` (17 bound / 2 reserved: `GDateTime*`
+  `get_date` / `select_day`) and the ColumnView family land in `src/`.
+  `GtkColumnView` 24/2 (`GtkSorter*` / `GtkScrollInfo*`),
+  `GtkColumnViewColumn` 18/2 (`GtkSorter*` get/set),
+  `GtkSignalListItemFactory` 1/0 (transfer-full ctor; `setup`/`bind` via
+  `Bridge::connect`), `GtkListItem` 15/0 obtain-only,
+  `GtkSelectionModel` 8/3 (`GtkBitset*`), `GtkSingleSelection` 10/0,
+  `GtkNoSelection` 3/0. `GtkListItemFactory` is gir=0 — no C surface.
+  Calendar month is 0-based, as GTK reports it. `examples/wave_c.php`
+  proves set/get y-m-d + `day-selected`, a 2-column ColumnView over a
+  StringList with factory setup/bind, and `notify::selected` on a
+  SingleSelection. Mac: GEN_OK, PARITY_OK, AUDIT_OK, TESTS_OK,
+  PREPARE_EXT_OK. Pi (`/home/angel/gtk`): build, REFLECTION_OK (89
+  classes), SMOKE_OK, WAVE_C_OK.
+
 ## 2026-09-04 (text-buffer read-back)
 * **Binding**: `gtk_text_buffer_get_text` unreserved as
   `GtkTextBuffer::getText(handle, startOffset, endOffset, includeHiddenChars)`.

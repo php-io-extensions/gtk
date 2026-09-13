@@ -134,6 +134,16 @@ $surfaces = [
     ['gtk-text-tag-table-surface.php', 'GTKTEXTTAGTABLE'],
     ['gtk-text-mark-surface.php', 'GTKTEXTMARK'],
     ['gtk-text-view-surface.php', 'GTKTEXTVIEW'],
+    ['gtk-calendar-surface.php', 'GTKCALENDAR'],
+    ['gtk-column-view-surface.php', 'GTKCOLUMNVIEW'],
+    ['gtk-column-view-column-surface.php', 'GTKCOLUMNVIEWCOLUMN'],
+    ['gtk-signal-list-item-factory-surface.php', 'GTKSIGNALLISTITEMFACTORY'],
+    ['gtk-list-item-surface.php', 'GTKLISTITEM'],
+    ['gtk-selection-model-surface.php', 'GTKSELECTIONMODEL'],
+    ['gtk-single-selection-surface.php', 'GTKSINGLESELECTION'],
+    ['gtk-no-selection-surface.php', 'GTKNOSELECTION'],
+    ['gtk-gl-area-surface.php', 'GTKGLAREA'],
+    ['gdk-gl-context-surface.php', 'GDKGLCONTEXT'],
 ];
 
 foreach ($surfaces as [$file, $prefix]) {

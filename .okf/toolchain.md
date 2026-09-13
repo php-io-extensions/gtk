@@ -8,7 +8,7 @@ tags: [toolchain, zephir, build, gir, pi]
 status: draft
 generated:
   by: cursor-grok-4.6/cursor
-  at: 2026-08-28T10:00:00Z
+  at: 2026-09-12T19:20:00Z
 ---
 
 # Toolchain
@@ -42,6 +42,8 @@ bash build-linux.sh                # apt deps, stale-ext gen-stamp check, phpize
 php scripts/verify-reflection.php  # REFLECTION_OK: installed .so matches annotations
 php examples/proof_of_work.php     # headless class/version proof
 php examples/proof_window.php      # needs the Pi's logged-in seat
+php examples/proof_glarea.php      # seat + the opengl extension: GtkGLArea
+                                   # driven by ext-opengl (PROOF_GLAREA_OK)
 php examples/smoke.php             # SMOKE_OK
 ```
 
@@ -66,7 +68,7 @@ php examples/smoke.php             # SMOKE_OK
 - `scripts/tests/run-all.php` — negative controls: each guard is proven able
   to fail against a bad fixture (drift, parity break, composite break, audit
   miss, prepare-ext `fix_register_macro` firing, structure) plus per-class
-  surface checks for every slice-zero, Wave A, and Wave B class.
+  surface checks for every slice-zero, Wave A, Wave B, and Wave C class.
 -   `scripts/verify-wave-a.php` — re-measures vendored gir counts for the
   Wave A1–A8 classes and asserts extra-sources + surface-test wiring.
   `scripts/verify-wave-b.php` does the same for Wave B1–B9 (Gio and Gtk
@@ -114,7 +116,7 @@ php examples/smoke.php             # SMOKE_OK
   a real pkg-config probe into `ext/config.m4` — no config.m4 patching, no
   Makefile.frag, and none of appkit's `.m`-file machinery is needed for C.
   Never add `-lX11` (dep-gtk cargo cult; GTK4 links what pkg-config says).
-- The Pi's seat: `proof_window.php` / `smoke.php` need the logged-in
+- The Pi's seat: `proof_window.php` / `proof_glarea.php` / `smoke.php` need the logged-in
   Wayland/X11 session. Over ssh, export the seat env of the logged-in user
   first — on the build box `XDG_RUNTIME_DIR=/run/user/1000 DISPLAY=:0`
   works (both `wayland-0` and `X0` sockets exist; without `WAYLAND_DISPLAY`

@@ -20,6 +20,9 @@ open only the concepts the task needs.
 - [traps/fixed-child-position.md](/traps/fixed-child-position.md) —
   `gtk_fixed_get_child_position` answers in allocated coordinates: {0,0}
   before allocation, theme-offset after; assert move deltas only.
+- [traps/glarea-is-gles-on-the-pi.md](/traps/glarea-is-gles-on-the-pi.md) —
+  GDK can only back a GtkGLArea with a GLES context on the Pi; restricting
+  allowed-apis to desktop GL yields no context and no render signal.
 - [conventions/signal-lifetime.md](/conventions/signal-lifetime.md) — who owns
   a PHP callable connected to a signal (copied verbatim from dep-gtk; the
   `gtkLastMessage()` error channel it mentions was deliberately not carried
