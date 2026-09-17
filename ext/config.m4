@@ -38,6 +38,7 @@ if test "$PHP_GTK" = "yes"; then
 	AC_DEFINE(HAVE_GTK, 1, [Whether you have Gtk])
 	gtk_sources="gtk.c kernel/main.c kernel/memory.c kernel/exception.c kernel/debug.c kernel/backtrace.c kernel/object.c kernel/array.c kernel/string.c kernel/fcall.c kernel/require.c kernel/file.c kernel/operators.c kernel/math.c kernel/concat.c kernel/variables.c kernel/filter.c kernel/iterator.c kernel/time.c kernel/exit.c gtk/bridge/bridge.zep.c
 	gtk/gdk/gdkglcontext/gdkglcontext.zep.c
+	gtk/gdk/gdkkeyval/gdkkeyval.zep.c
 	gtk/gio/gaction/gaction.zep.c
 	gtk/gio/gactionmap/gactionmap.zep.c
 	gtk/gio/gapplication/gapplication.zep.c
@@ -66,11 +67,18 @@ if test "$PHP_GTK" = "yes"; then
 	gtk/gtk/gtkeditable/gtkeditable.zep.c
 	gtk/gtk/gtkentry/gtkentry.zep.c
 	gtk/gtk/gtkentrybuffer/gtkentrybuffer.zep.c
+	gtk/gtk/gtkeventcontroller/gtkeventcontroller.zep.c
+	gtk/gtk/gtkeventcontrollerkey/gtkeventcontrollerkey.zep.c
+	gtk/gtk/gtkeventcontrollermotion/gtkeventcontrollermotion.zep.c
+	gtk/gtk/gtkeventcontrollerscroll/gtkeventcontrollerscroll.zep.c
 	gtk/gtk/gtkexpander/gtkexpander.zep.c
 	gtk/gtk/gtkfixed/gtkfixed.zep.c
 	gtk/gtk/gtkflowbox/gtkflowbox.zep.c
 	gtk/gtk/gtkflowboxchild/gtkflowboxchild.zep.c
 	gtk/gtk/gtkframe/gtkframe.zep.c
+	gtk/gtk/gtkgesture/gtkgesture.zep.c
+	gtk/gtk/gtkgestureclick/gtkgestureclick.zep.c
+	gtk/gtk/gtkgesturesingle/gtkgesturesingle.zep.c
 	gtk/gtk/gtkglarea/gtkglarea.zep.c
 	gtk/gtk/gtkgrid/gtkgrid.zep.c
 	gtk/gtk/gtkheaderbar/gtkheaderbar.zep.c
@@ -217,10 +225,18 @@ if test "$PHP_GTK" = "yes"; then
 	src/gtk-single-selection.c
 	src/gtk-no-selection.c
 	src/gtk-gl-area.c
-	src/gdk-gl-context.c"
+	src/gdk-gl-context.c
+	src/gtk-event-controller.c
+	src/gtk-event-controller-key.c
+	src/gtk-event-controller-motion.c
+	src/gtk-event-controller-scroll.c
+	src/gtk-gesture.c
+	src/gtk-gesture-single.c
+	src/gtk-gesture-click.c
+	src/gdk-keyval.c"
 	PHP_NEW_EXTENSION(gtk, $gtk_sources, $ext_shared,, -Wno-error=incompatible-pointer-types $PHP_GTK4_INCS )
 	PHP_ADD_BUILD_DIR([$ext_builddir/kernel/])
-	for dir in "gtk/bridge gtk/gdk/gdkglcontext gtk/gio/gaction gtk/gio/gactionmap gtk/gio/gapplication gtk/gio/glistmodel gtk/gio/gliststore gtk/gio/gmenu gtk/gio/gmenuitem gtk/gio/gmenumodel gtk/gio/gsimpleaction gtk/gio/gsimpleactiongroup gtk/gtk/gtkaboutdialog gtk/gtk/gtkactionable gtk/gtk/gtkadjustment gtk/gtk/gtkapplication gtk/gtk/gtkapplicationwindow gtk/gtk/gtkaspectframe gtk/gtk/gtkbox gtk/gtk/gtkbutton gtk/gtk/gtkcalendar gtk/gtk/gtkcenterbox gtk/gtk/gtkcheckbutton gtk/gtk/gtkcolumnview gtk/gtk/gtkcolumnviewcolumn gtk/gtk/gtkcssprovider gtk/gtk/gtkdropdown gtk/gtk/gtkeditable gtk/gtk/gtkentry gtk/gtk/gtkentrybuffer gtk/gtk/gtkexpander gtk/gtk/gtkfixed gtk/gtk/gtkflowbox gtk/gtk/gtkflowboxchild gtk/gtk/gtkframe gtk/gtk/gtkglarea gtk/gtk/gtkgrid gtk/gtk/gtkheaderbar gtk/gtk/gtkimage gtk/gtk/gtklabel gtk/gtk/gtklevelbar gtk/gtk/gtklistbox gtk/gtk/gtklistboxrow gtk/gtk/gtklistitem gtk/gtk/gtkmediafile gtk/gtk/gtkmediastream gtk/gtk/gtknoselection gtk/gtk/gtknotebook gtk/gtk/gtknotebookpage gtk/gtk/gtkorientable gtk/gtk/gtkoverlay gtk/gtk/gtkpaned gtk/gtk/gtkpasswordentry gtk/gtk/gtkpicture gtk/gtk/gtkpopover gtk/gtk/gtkpopovermenu gtk/gtk/gtkpopovermenubar gtk/gtk/gtkprogressbar gtk/gtk/gtkrange gtk/gtk/gtkrevealer gtk/gtk/gtkscale gtk/gtk/gtkscrollable gtk/gtk/gtkscrollbar gtk/gtk/gtkscrolledwindow gtk/gtk/gtksearchentry gtk/gtk/gtkselectionmodel gtk/gtk/gtkseparator gtk/gtk/gtksignallistitemfactory gtk/gtk/gtksingleselection gtk/gtk/gtkspinbutton gtk/gtk/gtkspinner gtk/gtk/gtkstack gtk/gtk/gtkstackpage gtk/gtk/gtkstacksidebar gtk/gtk/gtkstackswitcher gtk/gtk/gtkstringlist gtk/gtk/gtkstringobject gtk/gtk/gtkstylecontext gtk/gtk/gtkswitch gtk/gtk/gtktext gtk/gtk/gtktextbuffer gtk/gtk/gtktextmark gtk/gtk/gtktexttag gtk/gtk/gtktexttagtable gtk/gtk/gtktextview gtk/gtk/gtktogglebutton gtk/gtk/gtkvideo gtk/gtk/gtkviewport gtk/gtk/gtkwidget gtk/gtk/gtkwindow gtk/gtk/gtkwindowcontrols"; do
+	for dir in "gtk/bridge gtk/gdk/gdkglcontext gtk/gdk/gdkkeyval gtk/gio/gaction gtk/gio/gactionmap gtk/gio/gapplication gtk/gio/glistmodel gtk/gio/gliststore gtk/gio/gmenu gtk/gio/gmenuitem gtk/gio/gmenumodel gtk/gio/gsimpleaction gtk/gio/gsimpleactiongroup gtk/gtk/gtkaboutdialog gtk/gtk/gtkactionable gtk/gtk/gtkadjustment gtk/gtk/gtkapplication gtk/gtk/gtkapplicationwindow gtk/gtk/gtkaspectframe gtk/gtk/gtkbox gtk/gtk/gtkbutton gtk/gtk/gtkcalendar gtk/gtk/gtkcenterbox gtk/gtk/gtkcheckbutton gtk/gtk/gtkcolumnview gtk/gtk/gtkcolumnviewcolumn gtk/gtk/gtkcssprovider gtk/gtk/gtkdropdown gtk/gtk/gtkeditable gtk/gtk/gtkentry gtk/gtk/gtkentrybuffer gtk/gtk/gtkeventcontroller gtk/gtk/gtkeventcontrollerkey gtk/gtk/gtkeventcontrollermotion gtk/gtk/gtkeventcontrollerscroll gtk/gtk/gtkexpander gtk/gtk/gtkfixed gtk/gtk/gtkflowbox gtk/gtk/gtkflowboxchild gtk/gtk/gtkframe gtk/gtk/gtkgesture gtk/gtk/gtkgestureclick gtk/gtk/gtkgesturesingle gtk/gtk/gtkglarea gtk/gtk/gtkgrid gtk/gtk/gtkheaderbar gtk/gtk/gtkimage gtk/gtk/gtklabel gtk/gtk/gtklevelbar gtk/gtk/gtklistbox gtk/gtk/gtklistboxrow gtk/gtk/gtklistitem gtk/gtk/gtkmediafile gtk/gtk/gtkmediastream gtk/gtk/gtknoselection gtk/gtk/gtknotebook gtk/gtk/gtknotebookpage gtk/gtk/gtkorientable gtk/gtk/gtkoverlay gtk/gtk/gtkpaned gtk/gtk/gtkpasswordentry gtk/gtk/gtkpicture gtk/gtk/gtkpopover gtk/gtk/gtkpopovermenu gtk/gtk/gtkpopovermenubar gtk/gtk/gtkprogressbar gtk/gtk/gtkrange gtk/gtk/gtkrevealer gtk/gtk/gtkscale gtk/gtk/gtkscrollable gtk/gtk/gtkscrollbar gtk/gtk/gtkscrolledwindow gtk/gtk/gtksearchentry gtk/gtk/gtkselectionmodel gtk/gtk/gtkseparator gtk/gtk/gtksignallistitemfactory gtk/gtk/gtksingleselection gtk/gtk/gtkspinbutton gtk/gtk/gtkspinner gtk/gtk/gtkstack gtk/gtk/gtkstackpage gtk/gtk/gtkstacksidebar gtk/gtk/gtkstackswitcher gtk/gtk/gtkstringlist gtk/gtk/gtkstringobject gtk/gtk/gtkstylecontext gtk/gtk/gtkswitch gtk/gtk/gtktext gtk/gtk/gtktextbuffer gtk/gtk/gtktextmark gtk/gtk/gtktexttag gtk/gtk/gtktexttagtable gtk/gtk/gtktextview gtk/gtk/gtktogglebutton gtk/gtk/gtkvideo gtk/gtk/gtkviewport gtk/gtk/gtkwidget gtk/gtk/gtkwindow gtk/gtk/gtkwindowcontrols"; do
 		PHP_ADD_BUILD_DIR([$ext_builddir/$dir])
 	done
 	PHP_SUBST(GTK_SHARED_LIBADD)

@@ -28,7 +28,7 @@ zend_long phpgtk_gtkpopover_get_has_arrow(zval *handle);
 zend_long phpgtk_gtkpopover_get_mnemonics_visible(zval *handle);
 /*@zep Gtk\GtkPopover getOffset(int handle) -> array */
 void phpgtk_gtkpopover_get_offset(zval *return_value, zval *handle);
-/*@zep Gtk\GtkPopover getPointingTo(int handle) -> array */
+/*@zep Gtk\GtkPopover getPointingTo(int handle) -> var */
 void phpgtk_gtkpopover_get_pointing_to(zval *return_value, zval *handle);
 /*@zep Gtk\GtkPopover getPosition(int handle) -> int */
 zend_long phpgtk_gtkpopover_get_position(zval *handle);

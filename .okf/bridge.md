@@ -57,6 +57,9 @@ main loop. Nothing here decides anything about how GTK is used. **No other
   the GL wave used this path unchanged.
   Signal parameters that are GObjects are registered on the way in, so a
   handler receives handles it can pass straight back into bindings.
+  Input signals (key-pressed, motion, scroll, pressed, …) arrive the same
+  way: guint/gint → int, gdouble → float, `GdkModifierType` flags → int,
+  boxed `GdkEventSequence*` → raw pointer int (not a registry handle).
   `disconnect` checks `g_signal_handler_is_connected` first so a bogus id
   cannot make GLib warn.
 - `getProperty(handle, name)` / `setProperty(handle, name, value)` —

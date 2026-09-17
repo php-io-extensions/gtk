@@ -7,6 +7,9 @@
  *   pkg-good        — exact Widget match + sanctioned-partial Gadget; AUDIT_OK
  *   pkg-prop        — uncovered property; must FAIL naming property "orphan"
  *   pkg-noconstruct — concrete class with no construction path; must FAIL
+ *   pkg-functions   — free-function home joined by c:identifier; AUDIT_OK
+ *   pkg-functions-drift — counts add up but a body calls outside the set;
+ *                     must FAIL naming the uncovered gdk_dial_down
  *
  * Prints AUDIT_GUARD_OK only when every scenario behaves.
  */
@@ -73,6 +76,18 @@ expectFail(
     'pkg-noconstruct',
     runAudit($scriptsDir, $fixtures . '/pkg-noconstruct'),
     'no construction path',
+    $failures
+);
+
+$functions = runAudit($scriptsDir, $fixtures . '/pkg-functions');
+if ($functions['code'] !== 0 || !preg_match('/Gdk\\\\GdkDial\s+gir=3\s+bound=2\s+reserved=1\s+.*\bOK\b/', $functions['text'])) {
+    $failures[] = "pkg-functions: expected GdkDial gir=3 bound=2 reserved=1 OK, got exit {$functions['code']}:\n{$functions['text']}";
+}
+
+expectFail(
+    'pkg-functions-drift',
+    runAudit($scriptsDir, $fixtures . '/pkg-functions-drift'),
+    'gdk_dial_down is neither bound nor reserved',
     $failures
 );
 

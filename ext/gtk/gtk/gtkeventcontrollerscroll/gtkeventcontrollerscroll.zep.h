@@ -1,0 +1,35 @@
+
+extern zend_class_entry *gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_ce;
+
+ZEPHIR_INIT_CLASS(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll);
+
+PHP_METHOD(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, new_);
+PHP_METHOD(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, getFlags);
+PHP_METHOD(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, getUnit);
+PHP_METHOD(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, setFlags);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_new_, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_getflags, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_getunit, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_setflags, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_method_entry) {
+	PHP_ME(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, new_, arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_new_, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, getFlags, arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_getflags, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, getUnit, arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_getunit, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventControllerScroll_GtkEventControllerScroll, setFlags, arginfo_gtk_gtk_gtkeventcontrollerscroll_gtkeventcontrollerscroll_setflags, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

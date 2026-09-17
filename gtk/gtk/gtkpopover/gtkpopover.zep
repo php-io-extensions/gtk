@@ -60,7 +60,7 @@ class GtkPopover
         return result;
     }
 
-    public static function getPointingTo(int handle) -> array
+    public static function getPointingTo(int handle) -> var
     {
         var result;
 

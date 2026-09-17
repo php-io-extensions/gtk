@@ -144,6 +144,14 @@ $surfaces = [
     ['gtk-no-selection-surface.php', 'GTKNOSELECTION'],
     ['gtk-gl-area-surface.php', 'GTKGLAREA'],
     ['gdk-gl-context-surface.php', 'GDKGLCONTEXT'],
+    ['gtk-event-controller-surface.php', 'GTKEVENTCONTROLLER'],
+    ['gtk-event-controller-key-surface.php', 'GTKEVENTCONTROLLERKEY'],
+    ['gtk-event-controller-motion-surface.php', 'GTKEVENTCONTROLLERMOTION'],
+    ['gtk-event-controller-scroll-surface.php', 'GTKEVENTCONTROLLERSCROLL'],
+    ['gtk-gesture-surface.php', 'GTKGESTURE'],
+    ['gtk-gesture-single-surface.php', 'GTKGESTURESINGLE'],
+    ['gtk-gesture-click-surface.php', 'GTKGESTURECLICK'],
+    ['gdk-keyval-surface.php', 'GDKKEYVAL'],
 ];
 
 foreach ($surfaces as [$file, $prefix]) {

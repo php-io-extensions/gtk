@@ -1,5 +1,22 @@
 # Change log
 
+## 2026-09-17 (input wave — event controllers, gestures, keyvals)
+
+* **Binding**: `GtkEventController` (13/11/2), `GtkEventControllerKey`
+  (5/5/0), `GtkEventControllerMotion` (3/3/0), `GtkEventControllerScroll`
+  (4/4/0), `GtkGesture` (17/10/7 + `n-points` property reservation),
+  `GtkGestureSingle` (8/7/1, `OBTAIN_ONLY`), `GtkGestureClick` (1/1/0),
+  `GdkKeyval` (9/9/0). Counts gir/bound/reserved. See
+  [binding-rules.md](/binding-rules.md). Version stays 0.8.0.
+* **Tooling**: `audit-gir.php` gained free-function homes
+  (`@audit functions` marker, `c:identifier` join, `--functions` mode);
+  `audit-guard.php` gained `pkg-functions` / `pkg-functions-drift`
+  controls; `surface-check.php` takes `functionPrefixes`.
+* **Smoke**: `examples/smoke.php` attaches all four controllers to the
+  window, connects every signal, round-trips getters/setters, proves a
+  controller `notify::propagation-phase` fires, checks keyvals, removes
+  the controllers.
+
 ## 2026-09-13 (GL wave — GtkGLArea and the first Gdk class)
 
 * **Binding**: `GtkGLArea` (`src/gtk-gl-area.{h,c}`, gir=20 bound=16

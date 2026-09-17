@@ -61,7 +61,10 @@ php examples/smoke.php             # SMOKE_OK
   (gir `getter=`/`setter=` attributes with a `get_x`/`is_x`/`has_x`/`set_x`
   name-mapping fallback, because those attributes are occasionally missing)
   or reserved as `property "x"` — property-only reservations do not count
-  toward the member sum. Construction path required unless the type is
+  toward the member sum. Free-function homes (`@audit functions <class>
+  <prefix>...`) are joined to gir namespace functions by `c:identifier`
+  through the `src/*.c` bodies; `--functions <gir> <prefix>...` lists the
+  set. Construction path required unless the type is
   abstract, an interface, or on `OBTAIN_ONLY`. `@audit partial <class>
   <reason>` sanctions a shortfall (never an excess). `--count <gir> <CType>`
   gives a standalone breakdown.

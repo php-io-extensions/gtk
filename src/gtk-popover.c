@@ -88,18 +88,17 @@ void phpgtk_gtkpopover_get_pointing_to(zval *return_value, zval *handle)
 {
     GtkPopover *self = PHPGTK_ARG_AS(GtkPopover, GTK_TYPE_POPOVER, handle);
 
-    GdkRectangle rect;
+    GdkRectangle rect = { 0, 0, 0, 0 };
 
     if (self == NULL) {
-        array_init(return_value); return;
+        ZVAL_NULL(return_value); return;
     }
 
-    gtk_popover_get_pointing_to(self, &rect);
-    array_init(return_value);
-    add_assoc_long(return_value, "x", rect.x);
-    add_assoc_long(return_value, "y", rect.y);
-    add_assoc_long(return_value, "width", rect.width);
-    add_assoc_long(return_value, "height", rect.height);
+    if (!gtk_popover_get_pointing_to(self, &rect)) {
+        ZVAL_NULL(return_value);
+        return;
+    }
+    phpgtk_ret_rectangle(return_value, &rect);
 }
 
 zend_long phpgtk_gtkpopover_get_position(zval *handle)

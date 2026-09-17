@@ -101,7 +101,15 @@
         "src/gtk-single-selection.c",
         "src/gtk-no-selection.c",
         "src/gtk-gl-area.c",
-        "src/gdk-gl-context.c"
+        "src/gdk-gl-context.c",
+        "src/gtk-event-controller.c",
+        "src/gtk-event-controller-key.c",
+        "src/gtk-event-controller-motion.c",
+        "src/gtk-event-controller-scroll.c",
+        "src/gtk-gesture.c",
+        "src/gtk-gesture-single.c",
+        "src/gtk-gesture-click.c",
+        "src/gdk-keyval.c"
     ],
     "optimizer-dirs": [
         "optimizers"

@@ -1,0 +1,82 @@
+
+extern zend_class_entry *gtk_gtk_gtkeventcontroller_gtkeventcontroller_ce;
+
+ZEPHIR_INIT_CLASS(Gtk_Gtk_GtkEventController_GtkEventController);
+
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventDevice);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventState);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventTime);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getName);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getPropagationLimit);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getPropagationPhase);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, getWidget);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, reset);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, setName);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, setPropagationLimit);
+PHP_METHOD(Gtk_Gtk_GtkEventController_GtkEventController, setPropagationPhase);
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventdevice, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventstate, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventtime, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getname, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getpropagationlimit, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getpropagationphase, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getwidget, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_reset, 0, 1, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setname, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+	ZEND_ARG_INFO(0, name)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setpropagationlimit, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, limit, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setpropagationphase, 0, 2, IS_VOID, 0)
+
+	ZEND_ARG_TYPE_INFO(0, handle, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, phase, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEPHIR_INIT_FUNCS(gtk_gtk_gtkeventcontroller_gtkeventcontroller_method_entry) {
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventDevice, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventdevice, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventState, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventstate, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getCurrentEventTime, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getcurrenteventtime, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getName, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getname, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getPropagationLimit, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getpropagationlimit, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getPropagationPhase, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getpropagationphase, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, getWidget, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_getwidget, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, reset, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_reset, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, setName, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setname, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, setPropagationLimit, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setpropagationlimit, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_ME(Gtk_Gtk_GtkEventController_GtkEventController, setPropagationPhase, arginfo_gtk_gtk_gtkeventcontroller_gtkeventcontroller_setpropagationphase, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	PHP_FE_END
+};

@@ -49,8 +49,13 @@ function gtkSurfaceCountReserved(string $header, string $classPath): int
  *   girName: string,
  *   cType: string,
  *   symbolPrefix: string,
- *   tokenPrefix: string
+ *   tokenPrefix: string,
+ *   functionPrefixes?: list<string>
  * } $spec
+ *
+ * functionPrefixes marks a free-function home (no gir class): the gir count
+ * comes from audit-gir.php --functions instead of --count, and cType is
+ * ignored.
  */
 function gtkSurfaceRun(array $spec, string $mode): void
 {
@@ -126,8 +131,10 @@ function gtkSurfaceRun(array $spec, string $mode): void
     if (!is_file($gir)) {
         $gir = $root . '/scripts/gir/' . $spec['girName'] . '.gir';
     }
-    $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($root . '/scripts/audit-gir.php')
-        . ' --count ' . escapeshellarg($gir) . ' ' . escapeshellarg($spec['cType']);
+    $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($root . '/scripts/audit-gir.php');
+    $cmd .= isset($spec['functionPrefixes'])
+        ? ' --functions ' . escapeshellarg($gir) . ' ' . implode(' ', array_map('escapeshellarg', $spec['functionPrefixes']))
+        : ' --count ' . escapeshellarg($gir) . ' ' . escapeshellarg($spec['cType']);
     exec($cmd, $out, $code);
     $line = implode("\n", $out);
     if ($code !== 0 || !preg_match('/expected=(\d+)/', $line, $m)) {

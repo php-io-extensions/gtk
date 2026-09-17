@@ -25,7 +25,7 @@ class GtkpopoverGetPointingToOptimizer extends OptimizerAbstract
         $symbolVariable = $call->getSymbolVariable(true, $context);
         $this->checkNotVariableString($symbolVariable, $expression);
 
-        $symbolVariable->setDynamicTypes('array');
+        $symbolVariable->setDynamicTypes('undefined');
 
         $this->checkInitSymbolVariable($call, $symbolVariable, $context);
 

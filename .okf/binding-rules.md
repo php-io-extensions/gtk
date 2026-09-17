@@ -314,6 +314,64 @@ the translation table whitelisted (`g_free`, `g_strfreev`, list frees,
   `GdkDisplay` / `GdkSurface` handles whose classes are also unbound —
   legal, because handles are untyped ints.
 
+## Worked examples (input wave, GTK 4.18.6 / Gdk 4.18.6 gir counts)
+
+Class path → PHP class: `Gtk\GtkX` → `Gtk\Gtk\GtkX\GtkX`,
+`Gdk\GdkKeyval` → `Gtk\Gdk\GdkKeyval\GdkKeyval`.
+
+- [`src/gtk-event-controller.{h,c}`](src/gtk-event-controller.h) — abstract,
+  `gir=13 bound=11 reserved=2` (`get_current_event` is `GdkEvent*`, a
+  non-GObject fundamental; `set_static_name` needs a string outliving the
+  controller — `setName` covers it). All 4 properties accessor-covered.
+- [`src/gtk-event-controller-key.{h,c}`](src/gtk-event-controller-key.h) —
+  `gir=5 bound=5 reserved=0`. Constructor transfer-full. `getGroup` is
+  only valid inside a key handler (GTK asserts a current event). `getImContext` /
+  `setImContext` cross a `GtkIMContext` handle (class unbound).
+- [`src/gtk-event-controller-motion.{h,c}`](src/gtk-event-controller-motion.h) —
+  `gir=3 bound=3 reserved=0`. Constructor transfer-full.
+- [`src/gtk-event-controller-scroll.{h,c}`](src/gtk-event-controller-scroll.h) —
+  `gir=4 bound=4 reserved=0`. Constructor transfer-full, takes the flags int.
+  `getUnit` is GTK 4.8.
+- [`src/gtk-gesture.{h,c}`](src/gtk-gesture.h) — abstract, `gir=17 bound=10
+  reserved=7` (6 `GdkEventSequence*`/`GdkEvent*` members, deprecated
+  `set_sequence_state`), plus 1 property-only reservation (`n-points`).
+  `getBoundingBox` → `{x, y, width, height}` / `getBoundingBoxCenter` →
+  `{x, y}`, both null when GTK returns FALSE. `getGroup` is a
+  container-owned GList of handles (includes the gesture itself).
+  `getBoundingBoxCenter` on an idle gesture prints 3 Gdk-CRITICALs (GTK
+  4.18.6 reads a NULL last event) then returns null — call it from a
+  gesture handler. `group` needs both gestures on the same widget.
+- [`src/gtk-gesture-single.{h,c}`](src/gtk-gesture-single.h) —
+  `gir=8 bound=7 reserved=1` (`get_current_sequence`). gir marks it
+  non-abstract but it has no constructor → `OBTAIN_ONLY`.
+- [`src/gtk-gesture-click.{h,c}`](src/gtk-gesture-click.h) —
+  `gir=1 bound=1 reserved=0`. Constructor transfer-full.
+- [`src/gdk-keyval.{h,c}`](src/gdk-keyval.h) — **first free-function home**.
+  Static-only class for Gdk namespace-level functions; marker
+  `/*@audit functions Gdk\GdkKeyval gdk_keyval_ gdk_unicode_to_keyval */`.
+  `gir=9 bound=9 reserved=0`. `name` → null for unknown keyval;
+  `fromUnicode` = `gdk_unicode_to_keyval`; `convertCase` → `{lower, upper}`.
+- Signals (Bridge territory): key `key-pressed`/`key-released`
+  (keyval, keycode, state), `modifiers` (state), `im-update`; motion
+  `motion`/`enter` (x, y), `leave`; scroll `scroll` (dx, dy) → bool,
+  `scroll-begin`, `scroll-end`, `decelerate`; click `pressed`/`released`
+  (n_press, x, y), `stopped`, `unpaired-release` (x, y, button, sequence).
+  Attach with `GtkWidget::addController` (gives GTK its own ref; registry
+  keeps its handle), detach with `removeController`.
+
+## Free-function homes
+
+gir namespace-level `<function>` rows have no owning class. They get a
+static-only home class (first segment = library) plus a header marker
+`/*@audit functions <ClassPath> <c:identifier-prefix>...*/`. `audit-gir.php`
+takes the member set = namespace functions whose `c:identifier` starts with
+a listed prefix, then joins by `c:identifier`: each bound body in
+`src/*.c` must call exactly one set member, each `@reserved` line must name
+one, and together they cover the set exactly once. No property or
+construction checks. `audit-gir.php --functions <gir> <prefix>...` prints
+the set. `gen-zep.php` / `check-parity.php` needed no change (the class
+path alone routes it).
+
 ## Mechanics
 
 - C symbol: `phpgtk_<classlower>_<function_snake>(zval *…)`; int/bool/double

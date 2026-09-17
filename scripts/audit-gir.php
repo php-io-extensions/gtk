@@ -37,6 +37,17 @@
  * A partial class must not exceed the gir count but may fall short; it is
  * reported as PARTIAL so review can see exactly what is sanctioned.
  *
+ * Free functions (gir namespace-level <function>, no owning class) get a
+ * static-only home class declared with a marker in its src header:
+ *
+ *   /*@audit functions Gdk\GdkKeyval gdk_keyval_ gdk_unicode_to_keyval * /
+ *
+ * The home's member set is every namespace-level function whose
+ * c:identifier starts with one of the listed prefixes. The join is by
+ * c:identifier: each bound method's src/*.c body must call exactly one
+ * member of that set, each @reserved line must name one, and together they
+ * must cover the set exactly once. No properties, no construction path.
+ *
  * Bridge\* classes are PHP-side glue with no gir counterpart and are skipped.
  *
  * Usage:
@@ -74,6 +85,7 @@ const OBTAIN_ONLY = [
     'Gtk\\GtkStackPage',
     'Gtk\\GtkMediaStream', // abstract; obtained from GtkMediaFile or GtkVideo::getMediaStream
     'Gtk\\GtkListItem', // obtained from GtkSignalListItemFactory setup/bind
+    'Gtk\\GtkGestureSingle', // no gir constructor; construct GtkGestureClick
 ];
 
 function fail(string $msg): never
@@ -258,19 +270,93 @@ function propertyUncovered(array $prop, array $members): ?string
 }
 
 /**
+ * Namespace-level <function> elements whose c:identifier starts with one of
+ * $prefixes.
+ *
+ * @param list<string> $prefixes
+ * @return list<string> c:identifiers, sorted
+ */
+function girFreeFunctions(DOMXPath $xp, array $prefixes): array
+{
+    $out = [];
+    $nodes = $xp->query('/gir:repository/gir:namespace/gir:function');
+    foreach ($nodes === false ? [] : $nodes as $fn) {
+        if (!$fn instanceof DOMElement) {
+            continue;
+        }
+        $id = $fn->getAttributeNS(GIR_NS_C, 'identifier');
+        foreach ($prefixes as $prefix) {
+            if ($id !== '' && str_starts_with($id, $prefix)) {
+                $out[] = $id;
+                break;
+            }
+        }
+    }
+    sort($out);
+
+    return $out;
+}
+
+/**
+ * Native gtk_/gdk_/gsk_/pango_/g_ calls in the body of each phpgtk_* symbol,
+ * read from src/*.c (brace-matched; comments stripped).
+ *
+ * @return array<string, list<string>> symbol → native calls
+ */
+function nativeCallsBySymbol(string $root): array
+{
+    $out = [];
+    foreach (glob("{$root}/src/*.c") ?: [] as $path) {
+        $src = (string) file_get_contents($path);
+        $src = (string) preg_replace('#/\*.*?\*/#s', '', $src);
+        $src = (string) preg_replace('#//[^\n]*#', '', $src);
+        if (!preg_match_all('/\b(phpgtk_[a-z0-9_]+)\s*\([^;{)]*\)\s*\{/', $src, $m, PREG_OFFSET_CAPTURE)) {
+            continue;
+        }
+        foreach ($m[1] as $i => [$symbol]) {
+            $open = $m[0][$i][1] + strlen($m[0][$i][0]) - 1;
+            $depth = 0;
+            $len = strlen($src);
+            $close = $len - 1;
+            for ($j = $open; $j < $len; $j++) {
+                if ($src[$j] === '{') {
+                    $depth++;
+                } elseif ($src[$j] === '}' && --$depth === 0) {
+                    $close = $j;
+                    break;
+                }
+            }
+            $body = substr($src, $open, $close - $open + 1);
+            preg_match_all('/\b((?:gtk|gdk|gsk|pango|g)_[a-z0-9_]+)\s*\(/', $body, $cm);
+            $out[$symbol] = $cm[1];
+        }
+    }
+
+    return $out;
+}
+
+/**
  * Collect per-class annotation facts from src/*.h.
  *
  * @return array{
- *   classes: array<string, array{bound: int, reserved: int, construct: int, hasConstruction: bool, reservedTexts: list<string>}>,
- *   partial: array<string, string>
+ *   classes: array<string, array{bound: int, reserved: int, construct: int, hasConstruction: bool, reservedTexts: list<string>, symbols: list<string>}>,
+ *   partial: array<string, string>,
+ *   functions: array<string, list<string>>
  * }
  */
 function collectAnnotations(string $root): array
 {
     $classes = [];
     $partial = [];
+    $functions = [];
     foreach (glob("{$root}/src/*.h") ?: [] as $path) {
+        $pendingClass = null;
         foreach (file($path, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
+            if (!is_null($pendingClass) && preg_match('/^\s*(?:zend_long|double|void)\s+(phpgtk_[a-z0-9_]+)\s*\(/', $line, $pm)) {
+                $classes[$pendingClass]['symbols'][] = $pm[1];
+                $pendingClass = null;
+                continue;
+            }
             if (preg_match('#/\*\s*@zep-construct\s+([A-Za-z0-9_\\\\]+)\s+(\w+)\s*\(([^)]*)\)\s*->\s*(\w+)\s*\*/#', $line, $m)) {
                 $classPath = $m[1];
                 $classes[$classPath]['construct'] = ($classes[$classPath]['construct'] ?? 0) + 1;
@@ -280,6 +366,7 @@ function collectAnnotations(string $root): array
                 $paramSrc = $m[3];
                 $returnType = $m[4];
                 $classes[$classPath]['bound'] = ($classes[$classPath]['bound'] ?? 0) + 1;
+                $pendingClass = $classPath;
                 $hasHandle = preg_match('/\bhandle\b/', $paramSrc) === 1;
                 if ($returnType === 'int' && !$hasHandle) {
                     $classes[$classPath]['hasConstruction'] = true;
@@ -300,11 +387,94 @@ function collectAnnotations(string $root): array
                     fail("@audit partial for {$m[1]} needs a reason");
                 }
                 $partial[$m[1]] = $m[2];
+            } elseif (preg_match('#/\*\s*@audit\s+functions\s+([A-Za-z0-9_\\\\]+)\s+(.*?)\s*\*/#', $line, $m)) {
+                $prefixes = preg_split('/\s+/', trim($m[2])) ?: [];
+                $prefixes = array_values(array_filter($prefixes, static fn (string $p): bool => $p !== ''));
+                if ($prefixes === []) {
+                    fail("@audit functions for {$m[1]} needs at least one c:identifier prefix");
+                }
+                $functions[$m[1]] = $prefixes;
             }
         }
     }
 
-    return ['classes' => $classes, 'partial' => $partial];
+    return ['classes' => $classes, 'partial' => $partial, 'functions' => $functions];
+}
+
+/**
+ * Audit one free-function home class; prints its line and returns true on
+ * failure.
+ *
+ * @param list<string> $prefixes
+ * @param array<string, mixed> $counts
+ */
+function auditFunctionHome(string $classPath, array $prefixes, array $counts, DOMXPath $xp, string $root): bool
+{
+    static $calls = null;
+    $calls ??= nativeCallsBySymbol($root);
+
+    $expectedIds = girFreeFunctions($xp, $prefixes);
+    $bound = $counts['bound'] ?? 0;
+    $reserved = $counts['reserved'] ?? 0;
+    $problems = [];
+
+    if ($expectedIds === []) {
+        $problems[] = 'no gir namespace function matches prefixes ' . implode(', ', $prefixes);
+    }
+    if (($counts['construct'] ?? 0) > 0) {
+        $problems[] = 'a free-function home has no construction path to synthesize';
+    }
+
+    $joined = [];
+    foreach ($counts['symbols'] ?? [] as $symbol) {
+        $native = $calls[$symbol] ?? null;
+        if (is_null($native)) {
+            $problems[] = "{$symbol}: no function body in src/*.c";
+            continue;
+        }
+        $members = array_values(array_intersect($native, $expectedIds));
+        if (count($members) !== 1) {
+            $problems[] = "{$symbol}: body must call exactly one member of the set, found ["
+                . implode(', ', $native) . ']';
+            continue;
+        }
+        $joined[] = $members[0];
+    }
+    foreach ($counts['reservedTexts'] ?? [] as $text) {
+        if (!preg_match('/\b((?:gtk|gdk|gsk|pango|g)_[a-z0-9_]+)/', $text, $rm)) {
+            $problems[] = "reserved line names no c:identifier: {$text}";
+            continue;
+        }
+        if (!in_array($rm[1], $expectedIds, true)) {
+            $problems[] = "reserved {$rm[1]} is not a member of the set";
+            continue;
+        }
+        $joined[] = $rm[1];
+    }
+
+    foreach (array_count_values($joined) as $id => $n) {
+        if ($n > 1) {
+            $problems[] = "{$id} is covered {$n} times";
+        }
+    }
+    foreach (array_diff($expectedIds, $joined) as $id) {
+        $problems[] = "{$id} is neither bound nor reserved";
+    }
+
+    echo sprintf(
+        "%-40s gir=%-4d bound=%-4d reserved=%-4d functions(%s) %s\n",
+        $classPath,
+        count($expectedIds),
+        $bound,
+        $reserved,
+        implode(' ', $prefixes),
+        $problems === [] ? 'OK' : 'FAIL'
+    );
+    foreach ($problems as $p) {
+        echo "    - {$p}\n";
+    }
+
+    return $problems !== [];
 }
 
 // ---- main ----
@@ -334,6 +504,25 @@ if (($args[0] ?? '') === '--count') {
     foreach ($d['properties'] as $p) {
         $u = propertyUncovered($p, $d['members']);
         echo "  property {$p['name']}: " . (is_null($u) ? 'accessor-covered' : $u) . "\n";
+    }
+    exit(0);
+}
+
+// --functions <file.gir[.gz]> <prefix>...: namespace-level functions by c:identifier prefix.
+if (($args[0] ?? '') === '--functions') {
+    $file = $args[1] ?? null;
+    $prefixes = array_slice($args, 2);
+    if (is_null($file) || $prefixes === []) {
+        fail('usage: audit-gir.php --functions <file.gir[.gz]> <prefix>...');
+    }
+    if (!is_file($file)) {
+        fail("gir file '{$file}' does not exist");
+    }
+    $girName = preg_replace('/\.gir(\.gz)?$/', '', basename($file));
+    $ids = girFreeFunctions(loadGir(dirname($file), (string) $girName), $prefixes);
+    echo 'functions prefixes=' . implode(',', $prefixes) . ' expected=' . count($ids) . "\n";
+    foreach ($ids as $id) {
+        echo "  function {$id}\n";
     }
     exit(0);
 }
@@ -368,8 +557,17 @@ foreach ($annotations['classes'] as $classPath => $counts) {
         continue;
     }
 
-    $cType = (string) end($segments);
     $xp = loadGir($girDir, $girName);
+
+    if (isset($annotations['functions'][$classPath])) {
+        if (auditFunctionHome($classPath, $annotations['functions'][$classPath], $counts, $xp, $root)) {
+            $failures++;
+        }
+        $audited++;
+        continue;
+    }
+
+    $cType = (string) end($segments);
     $el = findGirType($xp, $cType);
     if (is_null($el)) {
         echo sprintf("%-40s FAIL (type '%s' not found in %s)\n", $classPath, $cType, $girName);
