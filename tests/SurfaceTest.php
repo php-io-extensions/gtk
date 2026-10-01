@@ -52,12 +52,22 @@ it('keeps the native class hierarchy', function (): void {
     expect(get_parent_class(GtkApplication::class))->toBe(GApplication::class)
         ->and(get_parent_class(GApplication::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkException::class))->toBe(RuntimeException::class)
-        ->and(get_parent_class(GError::class))->toBe(RuntimeException::class);
+        ->and(get_parent_class(GError::class))->toBe(RuntimeException::class)
+        ->and(get_parent_class(GtkWidget::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkWindow::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkApplicationWindow::class))->toBe(GtkWindow::class)
+        ->and(get_parent_class(GtkAboutDialog::class))->toBe(GtkWindow::class)
+        ->and(get_parent_class(GtkBox::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkPopoverMenuBar::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GMenu::class))->toBe(GMenuModel::class)
+        ->and(get_parent_class(GMenuItem::class))->toBe(GObject::class)
+        ->and(get_parent_class(GSimpleAction::class))->toBe(GObject::class)
+        ->and(get_parent_class(GSimpleActionGroup::class))->toBe(GObject::class);
 });
 
 it('cannot construct native wrappers from PHP', function (string $class): void {
     expect(fn () => new $class())->toThrow(Error::class);
-})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class]);
+})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class]);
 
 it('refuses to clone or serialize a native wrapper', function (): void {
     $ctx = GMainContext::default();

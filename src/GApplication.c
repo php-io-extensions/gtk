@@ -143,3 +143,33 @@ cleanup:
 	efree(held);
 	efree(argv);
 }
+
+ZEND_METHOD(GApplication, addAction)
+{
+	phpgtk_action_map_add_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_METHOD(GApplication, removeAction)
+{
+	phpgtk_action_map_remove_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_METHOD(GApplication, lookupAction)
+{
+	phpgtk_action_map_lookup_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_METHOD(GApplication, hasAction)
+{
+	phpgtk_action_group_has_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_METHOD(GApplication, listActions)
+{
+	phpgtk_action_group_list_actions(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
+ZEND_METHOD(GApplication, activateAction)
+{
+	phpgtk_action_group_activate_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}

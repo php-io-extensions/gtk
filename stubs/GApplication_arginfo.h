@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 06323b2b7c26194197170548431481505f467f03 */
+ * Stub hash: 18fa8191d25723ca0e4945cca93450c9ff7c412f */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_idIsValid, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, applicationId, IS_STRING, 0)
@@ -31,6 +31,30 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_run, 0, 0, IS
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, argv, IS_ARRAY, 0, "[]")
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_addAction, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, action, GSimpleAction, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_removeAction, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, actionName, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GApplication_lookupAction, 0, 1, GObject, 1)
+	ZEND_ARG_TYPE_INFO(0, actionName, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_hasAction, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, actionName, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_listActions, 0, 0, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GApplication_activateAction, 0, 2, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, actionName, IS_STRING, 0)
+	ZEND_ARG_OBJ_INFO(0, parameter, GVariant, 1)
+ZEND_END_ARG_INFO()
+
 ZEND_METHOD(GApplication, idIsValid);
 ZEND_METHOD(GApplication, getApplicationId);
 ZEND_METHOD(GApplication, getFlags);
@@ -42,6 +66,12 @@ ZEND_METHOD(GApplication, hold);
 ZEND_METHOD(GApplication, release);
 ZEND_METHOD(GApplication, quit);
 ZEND_METHOD(GApplication, run);
+ZEND_METHOD(GApplication, addAction);
+ZEND_METHOD(GApplication, removeAction);
+ZEND_METHOD(GApplication, lookupAction);
+ZEND_METHOD(GApplication, hasAction);
+ZEND_METHOD(GApplication, listActions);
+ZEND_METHOD(GApplication, activateAction);
 
 static const zend_function_entry class_GApplication_methods[] = {
 	ZEND_ME(GApplication, idIsValid, arginfo_class_GApplication_idIsValid, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -55,6 +85,12 @@ static const zend_function_entry class_GApplication_methods[] = {
 	ZEND_ME(GApplication, release, arginfo_class_GApplication_release, ZEND_ACC_PUBLIC)
 	ZEND_ME(GApplication, quit, arginfo_class_GApplication_quit, ZEND_ACC_PUBLIC)
 	ZEND_ME(GApplication, run, arginfo_class_GApplication_run, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, addAction, arginfo_class_GApplication_addAction, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, removeAction, arginfo_class_GApplication_removeAction, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, lookupAction, arginfo_class_GApplication_lookupAction, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, hasAction, arginfo_class_GApplication_hasAction, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, listActions, arginfo_class_GApplication_listActions, ZEND_ACC_PUBLIC)
+	ZEND_ME(GApplication, activateAction, arginfo_class_GApplication_activateAction, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 

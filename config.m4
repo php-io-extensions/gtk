@@ -10,7 +10,7 @@ if test "$PHP_GTK" != "no"; then
   PHP_SUBST([GTK_SHARED_LIBADD])
 
   PHP_NEW_EXTENSION([gtk],
-    [src/gtk.c src/runtime.c src/GObject.c src/GApplication.c src/GtkApplication.c src/GMainContext.c],
+    [src/gtk.c src/runtime.c src/GObject.c src/GApplication.c src/GtkApplication.c src/GMainContext.c src/GVariant.c src/GtkWidget.c src/GtkWindow.c src/GMenu.c src/GAction.c],
     [$ext_shared],, [-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1])
   PHP_ADD_BUILD_DIR([$ext_builddir/src])
 fi

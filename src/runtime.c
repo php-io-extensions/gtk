@@ -44,6 +44,9 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_MAIN_CONTEXT:
 				g_main_context_unref((GMainContext *) intern->ptr);
 				break;
+			case PHPGTK_VARIANT:
+				g_variant_unref((GVariant *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -144,6 +147,66 @@ void phpgtk_box_main_context(zval *rv, GMainContext *context)
 	phpgtk_box_new(rv, phpgtk_ce_GMainContext, g_main_context_ref(context), PHPGTK_MAIN_CONTEXT);
 }
 
+/* Takes PHP's own reference, sinking a floating one (g_variant_new_*() returns floating references). */
+void phpgtk_box_variant(zval *rv, GVariant *variant)
+{
+	if (variant == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, variant)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GVariant, g_variant_ref_sink(variant), PHPGTK_VARIANT);
+}
+
+/* A (transfer full) return: PHP's reference replaces the one the call handed us. */
+void phpgtk_box_gobject_full(zval *rv, gpointer object)
+{
+	phpgtk_box_gobject(rv, object);
+	if (object != NULL) {
+		g_object_unref(object);
+	}
+}
+
+void phpgtk_box_variant_full(zval *rv, GVariant *variant)
+{
+	phpgtk_box_variant(rv, variant);
+	if (variant != NULL) {
+		g_variant_unref(variant);
+	}
+}
+
+void phpgtk_return_string(zval *rv, const char *str)
+{
+	if (str == NULL) {
+		ZVAL_NULL(rv);
+	} else {
+		ZVAL_STRING(rv, str);
+	}
+}
+
+/* g_action_parse_detailed_name() writes through every out-parameter, so each gets a real slot. */
+bool phpgtk_is_detailed_action(const char *detailed)
+{
+	gchar *name = NULL;
+	GVariant *target = NULL;
+	GError *error = NULL;
+	gboolean valid = g_action_parse_detailed_name(detailed, &name, &target, &error);
+
+	g_free(name);
+	if (target != NULL) {
+		g_variant_unref(target);
+	}
+	if (error != NULL) {
+		g_error_free(error);
+	}
+
+	return valid;
+}
+
 zend_long phpgtk_enum_value(zend_object *obj_or_null, zend_long fallback)
 {
 	return obj_or_null != NULL ? Z_LVAL_P(zend_enum_fetch_case_value(obj_or_null)) : fallback;
@@ -239,6 +302,10 @@ void phpgtk_gvalue_to_zval(zval *rv, const GValue *value)
 		case G_TYPE_OBJECT:
 		case G_TYPE_INTERFACE:
 			phpgtk_box_gobject(rv, g_value_get_object(value));
+			return;
+
+		case G_TYPE_VARIANT:
+			phpgtk_box_variant(rv, g_value_get_variant(value));
 			return;
 	}
 

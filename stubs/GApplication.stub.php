@@ -44,4 +44,22 @@ class GApplication extends GObject
 
     /** @param array $argv string arguments, argv[0] first */
     public function run(array $argv = []): int {}
+
+    /** g_action_map_add_action(): the application's "app" actions */
+    public function addAction(GSimpleAction $action): void {}
+
+    /** g_action_map_remove_action() */
+    public function removeAction(string $actionName): void {}
+
+    /** g_action_map_lookup_action(): a GSimpleAction for actions added from PHP; GTK may add others */
+    public function lookupAction(string $actionName): ?GObject {}
+
+    /** g_action_group_has_action() */
+    public function hasAction(string $actionName): bool {}
+
+    /** g_action_group_list_actions() @return array list of action names */
+    public function listActions(): array {}
+
+    /** g_action_group_activate_action() */
+    public function activateAction(string $actionName, ?GVariant $parameter): void {}
 }

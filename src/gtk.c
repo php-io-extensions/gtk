@@ -23,6 +23,19 @@ zend_class_entry *phpgtk_ce_GApplication;
 zend_class_entry *phpgtk_ce_GApplicationFlags;
 zend_class_entry *phpgtk_ce_GtkApplication;
 zend_class_entry *phpgtk_ce_GMainContext;
+zend_class_entry *phpgtk_ce_GtkOrientation;
+zend_class_entry *phpgtk_ce_GtkWidget;
+zend_class_entry *phpgtk_ce_GtkBox;
+zend_class_entry *phpgtk_ce_GtkPopoverMenuBar;
+zend_class_entry *phpgtk_ce_GtkWindow;
+zend_class_entry *phpgtk_ce_GtkApplicationWindow;
+zend_class_entry *phpgtk_ce_GtkAboutDialog;
+zend_class_entry *phpgtk_ce_GMenuModel;
+zend_class_entry *phpgtk_ce_GMenu;
+zend_class_entry *phpgtk_ce_GMenuItem;
+zend_class_entry *phpgtk_ce_GSimpleAction;
+zend_class_entry *phpgtk_ce_GSimpleActionGroup;
+zend_class_entry *phpgtk_ce_GVariant;
 
 /* ---- sources ---------------------------------------------------------- */
 
@@ -327,6 +340,11 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GApplication();
 	phpgtk_register_GtkApplication();
 	phpgtk_register_GMainContext();
+	phpgtk_register_GVariant();
+	phpgtk_register_GtkWidget();
+	phpgtk_register_GtkWindow();
+	phpgtk_register_GMenu();
+	phpgtk_register_GAction();
 
 	return SUCCESS;
 }
