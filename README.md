@@ -1,0 +1,71 @@
+# ext-gtk
+
+1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
+in C against the Zend API. C functions keep their names (`g_timeout_add`,
+`g_signal_connect`); functions on a type are methods of the class named after it
+(`g_application_register(app)` is `$app->register()`). No defaults, no
+composites: behaviour is composed by the caller.
+
+Linux first, macOS too. GTK 4.10+, GLib 2.74+, PHP 8.4+, NTS and ZTS.
+
+## What is bound
+
+The calls that initialise GTK, register the application with the desktop, hold
+and release it, pump the main context, sleep with a budget, and wake a sleep:
+
+| | Native |
+|---|---|
+| functions | `gtk_init`, `gtk_init_check`, `gtk_is_initialized`, `gtk_get_{major,minor,micro}_version`, `g_timeout_add`, `g_idle_add`, `g_unix_fd_add`, `g_source_remove`, `g_signal_connect`, `g_signal_handler_disconnect`, `g_signal_handler_is_connected` |
+| `GObject` | `G_OBJECT_TYPE_NAME` |
+| `GApplication` | `g_application_id_is_valid`, `get_application_id`, `get_flags`, `get_is_registered`, `get_is_remote`, `register`, `activate`, `hold`, `release`, `quit`, `run` |
+| `GtkApplication` | `gtk_application_new` |
+| `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner` |
+
+Enums: `GApplicationFlags`, `GIOCondition`. Constants: `G_SOURCE_CONTINUE`,
+`G_SOURCE_REMOVE`. Errors: `GError` (a GError, with its `domain`),
+`GtkException` (a call refused before reaching GTK). The stubs in `stubs/` are
+the full declaration.
+
+## Example
+
+```php
+$app = GtkApplication::new('com.example.App', GApplicationFlags::DEFAULT_FLAGS);
+g_signal_connect($app, 'activate', fn (GtkApplication $app) => null);
+$app->register();   // startup: GTK initialises
+$app->hold();
+
+$ctx = GMainContext::default();
+
+// Sleep up to 16 ms, or until a source is ready, dispatching what is.
+$budget = g_timeout_add(16, fn (): bool => G_SOURCE_REMOVE);
+$ctx->iteration(true);
+
+// Wake on a descriptor (a kqueue or epoll fd works: it turns readable when its own events are pending).
+g_unix_fd_add($fd, GIOCondition::IN, fn (int $fd, int $condition): bool => G_SOURCE_CONTINUE);
+
+$app->release();
+```
+
+## Install
+
+```bash
+bash install-debian-trixie.sh   # Debian, Ubuntu, Raspberry Pi OS (needs libgtk-4-dev)
+bash install-macos.sh           # Homebrew php@8.4 and php@8.4-zts (needs brew install gtk4)
+```
+
+Or with PIE: `pie install php-io-extensions/gtk`.
+
+## Test
+
+```bash
+composer install
+php vendor/bin/pest
+php examples/smoke.php   # needs a display session; prints SMOKE_OK
+```
+
+On Linux over SSH, export the session's `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR` and
+`DBUS_SESSION_BUS_ADDRESS` first. Design notes live in the OKF bundle under `.okf/`.
+
+## License
+
+MIT
