@@ -4,16 +4,6 @@ declare(strict_types=1);
 
 beforeEach(fn () => testApplication());
 
-/** Iterate the default context for $seconds. */
-function iterateFor(float $seconds): void
-{
-    $until = microtime(true) + $seconds;
-    while (microtime(true) < $until) {
-        g_timeout_add(10, fn (): bool => G_SOURCE_REMOVE);
-        GMainContext::default()->iteration(true);
-    }
-}
-
 it('refuses to build a widget before GTK is initialised instead of crashing', function (string $build): void {
     // A fresh process: this one initialised GTK in beforeEach.
     $code = 'try { '.$build.'; echo "BUILT"; } catch (GtkException $e) { echo $e->getMessage(); }';

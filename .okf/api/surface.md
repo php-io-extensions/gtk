@@ -5,7 +5,7 @@ description: Functions, classes, enums and constants ext-gtk binds, each one GTK
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-10-01T18:07:32Z }
+generated: { by: claude-fable/5.1, at: 2026-10-02T17:30:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -17,7 +17,7 @@ sources:
 
 # Overview
 
-Scope: calls that initialise GTK, register the app with the desktop, hold/release it, pump the default main context, sleep with a budget, wake a sleep, open/close windows, build menu bars from GMenu models and GSimpleAction groups. Stubs = source of truth; `tests/SurfaceTest.php` fails if a stub declaration is missing from the build.[^stubs]
+Scope: calls that initialise GTK, register the app with the desktop, hold/release it, pump the default main context, sleep with a budget, wake a sleep, open/close windows, build menu bars from GMenu models and GSimpleAction groups, lay widgets out (box, grid, fixed), style them (CSS classes and providers), the controls a toolkit window hosts, column-view tables, and video through GTK's media backend. Stubs = source of truth; `tests/SurfaceTest.php` fails if a stub declaration is missing from the build.[^stubs]
 
 Naming, all fixed:
 
@@ -38,6 +38,7 @@ Naming, all fixed:
 | `g_unix_fd_add(int\|resource\|Socket $fd, GIOCondition\|int, callable(int $fd, int $condition): bool): int` | `g_unix_fd_add_full` |
 | `g_source_remove(int): bool` | same; false for an id no longer in the default context |
 | `g_signal_connect(GObject, string, callable): int` | `g_signal_connect_closure_by_id`; handler gets the signal's params, instance first |
+| `g_signal_emit_by_name(GObject, string, mixed ...$params): mixed` | `g_signal_emitv` with the signal's own parameter types: bool, int (enums/flags; an int-backed enum case passes its value, a pure enum is refused), float, ?string, GObjects of the declared type or null; count checked (ArgumentCountError), other types refused (ValueError); returns the signal's value |
 | `g_signal_handler_disconnect`, `g_signal_handler_is_connected` | same |
 | `GObject::typeName()`, `pointer()` | `G_OBJECT_TYPE_NAME`, address |
 | `GApplication` | `id_is_valid` (static), `get_application_id`, `get_flags`, `get_is_registered`, `get_is_remote`, `register`, `activate`, `hold`, `release`, `quit`, `run(array $argv)`; GActionMap add/remove/lookup (lookup `?GObject`: GTK may add non-simple actions); GActionGroup has/list/activate |
@@ -53,8 +54,30 @@ Naming, all fixed:
 | `GVariant` | new_boolean/string/int32/double, typed getters, type string, is_of_type, print |
 | `GtkApplication` (windows) | add/remove_window, get_active_window, get_windows, menubar, accels for action |
 | `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner`; `pointer()` |
+| `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request (`[w, h]`, -1 unset), get_width/height, sensitive, `is_sensitive` (own flag and every ancestor's), `get_color(): [r, g, b, a]` (CSS-computed foreground), margin start/end/top/bottom, add/remove/has_css_class, `measure(GtkOrientation, int): {minimum, natural, minimumBaseline, naturalBaseline}`, `compute_bounds(target): ?[x, y, w, h]` (border box, which includes CSS padding and border; `get_width`/`get_height` are the content box), get_first_child, get_next_sibling (child order), get_native, get_root, `getSurface()` = `gtk_native_get_surface` on a GtkNative, null otherwise |
+| `GtkBox` (more) | insert_child_after, reorder_child_after (`null` sibling = first), spacing, homogeneous |
+| `GtkGrid` | new, `attach(child, column, row, width, height)` (width/height < 1 refused), remove, `get_child_at`, row/column spacing |
+| `GtkFixed` | new, put, move, remove, `get_child_position` (`[x, y]` floats; GTK applies the transform at layout, so read after the fixed has been allocated) |
+| `GtkCssProvider`, `GdkDisplay` | new (transfer full), `load_from_string`; `get_default`; `gtk_style_context_add_provider_for_display(display, provider, int $priority)`, `gtk_style_context_remove_provider_for_display`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
+| `GdkSurface` | get_width, get_height; signal `layout(int width, int height)` |
+| `GtkLabel` | `new(?string)`, text, wrap, `set_ellipsize(PangoEllipsizeMode)`, xalign, `set_justify(GtkJustification)` |
+| `GtkButton`, `GtkToggleButton` | `new_with_label`, label; signal `clicked`. ToggleButton extends Button: active, `toggled`. `activate()` on a realized button emits `clicked` after GTK's 250 ms pressed state |
+| `GtkCheckButton`, `GtkSwitch` | `new_with_label`, active, label (nullable); `toggled`. Switch: new, active; `notify::active`. CheckButton is not a GtkButton in GTK 4 |
+| `GtkEntry`, `GtkEntryBuffer` | new, `get_buffer`, placeholder text, visibility; `activate`. Buffer: `get_text`, `set_text(string, int $nChars = -1)`; `notify::text` |
+| `GtkTextView`, `GtkTextBuffer` | new, `get_buffer`, editable, `set_wrap_mode(GtkWrapMode)`. Buffer: `set_text(string, int $len = -1)`, `get_text(int $start, int $end, bool $hidden = false)` over `get_iter_at_offset` iters (-1 end = G_MAXINT), `begin/end_user_action` (nest; GTK wraps a user's edit in one); `changed`, `begin-user-action`, `end-user-action` |
+| `GtkScale` | `new_with_range(GtkOrientation, float, float, float)`, GtkRange value/set_range/set_increments (arrow key and page step), draw_value; `value-changed` |
+| `GtkStringList`, `GtkStringObject` | `new(string[])` (non-strings refused), append, `remove(int)` (out of range refused), `splice(position, nRemovals, string[])` (one items-changed; range refused), `get_string(int): ?string`, `g_list_model_get_n_items`; `get_string` |
+| `GtkDropDown` | `new_from_strings(string[])`, selected (`GTK_INVALID_LIST_POSITION` = none), `get_selected_item`, `set_model(?GObject)` (GListModel required); `notify::selected` |
+| `GtkCalendar`, `GDateTime` | new, `get_date(): GDateTime` (new ref, boxed), `select_day(GDateTime)` inside `G_GNUC_BEGIN/END_IGNORE_DEPRECATIONS` (4.20 deprecates it for `set_date`, which 4.18 lacks); `day-selected` fires on a change only. GDateTime: `new_local(y, m, d, h, min, float s)` (invalid → ValueError), year, month, day_of_month, `to_unix` (system-local) |
+| `GtkProgressBar`, `GtkSpinner` | new, fraction, pulse, pulse_step; new, spinning |
+| `GtkPicture` | `new`, `new_for_filename`, `set_filename(?string)` (missing file → `get_paintable()` null), content_fit (`GtkContentFit`), `get_paintable(): ?GObject` |
+| `GtkSeparator`, `GtkScrolledWindow` | `new(GtkOrientation)`; new, child (a non-GtkScrollable child is wrapped: `get_child` returns the GtkViewport), `set_policy(GtkPolicyType, GtkPolicyType)` |
+| `GtkColumnView`, `GtkColumnViewColumn` | `new(?GObject)` (GtkSelectionModel required, (transfer full) honoured with a new ref), append/remove_column, model, row/column separators; `new(?string, ?GtkSignalListItemFactory)` (factory (transfer full), new ref), title, expand, resizable |
+| `GtkSignalListItemFactory`, `GtkListItem` | new; signals `setup`, `bind`, `unbind`, `teardown` each `(factory, GtkListItem)`. ListItem: position, `get_item(): ?GObject`, child |
+| `GtkSingleSelection` | `new(?GObject)` (GListModel required, new ref), selected, selected_item, autoselect, can_unselect, model; `notify::selected`; `GTK_INVALID_LIST_POSITION` |
+| `GtkMediaStream`, `GtkMediaFile`, `GtkVideo` | play, pause, playing, ended, `get_error(): ?GError` (object, not thrown), `seek(int µs)`, is_seekable, timestamp, duration (µs), muted, loop, has_video; `notify::playing/ended/error`. MediaFile: `new_for_filename` (needs GTK initialised), `set_filename(?string)`, clear. Video: new, media_stream, autoplay, loop. `gtk_media_backend_available(): bool` (needs GTK initialised) |
 
-Validation: action names, detailed action names, GVariant type strings, parameter/state types and accelerators are checked before the call; GLib would otherwise log a critical and do nothing. Typed GVariant getters refuse a mismatched variant with GtkException.
+Validation: action names, detailed action names, GVariant type strings, parameter/state types and accelerators are checked before the call; GLib would otherwise log a critical and do nothing. The widget calls check the same way: a child's parent (inserts need none, removes and moves need this container), native int/int16/guint ranges (margins, size requests, spacings, grid cells, text offsets, list positions, seek), scale ranges (`min < max`, `step != 0`), UTF-8 and lengths on entry and text buffers (an entry `nChars` past the string makes GTK read past it), a column already in a view. `gtk_widget_unparent` is not bound: GTK reserves it for widget implementations, and on a window's or scrolled window's child it leaves the container's child pointer dangling. Each container binds its own `remove` or `setChild(null)`. Typed GVariant getters refuse a mismatched variant with GtkException.
 
 Signal parameter marshalling: objects/interfaces boxed; GVariant boxed; bool, ints, floats, strings as PHP scalars; enums/flags as int; pointers and boxed types as addresses. Return values set back into the signal's typed return GValue.
 

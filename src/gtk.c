@@ -24,8 +24,46 @@ zend_class_entry *phpgtk_ce_GApplicationFlags;
 zend_class_entry *phpgtk_ce_GtkApplication;
 zend_class_entry *phpgtk_ce_GMainContext;
 zend_class_entry *phpgtk_ce_GtkOrientation;
+zend_class_entry *phpgtk_ce_GtkAlign;
 zend_class_entry *phpgtk_ce_GtkWidget;
 zend_class_entry *phpgtk_ce_GtkBox;
+zend_class_entry *phpgtk_ce_GtkGrid;
+zend_class_entry *phpgtk_ce_GtkFixed;
+zend_class_entry *phpgtk_ce_GtkCssProvider;
+zend_class_entry *phpgtk_ce_GdkDisplay;
+zend_class_entry *phpgtk_ce_GdkSurface;
+zend_class_entry *phpgtk_ce_PangoEllipsizeMode;
+zend_class_entry *phpgtk_ce_GtkJustification;
+zend_class_entry *phpgtk_ce_GtkWrapMode;
+zend_class_entry *phpgtk_ce_GtkLabel;
+zend_class_entry *phpgtk_ce_GtkButton;
+zend_class_entry *phpgtk_ce_GtkCheckButton;
+zend_class_entry *phpgtk_ce_GtkSwitch;
+zend_class_entry *phpgtk_ce_GtkToggleButton;
+zend_class_entry *phpgtk_ce_GtkEntryBuffer;
+zend_class_entry *phpgtk_ce_GtkEntry;
+zend_class_entry *phpgtk_ce_GtkTextBuffer;
+zend_class_entry *phpgtk_ce_GtkTextView;
+zend_class_entry *phpgtk_ce_GtkScale;
+zend_class_entry *phpgtk_ce_GtkContentFit;
+zend_class_entry *phpgtk_ce_GtkPolicyType;
+zend_class_entry *phpgtk_ce_GtkStringList;
+zend_class_entry *phpgtk_ce_GtkStringObject;
+zend_class_entry *phpgtk_ce_GtkDropDown;
+zend_class_entry *phpgtk_ce_GtkCalendar;
+zend_class_entry *phpgtk_ce_GtkProgressBar;
+zend_class_entry *phpgtk_ce_GtkSpinner;
+zend_class_entry *phpgtk_ce_GtkPicture;
+zend_class_entry *phpgtk_ce_GtkSeparator;
+zend_class_entry *phpgtk_ce_GtkScrolledWindow;
+zend_class_entry *phpgtk_ce_GtkSignalListItemFactory;
+zend_class_entry *phpgtk_ce_GtkListItem;
+zend_class_entry *phpgtk_ce_GtkColumnViewColumn;
+zend_class_entry *phpgtk_ce_GtkColumnView;
+zend_class_entry *phpgtk_ce_GtkSingleSelection;
+zend_class_entry *phpgtk_ce_GtkMediaStream;
+zend_class_entry *phpgtk_ce_GtkMediaFile;
+zend_class_entry *phpgtk_ce_GtkVideo;
 zend_class_entry *phpgtk_ce_GtkPopoverMenuBar;
 zend_class_entry *phpgtk_ce_GtkWindow;
 zend_class_entry *phpgtk_ce_GtkApplicationWindow;
@@ -36,6 +74,7 @@ zend_class_entry *phpgtk_ce_GMenuItem;
 zend_class_entry *phpgtk_ce_GSimpleAction;
 zend_class_entry *phpgtk_ce_GSimpleActionGroup;
 zend_class_entry *phpgtk_ce_GVariant;
+zend_class_entry *phpgtk_ce_GDateTime;
 
 /* ---- sources ---------------------------------------------------------- */
 
@@ -235,6 +274,143 @@ ZEND_FUNCTION(g_signal_connect)
 	RETURN_LONG((zend_long) callout->handler_id);
 }
 
+/* One PHP value into a signal parameter of type $type, checked against the type first. */
+static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t arg_num, const char *signal)
+{
+	ZVAL_DEREF(param);
+
+	switch (G_TYPE_FUNDAMENTAL(type)) {
+		case G_TYPE_BOOLEAN:
+			if (Z_TYPE_P(param) != IS_TRUE && Z_TYPE_P(param) != IS_FALSE) {
+				zend_argument_type_error(arg_num, "must be of type bool for %s, %s given", signal, zend_zval_value_name(param));
+				return false;
+			}
+			break;
+
+		case G_TYPE_CHAR: case G_TYPE_UCHAR: case G_TYPE_INT: case G_TYPE_UINT: case G_TYPE_LONG:
+		case G_TYPE_ULONG: case G_TYPE_INT64: case G_TYPE_UINT64: case G_TYPE_ENUM: case G_TYPE_FLAGS:
+			/* Only an int-backed enum has a case value to fetch; a pure enum has no value slot. */
+			if (Z_TYPE_P(param) == IS_OBJECT && (Z_OBJCE_P(param)->ce_flags & ZEND_ACC_ENUM)
+					&& Z_OBJCE_P(param)->enum_backing_type == IS_LONG) {
+				g_value_init(value, type);
+				zval as_long;
+				ZVAL_LONG(&as_long, Z_LVAL_P(zend_enum_fetch_case_value(Z_OBJ_P(param))));
+				phpgtk_zval_to_gvalue(value, &as_long);
+				return true;
+			}
+			if (Z_TYPE_P(param) != IS_LONG) {
+				zend_argument_type_error(arg_num, "must be of type int for %s, %s given", signal, zend_zval_value_name(param));
+				return false;
+			}
+			break;
+
+		case G_TYPE_FLOAT: case G_TYPE_DOUBLE:
+			if (Z_TYPE_P(param) != IS_LONG && Z_TYPE_P(param) != IS_DOUBLE) {
+				zend_argument_type_error(arg_num, "must be of type float for %s, %s given", signal, zend_zval_value_name(param));
+				return false;
+			}
+			break;
+
+		case G_TYPE_STRING:
+			if (Z_TYPE_P(param) != IS_STRING && Z_TYPE_P(param) != IS_NULL) {
+				zend_argument_type_error(arg_num, "must be of type ?string for %s, %s given", signal, zend_zval_value_name(param));
+				return false;
+			}
+			break;
+
+		case G_TYPE_OBJECT:
+		case G_TYPE_INTERFACE:
+			g_value_init(value, type);
+			if (Z_TYPE_P(param) == IS_NULL) {
+				return true;
+			}
+			if (Z_TYPE_P(param) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(param), phpgtk_ce_GObject)
+					|| !g_type_is_a(G_OBJECT_TYPE(PHPGTK_PTR(Z_OBJ_P(param))), type)) {
+				g_value_unset(value);
+				zend_argument_type_error(arg_num, "must be a %s or null for %s, %s given", g_type_name(type), signal, zend_zval_value_name(param));
+				return false;
+			}
+			g_value_set_object(value, PHPGTK_PTR(Z_OBJ_P(param)));
+			return true;
+
+		default:
+			zend_argument_value_error(arg_num, "is a %s parameter of %s, which g_signal_emit_by_name() cannot pass", g_type_name(type), signal);
+			return false;
+	}
+
+	g_value_init(value, type);
+	phpgtk_zval_to_gvalue(value, param);
+	return true;
+}
+
+ZEND_FUNCTION(g_signal_emit_by_name)
+{
+	zend_object *instance;
+	zend_string *detailed_signal;
+	zval *params = NULL;
+	uint32_t param_count = 0;
+	guint signal_id;
+	GQuark detail;
+	GSignalQuery query;
+
+	ZEND_PARSE_PARAMETERS_START(2, -1)
+		Z_PARAM_OBJ_OF_CLASS(instance, phpgtk_ce_GObject)
+		Z_PARAM_STR(detailed_signal)
+		Z_PARAM_VARIADIC('*', params, param_count)
+	ZEND_PARSE_PARAMETERS_END();
+
+	GObject *object = (GObject *) PHPGTK_PTR(instance);
+
+	if (!g_signal_parse_name(ZSTR_VAL(detailed_signal), G_OBJECT_TYPE(object), &signal_id, &detail, TRUE)) {
+		zend_argument_value_error(2, "is not a signal of %s", G_OBJECT_TYPE_NAME(object));
+		RETURN_THROWS();
+	}
+
+	g_signal_query(signal_id, &query);
+	if (param_count != query.n_params) {
+		zend_argument_count_error("g_signal_emit_by_name(): %s takes %u parameters, %u given",
+			ZSTR_VAL(detailed_signal), query.n_params, param_count);
+		RETURN_THROWS();
+	}
+
+	GValue *values = ecalloc(param_count + 1, sizeof(GValue));
+	g_value_init(&values[0], G_OBJECT_TYPE(object));
+	g_value_set_object(&values[0], object);
+
+	uint32_t filled = 0;
+	for (; filled < param_count; filled++) {
+		GType type = query.param_types[filled] & ~G_SIGNAL_TYPE_STATIC_SCOPE;
+		if (!phpgtk_signal_param(&values[filled + 1], type, &params[filled], filled + 3, ZSTR_VAL(detailed_signal))) {
+			break;
+		}
+	}
+
+	if (filled == param_count) {
+		GType return_type = query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE;
+		GValue result = G_VALUE_INIT;
+
+		if (return_type != G_TYPE_NONE) {
+			g_value_init(&result, return_type);
+		}
+		g_signal_emitv(values, signal_id, detail, return_type != G_TYPE_NONE ? &result : NULL);
+		if (return_type != G_TYPE_NONE) {
+			phpgtk_gvalue_to_zval(return_value, &result);
+			g_value_unset(&result);
+		}
+	}
+
+	for (uint32_t i = 0; i <= filled && i <= param_count; i++) {
+		if (G_IS_VALUE(&values[i])) {
+			g_value_unset(&values[i]);
+		}
+	}
+	efree(values);
+
+	if (filled != param_count) {
+		RETURN_THROWS();
+	}
+}
+
 ZEND_FUNCTION(g_signal_handler_disconnect)
 {
 	zend_object *instance;
@@ -341,7 +517,13 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkApplication();
 	phpgtk_register_GMainContext();
 	phpgtk_register_GVariant();
+	phpgtk_register_GDateTime();
+	phpgtk_register_GtkCss();
+	phpgtk_register_GdkSurface();
 	phpgtk_register_GtkWidget();
+	phpgtk_register_GtkControls();
+	phpgtk_register_GtkColumnView();
+	phpgtk_register_GtkVideo();
 	phpgtk_register_GtkWindow();
 	phpgtk_register_GMenu();
 	phpgtk_register_GAction();

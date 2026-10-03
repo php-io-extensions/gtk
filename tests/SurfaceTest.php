@@ -58,6 +58,39 @@ it('keeps the native class hierarchy', function (): void {
         ->and(get_parent_class(GtkApplicationWindow::class))->toBe(GtkWindow::class)
         ->and(get_parent_class(GtkAboutDialog::class))->toBe(GtkWindow::class)
         ->and(get_parent_class(GtkBox::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkGrid::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkFixed::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkCssProvider::class))->toBe(GObject::class)
+        ->and(get_parent_class(GdkDisplay::class))->toBe(GObject::class)
+        ->and(get_parent_class(GdkSurface::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkLabel::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkButton::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkCheckButton::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkSwitch::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkToggleButton::class))->toBe(GtkButton::class)
+        ->and(get_parent_class(GtkEntry::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkEntryBuffer::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkTextView::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkTextBuffer::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkScale::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkStringList::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkStringObject::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkDropDown::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkCalendar::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkProgressBar::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkSpinner::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkPicture::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkSeparator::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkScrolledWindow::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GDateTime::class))->toBeFalse()
+        ->and(get_parent_class(GtkSignalListItemFactory::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkListItem::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkColumnViewColumn::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkColumnView::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkSingleSelection::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkMediaStream::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkMediaFile::class))->toBe(GtkMediaStream::class)
+        ->and(get_parent_class(GtkVideo::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GtkPopoverMenuBar::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GMenu::class))->toBe(GMenuModel::class)
         ->and(get_parent_class(GMenuItem::class))->toBe(GObject::class)
@@ -67,7 +100,7 @@ it('keeps the native class hierarchy', function (): void {
 
 it('cannot construct native wrappers from PHP', function (string $class): void {
     expect(fn () => new $class())->toThrow(Error::class);
-})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class]);
+})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class, GDateTime::class]);
 
 it('refuses to clone or serialize a native wrapper', function (): void {
     $ctx = GMainContext::default();

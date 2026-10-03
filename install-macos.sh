@@ -16,10 +16,12 @@ SOURCES=(config.m4 php_gtk.h src stubs)
 INI_NAME="30-gtk.ini"
 
 die() { printf '✖ %s\n' "$*" >&2; exit 1; }
+warn() { printf '⚠ %s\n' "$*" >&2; }
 step() { printf '▶ %s\n' "$*"; }
 
 [[ "$(uname -s)" == "Darwin" ]] || die "This installer targets macOS; on Debian or Raspberry Pi OS use install-debian-trixie.sh."
-pkg-config --exists 'gtk4 >= 4.10' || die "GTK 4.10+ not found by pkg-config — install: brew install gtk4"
+pkg-config --exists 'gtk4 >= 4.12' || die "GTK 4.12+ not found by pkg-config — install: brew install gtk4"
+[[ -d "$(brew --prefix gtk4)/lib/gtk-4.0/4.0.0/media" ]] || warn "Homebrew gtk4 has no media backend: GtkVideo plays nothing on this Mac (gtk_media_backend_available() returns false)."
 
 if [[ $# -gt 0 ]]; then
     PHP_BINS=("$@")

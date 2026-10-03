@@ -87,7 +87,8 @@ PHP_VER_ID="$(php -r 'echo PHP_VERSION_ID;')"
 
 command -v cc >/dev/null 2>&1 || die "cc not found — install: apt install build-essential"
 command -v pkg-config >/dev/null 2>&1 || die "pkg-config not found — install: apt install pkg-config"
-pkg-config --exists 'gtk4 >= 4.10' || die "GTK 4.10+ development files not found — install: apt install libgtk-4-dev"
+pkg-config --exists 'gtk4 >= 4.12' || die "GTK 4.12+ development files not found — install: apt install libgtk-4-dev"
+dpkg -s libgtk-4-media-gstreamer >/dev/null 2>&1 || die "GTK media backend not found — install: apt install libgtk-4-media-gstreamer gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 
 PHP_BIN_REAL="$(php -r 'echo PHP_BINARY;' 2>/dev/null)"
 PHP_BIN_DIR="$(dirname "$PHP_BIN_REAL")"

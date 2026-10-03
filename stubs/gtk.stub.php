@@ -48,6 +48,25 @@ function gtk_get_minor_version(): int {}
 function gtk_get_micro_version(): int {}
 
 /**
+ * @var int
+ * @cvalue GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+ */
+const GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue GTK_INVALID_LIST_POSITION
+ */
+const GTK_INVALID_LIST_POSITION = UNKNOWN;
+
+function gtk_style_context_add_provider_for_display(GdkDisplay $display, GtkCssProvider $provider, int $priority): void {}
+
+function gtk_style_context_remove_provider_for_display(GdkDisplay $display, GtkCssProvider $provider): void {}
+
+/** true when a media backend module is installed (the GtkMediaFile GTK builds is not GtkNoMediaFile); needs GTK initialised */
+function gtk_media_backend_available(): bool {}
+
+/**
  * @param callable $function called as $function(): bool; true keeps the source, false removes it
  */
 function g_timeout_add(int $interval, callable $function): int {}
@@ -69,6 +88,16 @@ function g_source_remove(int $tag): bool {}
  * @param callable $c_handler called with the signal's parameters, instance first
  */
 function g_signal_connect(GObject $instance, string $detailed_signal, callable $c_handler): int {}
+
+/**
+ * g_signal_emitv(): emit $detailed_signal on $instance with $params, one per signal parameter.
+ * Parameters are passed by the signal's own types: bool, int (also enums and flags; a backed
+ * enum case passes its value), float, string, and GObjects of the declared type; null for a
+ * string or object. Other parameter types are refused.
+ *
+ * @return mixed the signal's return value, null for a void signal
+ */
+function g_signal_emit_by_name(GObject $instance, string $detailed_signal, mixed ...$params): mixed {}
 
 function g_signal_handler_disconnect(GObject $instance, int $handler_id): void {}
 

@@ -8,6 +8,16 @@ enum GtkOrientation: int
     case VERTICAL = 1;
 }
 
+enum GtkAlign: int
+{
+    case FILL = 0;
+    case START = 1;
+    case END = 2;
+    case CENTER = 3;
+    case BASELINE_FILL = 4;
+    case BASELINE_CENTER = 5;
+}
+
 /**
  * @not-serializable
  */
@@ -40,6 +50,77 @@ class GtkWidget extends GObject
 
     /** gtk_widget_activate_action_variant() */
     public function activateAction(string $name, ?GVariant $args): bool {}
+
+    /** gtk_widget_activate(): false when the widget is not activatable */
+    public function activate(): bool {}
+
+    public function getHalign(): GtkAlign {}
+
+    public function setHalign(GtkAlign $align): void {}
+
+    public function getValign(): GtkAlign {}
+
+    public function setValign(GtkAlign $align): void {}
+
+    public function setSizeRequest(int $width, int $height): void {}
+
+    /** @return array{int, int} [width, height]; -1 = unset */
+    public function getSizeRequest(): array {}
+
+    public function getWidth(): int {}
+
+    public function getHeight(): int {}
+
+    public function getSensitive(): bool {}
+
+    public function setSensitive(bool $sensitive): void {}
+
+    /**
+     * gtk_widget_get_color(): the foreground colour CSS computed for this widget's node.
+     *
+     * @return array{float, float, float, float} [red, green, blue, alpha], 0..1
+     */
+    public function getColor(): array {}
+
+    /** gtk_widget_is_sensitive(): sensitive itself and every ancestor sensitive too */
+    public function isSensitive(): bool {}
+
+    public function setMarginStart(int $margin): void {}
+
+    public function setMarginEnd(int $margin): void {}
+
+    public function setMarginTop(int $margin): void {}
+
+    public function setMarginBottom(int $margin): void {}
+
+    public function addCssClass(string $cssClass): void {}
+
+    public function removeCssClass(string $cssClass): void {}
+
+    public function hasCssClass(string $cssClass): bool {}
+
+    /** @return array{minimum: int, natural: int, minimumBaseline: int, naturalBaseline: int} */
+    public function measure(GtkOrientation $orientation, int $forSize): array {}
+
+    /** gtk_widget_get_native(): the GtkNative ancestor (a window), boxed as its widget class */
+    public function getNative(): ?GtkWidget {}
+
+    /**
+     * gtk_widget_compute_bounds(): this widget's border box in $target's coordinates.
+     *
+     * @return array{float, float, float, float}|null [x, y, width, height]; null when the two share no common ancestor
+     */
+    public function computeBounds(GtkWidget $target): ?array {}
+
+    public function getFirstChild(): ?GtkWidget {}
+
+    public function getNextSibling(): ?GtkWidget {}
+
+    /** gtk_widget_get_root(): the GtkRoot ancestor (a window), boxed as its widget class */
+    public function getRoot(): ?GtkWidget {}
+
+    /** gtk_native_get_surface() when this widget is a GtkNative (a window), else null */
+    public function getSurface(): ?GdkSurface {}
 }
 
 /**
@@ -54,6 +135,57 @@ class GtkBox extends GtkWidget
     public function prepend(GtkWidget $child): void {}
 
     public function remove(GtkWidget $child): void {}
+
+    public function insertChildAfter(GtkWidget $child, ?GtkWidget $sibling): void {}
+
+    public function reorderChildAfter(GtkWidget $child, ?GtkWidget $sibling): void {}
+
+    public function getSpacing(): int {}
+
+    public function setSpacing(int $spacing): void {}
+
+    public function getHomogeneous(): bool {}
+
+    public function setHomogeneous(bool $homogeneous): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkGrid extends GtkWidget
+{
+    public static function new(): GtkGrid {}
+
+    public function attach(GtkWidget $child, int $column, int $row, int $width, int $height): void {}
+
+    public function remove(GtkWidget $child): void {}
+
+    public function getChildAt(int $column, int $row): ?GtkWidget {}
+
+    public function getRowSpacing(): int {}
+
+    public function setRowSpacing(int $spacing): void {}
+
+    public function getColumnSpacing(): int {}
+
+    public function setColumnSpacing(int $spacing): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkFixed extends GtkWidget
+{
+    public static function new(): GtkFixed {}
+
+    public function put(GtkWidget $child, float $x, float $y): void {}
+
+    public function move(GtkWidget $child, float $x, float $y): void {}
+
+    public function remove(GtkWidget $child): void {}
+
+    /** @return array{float, float} */
+    public function getChildPosition(GtkWidget $child): array {}
 }
 
 /**

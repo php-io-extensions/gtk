@@ -47,6 +47,9 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_VARIANT:
 				g_variant_unref((GVariant *) intern->ptr);
 				break;
+			case PHPGTK_DATE_TIME:
+				g_date_time_unref((GDateTime *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -162,6 +165,22 @@ void phpgtk_box_variant(zval *rv, GVariant *variant)
 	phpgtk_box_new(rv, phpgtk_ce_GVariant, g_variant_ref_sink(variant), PHPGTK_VARIANT);
 }
 
+/* Takes ownership of the reference handed in (g_date_time_new_*() and gtk_calendar_get_date() return new ones). */
+void phpgtk_box_date_time(zval *rv, GDateTime *date_time)
+{
+	if (date_time == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, date_time)) {
+		g_date_time_unref(date_time);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GDateTime, date_time, PHPGTK_DATE_TIME);
+}
+
 /* A (transfer full) return: PHP's reference replaces the one the call handed us. */
 void phpgtk_box_gobject_full(zval *rv, gpointer object)
 {
@@ -207,9 +226,52 @@ bool phpgtk_is_detailed_action(const char *detailed)
 	return valid;
 }
 
+bool phpgtk_long_in_range(zend_long value, zend_long min, zend_long max, uint32_t arg_num)
+{
+	if (value < min || value > max) {
+		zend_argument_value_error(arg_num, "must be between " ZEND_LONG_FMT " and " ZEND_LONG_FMT, min, max);
+		return false;
+	}
+
+	return true;
+}
+
+bool phpgtk_require_parent(GtkWidget *child, GtkWidget *expected_parent, uint32_t arg_num)
+{
+	GtkWidget *parent = gtk_widget_get_parent(child);
+
+	if (parent == expected_parent) {
+		return true;
+	}
+
+	if (expected_parent == NULL) {
+		zend_argument_value_error(arg_num, "already has a parent (%s)", G_OBJECT_TYPE_NAME(parent));
+	} else if (parent == NULL) {
+		zend_argument_value_error(arg_num, "is not a child of this %s", G_OBJECT_TYPE_NAME(expected_parent));
+	} else {
+		zend_argument_value_error(arg_num, "is a child of another %s", G_OBJECT_TYPE_NAME(parent));
+	}
+
+	return false;
+}
+
 zend_long phpgtk_enum_value(zend_object *obj_or_null, zend_long fallback)
 {
 	return obj_or_null != NULL ? Z_LVAL_P(zend_enum_fetch_case_value(obj_or_null)) : fallback;
+}
+
+/* A native enum value as the PHP enum case; a value the stub does not declare is an extension bug, reported as such. */
+void phpgtk_return_enum(zval *rv, zend_class_entry *ce, zend_long value)
+{
+	zend_object *case_object = NULL;
+
+	if (zend_enum_get_case_by_value(&case_object, ce, value, NULL, true) == FAILURE || case_object == NULL) {
+		zend_throw_exception_ex(phpgtk_ce_GtkException, 0, "%s has no case for native value " ZEND_LONG_FMT, ZSTR_VAL(ce->name), value);
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	ZVAL_OBJ_COPY(rv, case_object);
 }
 
 bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd)
@@ -350,16 +412,27 @@ void phpgtk_zval_to_gvalue(GValue *value, zval *zv)
 	}
 }
 
+/* A GError as a GError exception object, not thrown: message, code and domain filled. */
+void phpgtk_gerror_object(zval *rv, const GError *error)
+{
+	const char *domain = g_quark_to_string(error->domain);
+
+	object_init_ex(rv, phpgtk_ce_GError);
+	zend_update_property_string(phpgtk_ce_GError, Z_OBJ_P(rv), "message", sizeof("message") - 1, error->message != NULL ? error->message : "");
+	zend_update_property_long(phpgtk_ce_GError, Z_OBJ_P(rv), "code", sizeof("code") - 1, error->code);
+	zend_update_property_string(phpgtk_ce_GError, Z_OBJ_P(rv), "domain", sizeof("domain") - 1, domain != NULL ? domain : "");
+}
+
 void phpgtk_throw_gerror(GError *error)
 {
+	zval exception;
+
 	if (EG(exception) != NULL) {
 		return;
 	}
 
-	zend_object *exception = zend_throw_exception(phpgtk_ce_GError, error->message, error->code);
-	const char *domain = g_quark_to_string(error->domain);
-
-	zend_update_property_string(phpgtk_ce_GError, exception, "domain", sizeof("domain") - 1, domain != NULL ? domain : "");
+	phpgtk_gerror_object(&exception, error);
+	zend_throw_exception_object(&exception);
 }
 
 bool phpgtk_on_main_thread(void)

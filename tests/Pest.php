@@ -37,6 +37,16 @@ function iterateUntil(callable $done, int $limitMs = 2000): bool
     return $done();
 }
 
+/** Iterate the default context for $seconds. */
+function iterateFor(float $seconds): void
+{
+    $until = microtime(true) + $seconds;
+    while (microtime(true) < $until) {
+        g_timeout_add(10, fn (): bool => G_SOURCE_REMOVE);
+        GMainContext::default()->iteration(true);
+    }
+}
+
 /** One application for the process: GTK initialises once, on its startup. */
 function testApplication(): GtkApplication
 {
