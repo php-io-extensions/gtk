@@ -35,7 +35,8 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkDropDown`, `GtkStringList`, `GtkStringObject` | `new_from_strings`, `get/set_selected`, `get_selected_item`, `set_model`; `new`, `append`, `remove`, `splice`, `get_string`, `g_list_model_get_n_items`; `get_string` |
 | `GtkCalendar`, `GDateTime` | `new`, `get_date`, `select_day`; `new_local`, `get_year`, `get_month`, `get_day_of_month`, `to_unix` |
 | `GtkProgressBar`, `GtkSpinner` | `new`, `get/set_fraction`, `pulse`, `set_pulse_step`; `new`, `get/set_spinning` |
-| `GtkPicture`, `GtkSeparator`, `GtkScrolledWindow` | `new`, `new_for_filename`, `set_filename`, `get/set_content_fit`, `get_paintable`; `new`; `new`, `get/set_child`, `set_policy` |
+| `GtkPicture`, `GtkSeparator`, `GtkScrolledWindow` | `new`, `new_for_filename`, `set_filename`, `get/set_content_fit`, `get/set_paintable`, `get/set_can_shrink`; `new`; `new`, `get/set_child`, `set_policy` |
+| `GdkTexture`, `GdkMemoryTexture` | `get_width`, `get_height`; `new` from bytes in a `GdkMemoryFormat` |
 | `GtkColumnView`, `GtkColumnViewColumn` | `new`, `append/remove_column`, `get/set_model`, `set_show_row/column_separators`; `new`, `get/set_title`, `set_expand`, `set_resizable` |
 | `GtkSignalListItemFactory`, `GtkListItem`, `GtkSingleSelection` | `new` (signals `setup`, `bind`, `unbind`, `teardown`); `get_position`, `get_item`, `get/set_child`; `new`, `get/set_selected`, `get_selected_item`, `set_autoselect`, `set_can_unselect`, `get_model` |
 | `GtkMediaStream`, `GtkMediaFile`, `GtkVideo` | `play`, `pause`, `get/set_playing`, `get_ended`, `get_error`, `seek`, `is_seekable`, `get_timestamp`, `get_duration`, `get/set_muted`, `get/set_loop`, `has_video`; `new_for_filename`, `set_filename`, `clear`; `new`, `get/set_media_stream`, `get/set_autoplay`, `set_loop`; function `gtk_media_backend_available` |

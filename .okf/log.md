@@ -1,5 +1,9 @@
 # Log
 
+## 2026-10-03
+
+* Pixels from bytes: `GdkTexture`, `GdkMemoryTexture::new()`, `GdkMemoryFormat`; `GtkPicture` set_paintable and can_shrink; `GtkWidget::getScaleFactor()`. [surface](api/surface.md)
+
 ## 2026-10-02
 
 * [Surface](api/surface.md): widget alignment, sizing, margins, CSS classes; GtkBox ordering; GtkGrid, GtkFixed; GtkCssProvider, GdkDisplay, style-context functions; GdkSurface. New concept [layout and styling](architecture/layout.md).

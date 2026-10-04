@@ -627,6 +627,26 @@ ZEND_METHOD(GtkPicture, getPaintable)
 	phpgtk_box_gobject(return_value, gtk_picture_get_paintable(THIS(GTK_PICTURE)));
 }
 
+ZEND_METHOD(GtkPicture, setPaintable)
+{
+	zend_object *paintable = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(paintable, phpgtk_ce_GObject)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (paintable != NULL && !GDK_IS_PAINTABLE(PHPGTK_PTR(paintable))) {
+		zend_argument_type_error(1, "must be a GdkPaintable, %s given", ZSTR_VAL(paintable->ce->name));
+		RETURN_THROWS();
+	}
+
+	gtk_picture_set_paintable(THIS(GTK_PICTURE), paintable != NULL ? GDK_PAINTABLE(PHPGTK_PTR(paintable)) : NULL);
+}
+
+PHPGTK_GET_BOOL(GtkPicture, getCanShrink, GTK_PICTURE, gtk_picture_get_can_shrink)
+PHPGTK_SET_BOOL(GtkPicture, setCanShrink, GTK_PICTURE, gtk_picture_set_can_shrink)
+
 /* ---- GtkSeparator ------------------------------------------------------ */
 
 ZEND_METHOD(GtkSeparator, new)

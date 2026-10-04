@@ -5,7 +5,7 @@ description: Functions, classes, enums and constants ext-gtk binds, each one GTK
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-fable/5.1, at: 2026-10-02T17:30:00Z }
+generated: { by: claude-opus/5.5, at: 2026-10-04T02:58:09Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -60,6 +60,7 @@ Naming, all fixed:
 | `GtkFixed` | new, put, move, remove, `get_child_position` (`[x, y]` floats; GTK applies the transform at layout, so read after the fixed has been allocated) |
 | `GtkCssProvider`, `GdkDisplay` | new (transfer full), `load_from_string`; `get_default`; `gtk_style_context_add_provider_for_display(display, provider, int $priority)`, `gtk_style_context_remove_provider_for_display`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
 | `GdkSurface` | get_width, get_height; signal `layout(int width, int height)` |
+| `GdkTexture`, `GdkMemoryTexture`, `GdkMemoryFormat` | get_width, get_height; `gdk_memory_texture_new(width, height, format, bytes, stride)` with the bytes as a PHP string (copied into a GBytes), refusing a stride shorter than a row and bytes that do not hold every row; the fourteen 8-bit formats, the four X8 ones (opaque) needing GTK 4.14 |
 | `GtkLabel` | `new(?string)`, text, wrap, `set_ellipsize(PangoEllipsizeMode)`, xalign, `set_justify(GtkJustification)` |
 | `GtkButton`, `GtkToggleButton` | `new_with_label`, label; signal `clicked`. ToggleButton extends Button: active, `toggled`. `activate()` on a realized button emits `clicked` after GTK's 250 ms pressed state |
 | `GtkCheckButton`, `GtkSwitch` | `new_with_label`, active, label (nullable); `toggled`. Switch: new, active; `notify::active`. CheckButton is not a GtkButton in GTK 4 |
@@ -70,7 +71,7 @@ Naming, all fixed:
 | `GtkDropDown` | `new_from_strings(string[])`, selected (`GTK_INVALID_LIST_POSITION` = none), `get_selected_item`, `set_model(?GObject)` (GListModel required); `notify::selected` |
 | `GtkCalendar`, `GDateTime` | new, `get_date(): GDateTime` (new ref, boxed), `select_day(GDateTime)` inside `G_GNUC_BEGIN/END_IGNORE_DEPRECATIONS` (4.20 deprecates it for `set_date`, which 4.18 lacks); `day-selected` fires on a change only. GDateTime: `new_local(y, m, d, h, min, float s)` (invalid → ValueError), year, month, day_of_month, `to_unix` (system-local) |
 | `GtkProgressBar`, `GtkSpinner` | new, fraction, pulse, pulse_step; new, spinning |
-| `GtkPicture` | `new`, `new_for_filename`, `set_filename(?string)` (missing file → `get_paintable()` null), content_fit (`GtkContentFit`), `get_paintable(): ?GObject` |
+| `GtkPicture` | `new`, `new_for_filename`, `set_filename(?string)` (missing file → `get_paintable()` null), content_fit (`GtkContentFit`), `get_paintable(): ?GObject`, `set_paintable(?GObject)` (a GdkPaintable such as a texture; anything else is a TypeError), can_shrink |
 | `GtkSeparator`, `GtkScrolledWindow` | `new(GtkOrientation)`; new, child (a non-GtkScrollable child is wrapped: `get_child` returns the GtkViewport), `set_policy(GtkPolicyType, GtkPolicyType)` |
 | `GtkColumnView`, `GtkColumnViewColumn` | `new(?GObject)` (GtkSelectionModel required, (transfer full) honoured with a new ref), append/remove_column, model, row/column separators; `new(?string, ?GtkSignalListItemFactory)` (factory (transfer full), new ref), title, expand, resizable |
 | `GtkSignalListItemFactory`, `GtkListItem` | new; signals `setup`, `bind`, `unbind`, `teardown` each `(factory, GtkListItem)`. ListItem: position, `get_item(): ?GObject`, child |

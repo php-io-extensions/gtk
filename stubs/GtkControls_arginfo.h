@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: c7b73ed30e68f0d17bf66f048d9f51d0970f64b9 */
+ * Stub hash: 39905bd25ea1f9cda5f42f2ca7cfde82eedf0ae6 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -256,6 +256,16 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPicture_getPaintable arginfo_class_GtkDropDown_getSelectedItem
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPicture_setPaintable, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, paintable, GObject, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPicture_getCanShrink arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPicture_setCanShrink, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, canShrink, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkSeparator_new, 0, 1, GtkSeparator, 0)
 	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
 ZEND_END_ARG_INFO()
@@ -351,6 +361,9 @@ ZEND_METHOD(GtkPicture, setFilename);
 ZEND_METHOD(GtkPicture, getContentFit);
 ZEND_METHOD(GtkPicture, setContentFit);
 ZEND_METHOD(GtkPicture, getPaintable);
+ZEND_METHOD(GtkPicture, setPaintable);
+ZEND_METHOD(GtkPicture, getCanShrink);
+ZEND_METHOD(GtkPicture, setCanShrink);
 ZEND_METHOD(GtkSeparator, new);
 ZEND_METHOD(GtkScrolledWindow, new);
 ZEND_METHOD(GtkScrolledWindow, getChild);
@@ -498,6 +511,9 @@ static const zend_function_entry class_GtkPicture_methods[] = {
 	ZEND_ME(GtkPicture, getContentFit, arginfo_class_GtkPicture_getContentFit, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkPicture, setContentFit, arginfo_class_GtkPicture_setContentFit, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkPicture, getPaintable, arginfo_class_GtkPicture_getPaintable, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPicture, setPaintable, arginfo_class_GtkPicture_setPaintable, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPicture, getCanShrink, arginfo_class_GtkPicture_getCanShrink, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPicture, setCanShrink, arginfo_class_GtkPicture_setCanShrink, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 

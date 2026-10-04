@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b015087556fd75f0e78fbd8b568193c02aa25552 */
+ * Stub hash: dc37806c5dad354fb9abdaf667119efb1226b3bc */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -63,6 +63,8 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_getWidth, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWidget_getScaleFactor arginfo_class_GtkWidget_getWidth
 
 #define arginfo_class_GtkWidget_getHeight arginfo_class_GtkWidget_getWidth
 
@@ -223,6 +225,7 @@ ZEND_METHOD(GtkWidget, setValign);
 ZEND_METHOD(GtkWidget, setSizeRequest);
 ZEND_METHOD(GtkWidget, getSizeRequest);
 ZEND_METHOD(GtkWidget, getWidth);
+ZEND_METHOD(GtkWidget, getScaleFactor);
 ZEND_METHOD(GtkWidget, getHeight);
 ZEND_METHOD(GtkWidget, getSensitive);
 ZEND_METHOD(GtkWidget, setSensitive);
@@ -291,6 +294,7 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setSizeRequest, arginfo_class_GtkWidget_setSizeRequest, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getSizeRequest, arginfo_class_GtkWidget_getSizeRequest, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getWidth, arginfo_class_GtkWidget_getWidth, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getScaleFactor, arginfo_class_GtkWidget_getScaleFactor, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getHeight, arginfo_class_GtkWidget_getHeight, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getSensitive, arginfo_class_GtkWidget_getSensitive, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setSensitive, arginfo_class_GtkWidget_setSensitive, ZEND_ACC_PUBLIC)

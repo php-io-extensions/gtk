@@ -328,6 +328,14 @@ class GtkPicture extends GtkWidget
 
     /** the GdkPaintable, null when nothing loaded */
     public function getPaintable(): ?GObject {}
+
+    /** $paintable: a GdkPaintable, such as a GdkTexture; null shows nothing */
+    public function setPaintable(?GObject $paintable): void {}
+
+    public function getCanShrink(): bool {}
+
+    /** false keeps the picture at least as large as what it shows */
+    public function setCanShrink(bool $canShrink): void {}
 }
 
 /**

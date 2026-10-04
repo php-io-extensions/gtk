@@ -223,6 +223,13 @@ ZEND_METHOD(GtkWidget, getSizeRequest)
 	add_next_index_long(return_value, height);
 }
 
+ZEND_METHOD(GtkWidget, getScaleFactor)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG(gtk_widget_get_scale_factor(THIS_WIDGET));
+}
+
 ZEND_METHOD(GtkWidget, getWidth)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

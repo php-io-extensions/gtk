@@ -69,6 +69,9 @@ class GtkWidget extends GObject
 
     public function getWidth(): int {}
 
+    /** Device pixels per application pixel on the widget's surface: 2 on a HiDPI display. */
+    public function getScaleFactor(): int {}
+
     public function getHeight(): int {}
 
     public function getSensitive(): bool {}
