@@ -79,6 +79,7 @@ extern zend_class_entry *phpgtk_ce_GdkSurface;
 extern zend_class_entry *phpgtk_ce_GdkMemoryFormat;
 extern zend_class_entry *phpgtk_ce_GdkTexture;
 extern zend_class_entry *phpgtk_ce_GdkMemoryTexture;
+extern zend_class_entry *phpgtk_ce_GdkMemoryTextureBuilder;
 extern zend_class_entry *phpgtk_ce_PangoEllipsizeMode;
 extern zend_class_entry *phpgtk_ce_GtkJustification;
 extern zend_class_entry *phpgtk_ce_GtkWrapMode;

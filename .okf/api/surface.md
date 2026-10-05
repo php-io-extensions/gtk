@@ -5,7 +5,7 @@ description: Functions, classes, enums and constants ext-gtk binds, each one GTK
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-10-04T02:58:09Z }
+generated: { by: glm/5.3, at: 2026-10-05T00:35:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -60,7 +60,8 @@ Naming, all fixed:
 | `GtkFixed` | new, put, move, remove, `get_child_position` (`[x, y]` floats; GTK applies the transform at layout, so read after the fixed has been allocated) |
 | `GtkCssProvider`, `GdkDisplay` | new (transfer full), `load_from_string`; `get_default`; `gtk_style_context_add_provider_for_display(display, provider, int $priority)`, `gtk_style_context_remove_provider_for_display`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
 | `GdkSurface` | get_width, get_height; signal `layout(int width, int height)` |
-| `GdkTexture`, `GdkMemoryTexture`, `GdkMemoryFormat` | get_width, get_height; `gdk_memory_texture_new(width, height, format, bytes, stride)` with the bytes as a PHP string (copied into a GBytes), refusing a stride shorter than a row and bytes that do not hold every row; the fourteen 8-bit formats, the four X8 ones (opaque) needing GTK 4.14 |
+| `GdkTexture`, `GdkMemoryTexture`, `GdkMemoryFormat` | get_width, get_height; `gdk_memory_texture_new(width, height, format, bytes, stride)` with the bytes as a PHP string (copied into a GBytes) or as an address — an ext-fb buffer's `pointer()`, trusted, the rows the width, height and stride name are read there; refusing a stride shorter than a row and bytes that do not hold every row; the fourteen 8-bit formats, the four X8 ones (opaque) needing GTK 4.14 |
+| `GdkMemoryTextureBuilder` | GTK 4.16+: `gdk_memory_texture_builder_new` (refused on an older running GTK, naming the version; the class is compiled only when headers are 4.16+), fluent `setBytes(string\|int, ?int $length)` (an address is trusted, `$length` bytes are read there), `setWidth/setHeight/setStride` (refusing negatives), `setFormat(GdkMemoryFormat)`, `setUpdateTexture(?GdkTexture)`, `setUpdateRegion(?array)` of `[x, y, width, height]` rects into one cairo region, `build(): ?GdkTexture` (transfer full; null when width, height, format, stride or bytes is unset) |
 | `GtkLabel` | `new(?string)`, text, wrap, `set_ellipsize(PangoEllipsizeMode)`, xalign, `set_justify(GtkJustification)` |
 | `GtkButton`, `GtkToggleButton` | `new_with_label`, label; signal `clicked`. ToggleButton extends Button: active, `toggled`. `activate()` on a realized button emits `clicked` after GTK's 250 ms pressed state |
 | `GtkCheckButton`, `GtkSwitch` | `new_with_label`, active, label (nullable); `toggled`. Switch: new, active; `notify::active`. CheckButton is not a GtkButton in GTK 4 |

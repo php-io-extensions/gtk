@@ -45,7 +45,7 @@ it('exposes every function, class, enum and method the stubs declare', function 
 });
 
 it('reports its version', function (): void {
-    expect(phpversion('gtk'))->toBe('0.10.0');
+    expect(phpversion('gtk'))->toBe('0.10.1');
 });
 
 it('keeps the native class hierarchy', function (): void {

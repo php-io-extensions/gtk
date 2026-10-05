@@ -45,3 +45,40 @@ it('shows a texture in a picture, lets it shrink, and clears it', function (): v
         ->and(fn () => $picture->setPaintable(GtkBox::new(GtkOrientation::VERTICAL, 0)))->toThrow(TypeError::class, 'must be a GdkPaintable, GtkBox given')
         ->and($picture->getScaleFactor())->toBeGreaterThanOrEqual(1);
 });
+
+it('builds a memory texture from an address', function () {
+    $buffer = new FbBuffer(new FbFormat(FB_LAYOUT_RGBA8888, channelOrder: FB_CHANNELS_RGBA), 4, 2);
+
+    $texture = GdkMemoryTexture::new(4, 2, GdkMemoryFormat::R8G8B8X8, $buffer->pointer(), 16);
+
+    expect([$texture->getWidth(), $texture->getHeight()])->toBe([4, 2]);
+})->skip(! class_exists(FbBuffer::class), 'needs ext-fb for a native address');
+
+it('builds an updated texture from an address and a damage region', function () {
+    $buffer = new FbBuffer(new FbFormat(FB_LAYOUT_RGBA8888, channelOrder: FB_CHANNELS_RGBA), 4, 2);
+    $first = GdkMemoryTexture::new(4, 2, GdkMemoryFormat::R8G8B8X8, $buffer->pointer(), 16);
+    $buffer->set(1, 1, 0xFF0000FF);
+
+    $next = GdkMemoryTextureBuilder::new()
+        ->setBytes($buffer->pointer(), $buffer->size())
+        ->setWidth(4)->setHeight(2)->setFormat(GdkMemoryFormat::R8G8B8X8)->setStride(16)
+        ->setUpdateTexture($first)
+        ->setUpdateRegion([[1, 1, 1, 1]])
+        ->build();
+
+    expect($next)->toBeInstanceOf(GdkTexture::class)
+        ->and([$next->getWidth(), $next->getHeight()])->toBe([4, 2]);
+})->skip(! class_exists(FbBuffer::class) || gtk_get_minor_version() < 16, 'needs ext-fb and GTK 4.16');
+
+it('refuses a null address and an address without a length', function () {
+    expect(fn () => GdkMemoryTexture::new(4, 2, GdkMemoryFormat::R8G8B8X8, 0, 16))->toThrow(ValueError::class, 'must not be a null address')
+        ->and(fn () => GdkMemoryTextureBuilder::new()->setBytes(4096))->toThrow(ValueError::class, 'must be the byte count');
+});
+
+it('refuses an update region that is not a list of four integers', function () {
+    GdkMemoryTextureBuilder::new()->setUpdateRegion([[1, 1, 1]]);
+})->throws(ValueError::class, 'each rect is [x, y, width, height]');
+
+it('answers null from a builder with nothing set', function () {
+    expect(GdkMemoryTextureBuilder::new()->build())->toBeNull();
+})->skip(gtk_get_minor_version() < 16, 'needs GTK 4.16');

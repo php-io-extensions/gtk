@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: d2167fd7a2ef98442ce0ea5c510edf632ee5091b */
+ * Stub hash: ce4771e98f75612305b177939ace8ecae41d66f0 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkTexture_getWidth, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -10,13 +10,61 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTexture_new, 0, 5,
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, format, GdkMemoryFormat, 0)
-	ZEND_ARG_TYPE_INFO(0, bytes, IS_STRING, 0)
+	ZEND_ARG_TYPE_MASK(0, bytes, MAY_BE_STRING|MAY_BE_LONG, NULL)
 	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
 ZEND_END_ARG_INFO()
+
+#if GTK_CHECK_VERSION(4, 16, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_new, 0, 0, GdkMemoryTextureBuilder, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setBytes, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_TYPE_MASK(0, bytes, MAY_BE_STRING|MAY_BE_LONG, NULL)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 1, "null")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setWidth, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setHeight, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setFormat, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_OBJ_INFO(0, format, GdkMemoryFormat, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setStride, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateTexture, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_OBJ_INFO(0, texture, GdkTexture, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateRegion, 0, 1, IS_STATIC, 0)
+	ZEND_ARG_TYPE_INFO(0, rects, IS_ARRAY, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_build, 0, 0, GdkTexture, 1)
+ZEND_END_ARG_INFO()
+#endif
 
 ZEND_METHOD(GdkTexture, getWidth);
 ZEND_METHOD(GdkTexture, getHeight);
 ZEND_METHOD(GdkMemoryTexture, new);
+#if GTK_CHECK_VERSION(4, 16, 0)
+ZEND_METHOD(GdkMemoryTextureBuilder, new);
+ZEND_METHOD(GdkMemoryTextureBuilder, setBytes);
+ZEND_METHOD(GdkMemoryTextureBuilder, setWidth);
+ZEND_METHOD(GdkMemoryTextureBuilder, setHeight);
+ZEND_METHOD(GdkMemoryTextureBuilder, setFormat);
+ZEND_METHOD(GdkMemoryTextureBuilder, setStride);
+ZEND_METHOD(GdkMemoryTextureBuilder, setUpdateTexture);
+ZEND_METHOD(GdkMemoryTextureBuilder, setUpdateRegion);
+ZEND_METHOD(GdkMemoryTextureBuilder, build);
+#endif
 
 static const zend_function_entry class_GdkTexture_methods[] = {
 	ZEND_ME(GdkTexture, getWidth, arginfo_class_GdkTexture_getWidth, ZEND_ACC_PUBLIC)
@@ -28,6 +76,21 @@ static const zend_function_entry class_GdkMemoryTexture_methods[] = {
 	ZEND_ME(GdkMemoryTexture, new, arginfo_class_GdkMemoryTexture_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_FE_END
 };
+
+#if GTK_CHECK_VERSION(4, 16, 0)
+static const zend_function_entry class_GdkMemoryTextureBuilder_methods[] = {
+	ZEND_ME(GdkMemoryTextureBuilder, new, arginfo_class_GdkMemoryTextureBuilder_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setBytes, arginfo_class_GdkMemoryTextureBuilder_setBytes, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setWidth, arginfo_class_GdkMemoryTextureBuilder_setWidth, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setHeight, arginfo_class_GdkMemoryTextureBuilder_setHeight, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setFormat, arginfo_class_GdkMemoryTextureBuilder_setFormat, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setStride, arginfo_class_GdkMemoryTextureBuilder_setStride, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setUpdateTexture, arginfo_class_GdkMemoryTextureBuilder_setUpdateTexture, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, setUpdateRegion, arginfo_class_GdkMemoryTextureBuilder_setUpdateRegion, ZEND_ACC_PUBLIC)
+	ZEND_ME(GdkMemoryTextureBuilder, build, arginfo_class_GdkMemoryTextureBuilder_build, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+#endif
 
 static zend_class_entry *register_class_GdkMemoryFormat(void)
 {
@@ -111,3 +174,15 @@ static zend_class_entry *register_class_GdkMemoryTexture(zend_class_entry *class
 
 	return class_entry;
 }
+
+#if GTK_CHECK_VERSION(4, 16, 0)
+static zend_class_entry *register_class_GdkMemoryTextureBuilder(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GdkMemoryTextureBuilder", class_GdkMemoryTextureBuilder_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+#endif
