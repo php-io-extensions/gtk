@@ -32,6 +32,9 @@ zend_class_entry *phpgtk_ce_GtkFixed;
 zend_class_entry *phpgtk_ce_GtkCssProvider;
 zend_class_entry *phpgtk_ce_GdkDisplay;
 zend_class_entry *phpgtk_ce_GdkSurface;
+zend_class_entry *phpgtk_ce_GdkGLAPI;
+zend_class_entry *phpgtk_ce_GdkGLContext;
+zend_class_entry *phpgtk_ce_GtkGLArea;
 zend_class_entry *phpgtk_ce_GdkMemoryFormat;
 zend_class_entry *phpgtk_ce_GdkTexture;
 zend_class_entry *phpgtk_ce_GdkMemoryTexture;
@@ -527,6 +530,8 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GdkTexture();
 	phpgtk_register_GtkWidget();
 	phpgtk_register_GtkControls();
+	phpgtk_register_GdkGLContext();
+	phpgtk_register_GtkGLArea();
 	phpgtk_register_GtkColumnView();
 	phpgtk_register_GtkVideo();
 	phpgtk_register_GtkWindow();

@@ -26,6 +26,7 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkAboutDialog` | `new`, `get/set_program_name`, `get/set_version`, `get/set_copyright`, `get/set_comments`, `get/set_website` |
 | `GtkBox` | `new`, `append`, `prepend`, `remove`, `insert_child_after`, `reorder_child_after`, `get/set_spacing`, `get/set_homogeneous` |
 | `GtkGrid`, `GtkFixed` | `new`, `attach`, `remove`, `get_child_at`, `get/set_row_spacing`, `get/set_column_spacing`; `new`, `put`, `move`, `remove`, `get_child_position` |
+| `GdkGLContext`, `GdkGLAPI`, `GtkGLArea` | `make_current`, `clear_current`, `get_current`, `realize`, `get_use_es`, `get_version`, `get_api`; `new`, `get_context`, `make_current`, `attach_buffers`, `queue_render`, `get/set_auto_render`, `get/set_has_depth_buffer`, `get/set_has_stencil_buffer`, `get/set_allowed_apis`, `set_required_version`, `get_error` (signal `render`) |
 | `GtkCssProvider`, `GdkDisplay`, `GdkSurface` | `new`, `load_from_string`; `get_default`; `get_width`, `get_height` (signal `layout`); functions `gtk_style_context_add/remove_provider_for_display` |
 | `GtkLabel` | `new`, `get/set_text`, `get/set_wrap`, `set_ellipsize`, `get/set_xalign`, `set_justify` |
 | `GtkButton`, `GtkToggleButton`, `GtkCheckButton`, `GtkSwitch` | `new_with_label`, `get/set_label`; `new_with_label`, `get/set_active`; `new_with_label`, `get/set_active`, `get/set_label`; `new`, `get/set_active` |
