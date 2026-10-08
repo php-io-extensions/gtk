@@ -45,6 +45,22 @@ ZEND_METHOD(GdkDisplay, getDefault)
 	phpgtk_box_gobject(return_value, gdk_display_get_default());
 }
 
+#if GTK_CHECK_VERSION(4, 14, 0)
+ZEND_METHOD(GdkDisplay, getDmabufFormats)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* The class is compiled against 4.14 headers; the GTK actually running may be older. */
+	if (gtk_check_version(4, 14, 0) != NULL) {
+		zend_value_error("GdkDisplay::getDmabufFormats() needs GTK 4.14 or newer, this is %u.%u", gtk_get_major_version(), gtk_get_minor_version());
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_dmabuf_formats(return_value, gdk_display_get_dmabuf_formats(GDK_DISPLAY(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))));
+}
+#endif
+
 /* ---- style context functions (declared in gtk.stub.php) --------------- */
 
 ZEND_FUNCTION(gtk_style_context_add_provider_for_display)

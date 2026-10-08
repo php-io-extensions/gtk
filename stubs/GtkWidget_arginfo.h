@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: dc37806c5dad354fb9abdaf667119efb1226b3bc */
+ * Stub hash: 781c2a7f7ccab620716b9d448365a520ad942475 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -112,6 +112,9 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkWidget_getFirstChild arginfo_class_GtkWidget_getParent
 
 #define arginfo_class_GtkWidget_getNextSibling arginfo_class_GtkWidget_getParent
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getDisplay, 0, 0, GdkDisplay, 0)
+ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_getRoot arginfo_class_GtkWidget_getParent
 
@@ -243,6 +246,7 @@ ZEND_METHOD(GtkWidget, getNative);
 ZEND_METHOD(GtkWidget, computeBounds);
 ZEND_METHOD(GtkWidget, getFirstChild);
 ZEND_METHOD(GtkWidget, getNextSibling);
+ZEND_METHOD(GtkWidget, getDisplay);
 ZEND_METHOD(GtkWidget, getRoot);
 ZEND_METHOD(GtkWidget, getSurface);
 ZEND_METHOD(GtkBox, new);
@@ -312,6 +316,7 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, computeBounds, arginfo_class_GtkWidget_computeBounds, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getFirstChild, arginfo_class_GtkWidget_getFirstChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getNextSibling, arginfo_class_GtkWidget_getNextSibling, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getDisplay, arginfo_class_GtkWidget_getDisplay, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getRoot, arginfo_class_GtkWidget_getRoot, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getSurface, arginfo_class_GtkWidget_getSurface, ZEND_ACC_PUBLIC)
 	ZEND_FE_END

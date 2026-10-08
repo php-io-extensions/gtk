@@ -43,6 +43,7 @@ typedef enum {
 	PHPGTK_MAIN_CONTEXT = 1,       /* g_main_context_ref / g_main_context_unref */
 	PHPGTK_VARIANT = 2,            /* g_variant_ref_sink / g_variant_unref */
 	PHPGTK_DATE_TIME = 3,          /* g_date_time_ref / g_date_time_unref */
+	PHPGTK_DMABUF_FORMATS = 4,     /* gdk_dmabuf_formats_ref / gdk_dmabuf_formats_unref (GTK 4.14+) */
 } phpgtk_kind;
 
 typedef struct {
@@ -83,6 +84,8 @@ extern zend_class_entry *phpgtk_ce_GdkMemoryFormat;
 extern zend_class_entry *phpgtk_ce_GdkTexture;
 extern zend_class_entry *phpgtk_ce_GdkMemoryTexture;
 extern zend_class_entry *phpgtk_ce_GdkMemoryTextureBuilder;
+extern zend_class_entry *phpgtk_ce_GdkDmabufTextureBuilder;
+extern zend_class_entry *phpgtk_ce_GdkDmabufFormats;
 extern zend_class_entry *phpgtk_ce_PangoEllipsizeMode;
 extern zend_class_entry *phpgtk_ce_GtkJustification;
 extern zend_class_entry *phpgtk_ce_GtkWrapMode;
@@ -153,6 +156,9 @@ void phpgtk_box_gobject(zval *rv, gpointer object);
 void phpgtk_box_main_context(zval *rv, GMainContext *context);
 void phpgtk_box_variant(zval *rv, GVariant *variant);
 void phpgtk_box_date_time(zval *rv, GDateTime *date_time);
+#if GTK_CHECK_VERSION(4, 14, 0)
+void phpgtk_box_dmabuf_formats(zval *rv, GdkDmabufFormats *formats);
+#endif
 void phpgtk_box_gobject_full(zval *rv, gpointer object);
 void phpgtk_box_variant_full(zval *rv, GVariant *variant);
 

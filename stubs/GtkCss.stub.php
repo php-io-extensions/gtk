@@ -18,4 +18,9 @@ class GtkCssProvider extends GObject
 class GdkDisplay extends GObject
 {
     public static function getDefault(): ?GdkDisplay {}
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+    /** gdk_display_get_dmabuf_formats(): the dmabuf formats this display imports as textures, GTK 4.14 and newer (empty off Linux). */
+    public function getDmabufFormats(): GdkDmabufFormats {}
+#endif
 }

@@ -13,7 +13,19 @@ function stubDeclarations(): array
 
     foreach (glob(__DIR__ . '/../stubs/*.stub.php') as $stub) {
         $class = null;
+        // A block under `#if … defined(__linux__)` is built on Linux only.
+        $linuxOnly = false;
         foreach (file($stub) as $line) {
+            if (preg_match('/^#if\b.*__linux__/', $line)) {
+                $linuxOnly = true;
+            } elseif (preg_match('/^#endif/', $line)) {
+                $linuxOnly = false;
+            }
+            if ($linuxOnly && PHP_OS_FAMILY !== 'Linux') {
+                $class = null;
+
+                continue;
+            }
             if (preg_match('/^(?:final\s+)?(?:class|enum)\s+(\w+)/', $line, $m)) {
                 $class = $m[1];
                 $declared['classes'][$class] ??= [];

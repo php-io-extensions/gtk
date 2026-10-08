@@ -39,6 +39,8 @@ zend_class_entry *phpgtk_ce_GdkMemoryFormat;
 zend_class_entry *phpgtk_ce_GdkTexture;
 zend_class_entry *phpgtk_ce_GdkMemoryTexture;
 zend_class_entry *phpgtk_ce_GdkMemoryTextureBuilder;
+zend_class_entry *phpgtk_ce_GdkDmabufTextureBuilder;
+zend_class_entry *phpgtk_ce_GdkDmabufFormats;
 zend_class_entry *phpgtk_ce_PangoEllipsizeMode;
 zend_class_entry *phpgtk_ce_GtkJustification;
 zend_class_entry *phpgtk_ce_GtkWrapMode;

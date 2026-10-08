@@ -119,6 +119,9 @@ class GtkWidget extends GObject
 
     public function getNextSibling(): ?GtkWidget {}
 
+    /** gtk_widget_get_display(): the display the widget is on. */
+    public function getDisplay(): GdkDisplay {}
+
     /** gtk_widget_get_root(): the GtkRoot ancestor (a window), boxed as its widget class */
     public function getRoot(): ?GtkWidget {}
 

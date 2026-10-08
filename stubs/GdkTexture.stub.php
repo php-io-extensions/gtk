@@ -90,3 +90,79 @@ final class GdkMemoryTextureBuilder extends GObject
     public function build(): ?GdkTexture {}
 }
 #endif
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+/**
+ * GdkDmabufFormats: the (fourcc, modifier) pairs a display imports, GTK 4.14 and newer. Read only.
+ *
+ * @not-serializable
+ */
+final class GdkDmabufFormats
+{
+    /** Made by GdkDisplay::getDmabufFormats() only. */
+    private function __construct() {}
+
+    public function getNFormats(): int {}
+
+    /** @return array{int, int} [fourcc, modifier]; a modifier past PHP_INT_MAX reads as its two's-complement bits. */
+    public function getFormat(int $idx): array {}
+
+    public function contains(int $fourcc, int $modifier): bool {}
+}
+#endif
+
+#if GTK_CHECK_VERSION(4, 14, 0) && defined(__linux__)
+/**
+ * gdk_dmabuf_texture_builder: a GdkTexture over a Linux dmabuf, GTK 4.14 and newer, Linux only
+ * (the class is absent elsewhere). Each setter returns the builder; build() imports the dmabuf, and
+ * the builder can be reused. new() refuses on a GTK older than 4.14, naming the running version.
+ *
+ * @not-serializable
+ */
+final class GdkDmabufTextureBuilder extends GObject
+{
+    public static function new(): GdkDmabufTextureBuilder {}
+
+    public function setDisplay(GdkDisplay $display): static {}
+
+    public function setWidth(int $width): static {}
+
+    public function setHeight(int $height): static {}
+
+    /** A DRM fourcc, e.g. DRM_FORMAT_ABGR8888 (0x34324241): bytes R, G, B, A in memory. */
+    public function setFourcc(int $fourcc): static {}
+
+    /** A DRM format modifier; DRM_FORMAT_MOD_LINEAR is 0. */
+    public function setModifier(int $modifier): static {}
+
+    public function setPremultiplied(bool $premultiplied): static {}
+
+    public function setNPlanes(int $n_planes): static {}
+
+    /** The fd is borrowed: it must stay open while textures built here live. */
+    public function setFd(int $plane, int $fd): static {}
+
+    public function setStride(int $plane, int $stride): static {}
+
+    public function setOffset(int $plane, int $offset): static {}
+
+    public function setUpdateTexture(?GdkTexture $texture): static {}
+
+    /**
+     * gdk_dmabuf_texture_builder_set_update_region() over one cairo_region_t built from $rects;
+     * each rect is [x, y, width, height].
+     *
+     * @param array|null $rects One [int $x, int $y, int $width, int $height] per rect.
+     */
+    public function setUpdateRegion(?array $rects): static {}
+
+    /**
+     * gdk_dmabuf_texture_builder_build(). $destroy, when given, is called once GTK has finalized
+     * the texture and is done with the fds: the moment a borrowed fd may close or its buffer be
+     * reused. A failed import is thrown as GTK's GError ($destroy is not called); no texture and
+     * no GError (a builder missing its fd, size or fourcc, which GTK only warns about) is a
+     * GtkException.
+     */
+    public function build(?callable $destroy = null): GdkTexture {}
+}
+#endif

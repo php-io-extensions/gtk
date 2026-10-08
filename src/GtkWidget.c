@@ -405,6 +405,13 @@ ZEND_METHOD(GtkWidget, getNextSibling)
 	phpgtk_box_gobject(return_value, gtk_widget_get_next_sibling(THIS_WIDGET));
 }
 
+ZEND_METHOD(GtkWidget, getDisplay)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_widget_get_display(THIS_WIDGET));
+}
+
 ZEND_METHOD(GtkWidget, getRoot)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

@@ -50,6 +50,11 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_DATE_TIME:
 				g_date_time_unref((GDateTime *) intern->ptr);
 				break;
+			case PHPGTK_DMABUF_FORMATS:
+#if GTK_CHECK_VERSION(4, 14, 0)
+				gdk_dmabuf_formats_unref((GdkDmabufFormats *) intern->ptr);
+#endif
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -180,6 +185,23 @@ void phpgtk_box_date_time(zval *rv, GDateTime *date_time)
 
 	phpgtk_box_new(rv, phpgtk_ce_GDateTime, date_time, PHPGTK_DATE_TIME);
 }
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+/* Takes PHP's own reference; the caller keeps whatever it held (gdk_display_get_dmabuf_formats() is transfer none). */
+void phpgtk_box_dmabuf_formats(zval *rv, GdkDmabufFormats *formats)
+{
+	if (formats == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, formats)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GdkDmabufFormats, gdk_dmabuf_formats_ref(formats), PHPGTK_DMABUF_FORMATS);
+}
+#endif
 
 /* A (transfer full) return: PHP's reference replaces the one the call handed us. */
 void phpgtk_box_gobject_full(zval *rv, gpointer object)

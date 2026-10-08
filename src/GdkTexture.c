@@ -18,6 +18,17 @@ void phpgtk_register_GdkTexture(void)
 	phpgtk_object_setup(phpgtk_ce_GdkMemoryTextureBuilder);
 	phpgtk_map_gtype("GdkMemoryTextureBuilder", phpgtk_ce_GdkMemoryTextureBuilder);
 #endif
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+	phpgtk_ce_GdkDmabufFormats = register_class_GdkDmabufFormats();
+	phpgtk_object_setup(phpgtk_ce_GdkDmabufFormats);
+#endif
+
+#if GTK_CHECK_VERSION(4, 14, 0) && defined(__linux__)
+	phpgtk_ce_GdkDmabufTextureBuilder = register_class_GdkDmabufTextureBuilder(phpgtk_ce_GObject);
+	phpgtk_object_setup(phpgtk_ce_GdkDmabufTextureBuilder);
+	phpgtk_map_gtype("GdkDmabufTextureBuilder", phpgtk_ce_GdkDmabufTextureBuilder);
+#endif
 }
 
 ZEND_METHOD(GdkTexture, getWidth)
@@ -290,6 +301,315 @@ ZEND_METHOD(GdkMemoryTextureBuilder, build)
 
 	/* build() answers NULL with a critical warning when width, height, format, stride or bytes is unset; NULL reaches PHP as null. */
 	phpgtk_box_gobject_full(return_value, gdk_memory_texture_builder_build(THIS_BUILDER));
+}
+
+#endif
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+
+#define THIS_DMABUF_FORMATS ((GdkDmabufFormats *) PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GdkDmabufFormats, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+}
+
+ZEND_METHOD(GdkDmabufFormats, getNFormats)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gdk_dmabuf_formats_get_n_formats(THIS_DMABUF_FORMATS));
+}
+
+ZEND_METHOD(GdkDmabufFormats, getFormat)
+{
+	zend_long idx;
+	guint32 fourcc;
+	guint64 modifier;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(idx)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gsize count = gdk_dmabuf_formats_get_n_formats(THIS_DMABUF_FORMATS);
+	if (idx < 0 || (gsize) idx >= count) {
+		zend_argument_value_error(1, "must be between 0 and " ZEND_LONG_FMT, (zend_long) count - 1);
+		RETURN_THROWS();
+	}
+	gdk_dmabuf_formats_get_format(THIS_DMABUF_FORMATS, (gsize) idx, &fourcc, &modifier);
+
+	array_init_size(return_value, 2);
+	add_next_index_long(return_value, (zend_long) fourcc);
+	add_next_index_long(return_value, (zend_long) modifier);
+}
+
+ZEND_METHOD(GdkDmabufFormats, contains)
+{
+	zend_long fourcc, modifier;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(fourcc)
+		Z_PARAM_LONG(modifier)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (fourcc < 0 || (zend_ulong) fourcc > G_MAXUINT32) {
+		zend_argument_value_error(1, "must be between 0 and %u", (unsigned) G_MAXUINT32);
+		RETURN_THROWS();
+	}
+	RETURN_BOOL(gdk_dmabuf_formats_contains(THIS_DMABUF_FORMATS, (guint32) fourcc, (guint64) modifier));
+}
+
+#endif
+
+#if GTK_CHECK_VERSION(4, 14, 0) && defined(__linux__)
+
+#define THIS_DMABUF_BUILDER GDK_DMABUF_TEXTURE_BUILDER(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+/* GDK takes up to four planes (its private GDK_DMABUF_MAX_PLANES; the setters document plane < 4): a plane past them is refused here, not met with a critical warning. */
+#define PHPGTK_DMABUF_MAX_PLANES 4
+static bool phpgtk_dmabuf_plane(zend_long plane)
+{
+	if (plane < 0 || plane >= PHPGTK_DMABUF_MAX_PLANES) {
+		zend_argument_value_error(1, "must be a plane between 0 and %d", PHPGTK_DMABUF_MAX_PLANES - 1);
+		return false;
+	}
+	return true;
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* The class is compiled against 4.14 headers; the GTK actually running may be older. */
+	if (gtk_check_version(4, 14, 0) != NULL) {
+		zend_value_error("GdkDmabufTextureBuilder needs GTK 4.14 or newer, this is %u.%u", gtk_get_major_version(), gtk_get_minor_version());
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, gdk_dmabuf_texture_builder_new());
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setDisplay)
+{
+	zend_object *display;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(display, phpgtk_ce_GdkDisplay)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gdk_dmabuf_texture_builder_set_display(THIS_DMABUF_BUILDER, GDK_DISPLAY(PHPGTK_PTR(display)));
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+#define PHPGTK_DMABUF_UINT_SETTER(method, setter, max) \
+ZEND_METHOD(GdkDmabufTextureBuilder, method) \
+{ \
+	zend_long value; \
+\
+	ZEND_PARSE_PARAMETERS_START(1, 1) \
+		Z_PARAM_LONG(value) \
+	ZEND_PARSE_PARAMETERS_END(); \
+	PHPGTK_REQUIRE_MAIN_THREAD(); \
+\
+	if (value < 0 || (zend_ulong) value > (max)) { \
+		zend_argument_value_error(1, "must be between 0 and %u", (unsigned) (max)); \
+		RETURN_THROWS(); \
+	} \
+	setter(THIS_DMABUF_BUILDER, (guint) value); \
+\
+	RETURN_COPY(ZEND_THIS); \
+}
+
+PHPGTK_DMABUF_UINT_SETTER(setWidth, gdk_dmabuf_texture_builder_set_width, G_MAXINT)
+PHPGTK_DMABUF_UINT_SETTER(setHeight, gdk_dmabuf_texture_builder_set_height, G_MAXINT)
+PHPGTK_DMABUF_UINT_SETTER(setFourcc, gdk_dmabuf_texture_builder_set_fourcc, G_MAXUINT32)
+PHPGTK_DMABUF_UINT_SETTER(setNPlanes, gdk_dmabuf_texture_builder_set_n_planes, PHPGTK_DMABUF_MAX_PLANES)
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setModifier)
+{
+	zend_long modifier;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(modifier)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* A modifier is a guint64: a negative PHP int is its two's-complement bits (DRM_FORMAT_MOD_INVALID is -1). */
+	gdk_dmabuf_texture_builder_set_modifier(THIS_DMABUF_BUILDER, (guint64) modifier);
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setPremultiplied)
+{
+	bool premultiplied;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(premultiplied)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gdk_dmabuf_texture_builder_set_premultiplied(THIS_DMABUF_BUILDER, premultiplied);
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+#define PHPGTK_DMABUF_PLANE_SETTER(method, setter, type) \
+ZEND_METHOD(GdkDmabufTextureBuilder, method) \
+{ \
+	zend_long plane, value; \
+\
+	ZEND_PARSE_PARAMETERS_START(2, 2) \
+		Z_PARAM_LONG(plane) \
+		Z_PARAM_LONG(value) \
+	ZEND_PARSE_PARAMETERS_END(); \
+	PHPGTK_REQUIRE_MAIN_THREAD(); \
+\
+	if (!phpgtk_dmabuf_plane(plane)) { \
+		RETURN_THROWS(); \
+	} \
+	if (value < 0 || (zend_ulong) value > G_MAXUINT32) { \
+		zend_argument_value_error(2, "must be between 0 and %u", (unsigned) G_MAXUINT32); \
+		RETURN_THROWS(); \
+	} \
+	setter(THIS_DMABUF_BUILDER, (unsigned int) plane, (type) value); \
+\
+	RETURN_COPY(ZEND_THIS); \
+}
+
+PHPGTK_DMABUF_PLANE_SETTER(setStride, gdk_dmabuf_texture_builder_set_stride, unsigned int)
+PHPGTK_DMABUF_PLANE_SETTER(setOffset, gdk_dmabuf_texture_builder_set_offset, unsigned int)
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setFd)
+{
+	zend_long plane, fd;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(plane)
+		Z_PARAM_LONG(fd)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (!phpgtk_dmabuf_plane(plane)) {
+		RETURN_THROWS();
+	}
+	/* -1 is GTK's own "unset"; anything else is borrowed as it is and checked by build(). */
+	if (fd < -1 || fd > G_MAXINT) {
+		zend_argument_value_error(2, "must be a file descriptor or -1");
+		RETURN_THROWS();
+	}
+	gdk_dmabuf_texture_builder_set_fd(THIS_DMABUF_BUILDER, (unsigned int) plane, (int) fd);
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setUpdateTexture)
+{
+	zend_object *texture;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(texture, phpgtk_ce_GdkTexture)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gdk_dmabuf_texture_builder_set_update_texture(THIS_DMABUF_BUILDER, GDK_TEXTURE(PHPGTK_OPTIONAL_PTR(texture)));
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, setUpdateRegion)
+{
+	HashTable *rects = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ARRAY_HT_OR_NULL(rects)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (rects == NULL) {
+		gdk_dmabuf_texture_builder_set_update_region(THIS_DMABUF_BUILDER, NULL);
+		RETURN_COPY(ZEND_THIS);
+	}
+
+	cairo_region_t *region = cairo_region_create();
+	zval *rect;
+	ZEND_HASH_FOREACH_VAL(rects, rect) {
+		zval *x = Z_TYPE_P(rect) == IS_ARRAY ? zend_hash_index_find(Z_ARRVAL_P(rect), 0) : NULL;
+		zval *y = x != NULL && Z_TYPE_P(x) == IS_LONG ? zend_hash_index_find(Z_ARRVAL_P(rect), 1) : NULL;
+		zval *w = y != NULL && Z_TYPE_P(y) == IS_LONG ? zend_hash_index_find(Z_ARRVAL_P(rect), 2) : NULL;
+		zval *h = w != NULL && Z_TYPE_P(w) == IS_LONG ? zend_hash_index_find(Z_ARRVAL_P(rect), 3) : NULL;
+
+		if (h == NULL || Z_TYPE_P(h) != IS_LONG) {
+			cairo_region_destroy(region);
+			zend_argument_value_error(1, "each rect is [x, y, width, height], four integers");
+			RETURN_THROWS();
+		}
+
+		cairo_rectangle_int_t rectangle = {
+			.x = (int) Z_LVAL_P(x),
+			.y = (int) Z_LVAL_P(y),
+			.width = (int) Z_LVAL_P(w),
+			.height = (int) Z_LVAL_P(h),
+		};
+		cairo_region_union_rectangle(region, &rectangle);
+	} ZEND_HASH_FOREACH_END();
+
+	/* set_update_region keeps its own reference; the region built here is let go after. */
+	gdk_dmabuf_texture_builder_set_update_region(THIS_DMABUF_BUILDER, region);
+	cairo_region_destroy(region);
+
+	RETURN_COPY(ZEND_THIS);
+}
+
+/* The texture is finalized: GTK is done with the fds. The callable runs once and goes. */
+static void phpgtk_dmabuf_texture_destroyed(gpointer data)
+{
+	phpgtk_callout *callout = (phpgtk_callout *) data;
+	zval retval;
+
+	phpgtk_callout_invoke(callout, 0, NULL, &retval);
+	zval_ptr_dtor(&retval);
+	phpgtk_callout_release(callout);
+}
+
+ZEND_METHOD(GdkDmabufTextureBuilder, build)
+{
+	GError *error = NULL;
+	zval *destroy = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_ZVAL_OR_NULL(destroy)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (destroy != NULL && !zend_is_callable(destroy, 0, NULL)) {
+		zend_argument_type_error(1, "must be a valid callback or null");
+		RETURN_THROWS();
+	}
+
+	/* The fds stay the caller's, borrowed while the texture lives; $destroy says when it no longer does. */
+	phpgtk_callout *callout = destroy != NULL ? phpgtk_callout_new(destroy) : NULL;
+	GdkTexture *texture = gdk_dmabuf_texture_builder_build(THIS_DMABUF_BUILDER,
+		callout != NULL ? phpgtk_dmabuf_texture_destroyed : NULL, callout, &error);
+	if (texture == NULL) {
+		/* GTK calls the destroy notify only for a texture it made. */
+		if (callout != NULL) {
+			phpgtk_callout_release(callout);
+		}
+		if (error != NULL) {
+			phpgtk_throw_gerror(error);
+			g_error_free(error);
+		} else {
+			zend_throw_exception(phpgtk_ce_GtkException, "gdk_dmabuf_texture_builder_build() made no texture", 0);
+		}
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, texture);
 }
 
 #endif
