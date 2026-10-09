@@ -44,6 +44,7 @@ typedef enum {
 	PHPGTK_VARIANT = 2,            /* g_variant_ref_sink / g_variant_unref */
 	PHPGTK_DATE_TIME = 3,          /* g_date_time_ref / g_date_time_unref */
 	PHPGTK_DMABUF_FORMATS = 4,     /* gdk_dmabuf_formats_ref / gdk_dmabuf_formats_unref (GTK 4.14+) */
+	PHPGTK_EVENT = 5,              /* gdk_event_ref / gdk_event_unref */
 } phpgtk_kind;
 
 typedef struct {
@@ -71,6 +72,23 @@ extern zend_class_entry *phpgtk_ce_GMainContext;
 extern zend_class_entry *phpgtk_ce_GtkOrientation;
 extern zend_class_entry *phpgtk_ce_GtkAlign;
 extern zend_class_entry *phpgtk_ce_GtkWidget;
+extern zend_class_entry *phpgtk_ce_GtkEventController;
+extern zend_class_entry *phpgtk_ce_GtkEventControllerKey;
+extern zend_class_entry *phpgtk_ce_GtkEventControllerMotion;
+extern zend_class_entry *phpgtk_ce_GtkEventControllerScroll;
+extern zend_class_entry *phpgtk_ce_GtkEventControllerFocus;
+extern zend_class_entry *phpgtk_ce_GtkGesture;
+extern zend_class_entry *phpgtk_ce_GtkGestureSingle;
+extern zend_class_entry *phpgtk_ce_GtkGestureClick;
+extern zend_class_entry *phpgtk_ce_GtkGestureLongPress;
+extern zend_class_entry *phpgtk_ce_GdkEvent;
+extern zend_class_entry *phpgtk_ce_GdkScrollEvent;
+extern zend_class_entry *phpgtk_ce_GdkButtonEvent;
+extern zend_class_entry *phpgtk_ce_GdkTouchEvent;
+extern zend_class_entry *phpgtk_ce_GtkEventControllerLegacy;
+extern zend_class_entry *phpgtk_ce_GtkIMContext;
+extern zend_class_entry *phpgtk_ce_GtkSettings;
+extern zend_class_entry *phpgtk_ce_GtkIMMulticontext;
 extern zend_class_entry *phpgtk_ce_GtkBox;
 extern zend_class_entry *phpgtk_ce_GtkGrid;
 extern zend_class_entry *phpgtk_ce_GtkFixed;
@@ -137,6 +155,7 @@ void phpgtk_register_GMainContext(void);
 void phpgtk_register_GVariant(void);
 void phpgtk_register_GDateTime(void);
 void phpgtk_register_GtkWidget(void);
+void phpgtk_register_GtkEventController(void);
 void phpgtk_register_GtkCss(void);
 void phpgtk_register_GdkSurface(void);
 void phpgtk_register_GdkGLContext(void);
@@ -160,6 +179,7 @@ void phpgtk_box_date_time(zval *rv, GDateTime *date_time);
 void phpgtk_box_dmabuf_formats(zval *rv, GdkDmabufFormats *formats);
 #endif
 void phpgtk_box_gobject_full(zval *rv, gpointer object);
+void phpgtk_box_event(zval *rv, GdkEvent *event);
 void phpgtk_box_variant_full(zval *rv, GVariant *variant);
 
 /* Values. */

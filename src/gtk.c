@@ -26,6 +26,23 @@ zend_class_entry *phpgtk_ce_GMainContext;
 zend_class_entry *phpgtk_ce_GtkOrientation;
 zend_class_entry *phpgtk_ce_GtkAlign;
 zend_class_entry *phpgtk_ce_GtkWidget;
+zend_class_entry *phpgtk_ce_GtkEventController;
+zend_class_entry *phpgtk_ce_GtkEventControllerKey;
+zend_class_entry *phpgtk_ce_GtkEventControllerMotion;
+zend_class_entry *phpgtk_ce_GtkEventControllerScroll;
+zend_class_entry *phpgtk_ce_GtkEventControllerFocus;
+zend_class_entry *phpgtk_ce_GtkGesture;
+zend_class_entry *phpgtk_ce_GtkGestureSingle;
+zend_class_entry *phpgtk_ce_GtkGestureClick;
+zend_class_entry *phpgtk_ce_GtkGestureLongPress;
+zend_class_entry *phpgtk_ce_GdkEvent;
+zend_class_entry *phpgtk_ce_GdkScrollEvent;
+zend_class_entry *phpgtk_ce_GdkButtonEvent;
+zend_class_entry *phpgtk_ce_GdkTouchEvent;
+zend_class_entry *phpgtk_ce_GtkEventControllerLegacy;
+zend_class_entry *phpgtk_ce_GtkIMContext;
+zend_class_entry *phpgtk_ce_GtkSettings;
+zend_class_entry *phpgtk_ce_GtkIMMulticontext;
 zend_class_entry *phpgtk_ce_GtkBox;
 zend_class_entry *phpgtk_ce_GtkGrid;
 zend_class_entry *phpgtk_ce_GtkFixed;
@@ -451,6 +468,31 @@ ZEND_FUNCTION(g_signal_handler_is_connected)
 	RETURN_BOOL(g_signal_handler_is_connected(PHPGTK_PTR(instance), (gulong) handler_id));
 }
 
+ZEND_FUNCTION(g_object_get_property)
+{
+	zend_object *instance;
+	zend_string *property;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(instance, phpgtk_ce_GObject)
+		Z_PARAM_STR(property)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	GObject *object = G_OBJECT(PHPGTK_PTR(instance));
+	GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(object), ZSTR_VAL(property));
+	if (spec == NULL) {
+		zend_argument_value_error(2, "is not a property of %s", G_OBJECT_TYPE_NAME(object));
+		RETURN_THROWS();
+	}
+
+	GValue value = G_VALUE_INIT;
+	g_value_init(&value, G_PARAM_SPEC_VALUE_TYPE(spec));
+	g_object_get_property(object, ZSTR_VAL(property), &value);
+	phpgtk_gvalue_to_zval(return_value, &value);
+	g_value_unset(&value);
+}
+
 /* ---- GTK -------------------------------------------------------------- */
 
 ZEND_FUNCTION(gtk_init)
@@ -531,6 +573,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GdkSurface();
 	phpgtk_register_GdkTexture();
 	phpgtk_register_GtkWidget();
+	phpgtk_register_GtkEventController();
 	phpgtk_register_GtkControls();
 	phpgtk_register_GdkGLContext();
 	phpgtk_register_GtkGLArea();

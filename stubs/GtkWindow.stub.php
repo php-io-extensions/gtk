@@ -18,6 +18,13 @@ class GtkWindow extends GtkWidget
 
     public function setDefaultSize(int $width, int $height): void {}
 
+    /**
+     * gtk_native_get_surface_transform(): the window widget's origin in its surface, where event positions are.
+     *
+     * @return array{0: float, 1: float} [x, y]
+     */
+    public function getSurfaceTransform(): array {}
+
     public function getChild(): ?GtkWidget {}
 
     public function setChild(?GtkWidget $child): void {}

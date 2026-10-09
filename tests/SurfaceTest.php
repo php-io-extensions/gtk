@@ -13,15 +13,18 @@ function stubDeclarations(): array
 
     foreach (glob(__DIR__ . '/../stubs/*.stub.php') as $stub) {
         $class = null;
-        // A block under `#if … defined(__linux__)` is built on Linux only.
-        $linuxOnly = false;
+        // A block under `#if … defined(__linux__)` is built on Linux only, and one under
+        // `#if GTK_CHECK_VERSION(major, minor, micro)` only against that GTK or newer.
+        $absent = false;
         foreach (file($stub) as $line) {
-            if (preg_match('/^#if\b.*__linux__/', $line)) {
-                $linuxOnly = true;
+            if (preg_match('/^#if\b/', $line)) {
+                $absent = (str_contains($line, '__linux__') && PHP_OS_FAMILY !== 'Linux')
+                    || (preg_match('/GTK_CHECK_VERSION\((\d+),\s*(\d+),\s*(\d+)\)/', $line, $v) === 1
+                        && version_compare(gtk_get_major_version().'.'.gtk_get_minor_version().'.'.gtk_get_micro_version(), "{$v[1]}.{$v[2]}.{$v[3]}", '<'));
             } elseif (preg_match('/^#endif/', $line)) {
-                $linuxOnly = false;
+                $absent = false;
             }
-            if ($linuxOnly && PHP_OS_FAMILY !== 'Linux') {
+            if ($absent) {
                 $class = null;
 
                 continue;

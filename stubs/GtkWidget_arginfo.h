@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 781c2a7f7ccab620716b9d448365a520ad942475 */
+ * Stub hash: f7ce9faf7470a69d263c10e1072d645656a7ae65 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -93,6 +93,24 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_addCssClass, 0, 
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_removeCssClass arginfo_class_GtkWidget_addCssClass
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_addController, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, controller, GtkEventController, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWidget_removeController arginfo_class_GtkWidget_addController
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_computePoint, 0, 3, IS_ARRAY, 1)
+	ZEND_ARG_OBJ_INFO(0, target, GtkWidget, 0)
+	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_pick, 0, 3, GtkWidget, 1)
+	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_hasCssClass, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, cssClass, IS_STRING, 0)
@@ -240,6 +258,10 @@ ZEND_METHOD(GtkWidget, setMarginTop);
 ZEND_METHOD(GtkWidget, setMarginBottom);
 ZEND_METHOD(GtkWidget, addCssClass);
 ZEND_METHOD(GtkWidget, removeCssClass);
+ZEND_METHOD(GtkWidget, addController);
+ZEND_METHOD(GtkWidget, removeController);
+ZEND_METHOD(GtkWidget, computePoint);
+ZEND_METHOD(GtkWidget, pick);
 ZEND_METHOD(GtkWidget, hasCssClass);
 ZEND_METHOD(GtkWidget, measure);
 ZEND_METHOD(GtkWidget, getNative);
@@ -310,6 +332,10 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setMarginBottom, arginfo_class_GtkWidget_setMarginBottom, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, addCssClass, arginfo_class_GtkWidget_addCssClass, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, removeCssClass, arginfo_class_GtkWidget_removeCssClass, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, addController, arginfo_class_GtkWidget_addController, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, removeController, arginfo_class_GtkWidget_removeController, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, computePoint, arginfo_class_GtkWidget_computePoint, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, pick, arginfo_class_GtkWidget_pick, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, hasCssClass, arginfo_class_GtkWidget_hasCssClass, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, measure, arginfo_class_GtkWidget_measure, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getNative, arginfo_class_GtkWidget_getNative, ZEND_ACC_PUBLIC)

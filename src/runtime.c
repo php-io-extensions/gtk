@@ -50,6 +50,9 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_DATE_TIME:
 				g_date_time_unref((GDateTime *) intern->ptr);
 				break;
+			case PHPGTK_EVENT:
+				gdk_event_unref((GdkEvent *) intern->ptr);
+				break;
 			case PHPGTK_DMABUF_FORMATS:
 #if GTK_CHECK_VERSION(4, 14, 0)
 				gdk_dmabuf_formats_unref((GdkDmabufFormats *) intern->ptr);
@@ -184,6 +187,41 @@ void phpgtk_box_date_time(zval *rv, GDateTime *date_time)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_GDateTime, date_time, PHPGTK_DATE_TIME);
+}
+
+/* Takes PHP's own reference (gtk_event_controller_get_current_event() and signal arguments are transfer none); scroll, button and touch events get their own class. */
+void phpgtk_box_event(zval *rv, GdkEvent *event)
+{
+	if (event == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, event)) {
+		return;
+	}
+
+	zend_class_entry *ce = phpgtk_ce_GdkEvent;
+
+	switch (gdk_event_get_event_type(event)) {
+		case GDK_SCROLL:
+			ce = phpgtk_ce_GdkScrollEvent;
+			break;
+		case GDK_BUTTON_PRESS:
+		case GDK_BUTTON_RELEASE:
+			ce = phpgtk_ce_GdkButtonEvent;
+			break;
+		case GDK_TOUCH_BEGIN:
+		case GDK_TOUCH_UPDATE:
+		case GDK_TOUCH_END:
+		case GDK_TOUCH_CANCEL:
+			ce = phpgtk_ce_GdkTouchEvent;
+			break;
+		default:
+			break;
+	}
+
+	phpgtk_box_new(rv, ce, gdk_event_ref(event), PHPGTK_EVENT);
 }
 
 #if GTK_CHECK_VERSION(4, 14, 0)
@@ -353,9 +391,14 @@ bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd)
 	return false;
 }
 
-/* A signal parameter as PHP sees it: objects boxed, enums and flags as ints, pointers and boxed types as addresses. */
+/* A signal parameter as PHP sees it: objects and GdkEvents boxed, enums and flags as ints, pointers and boxed types as addresses. */
 void phpgtk_gvalue_to_zval(zval *rv, const GValue *value)
 {
+	if (G_VALUE_HOLDS(value, GDK_TYPE_EVENT)) {
+		phpgtk_box_event(rv, (GdkEvent *) g_value_peek_pointer(value));
+		return;
+	}
+
 	switch (G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(value))) {
 		case G_TYPE_BOOLEAN: ZVAL_BOOL(rv, g_value_get_boolean(value)); return;
 		case G_TYPE_CHAR:    ZVAL_LONG(rv, g_value_get_schar(value)); return;

@@ -100,6 +100,21 @@ class GtkWidget extends GObject
 
     public function removeCssClass(string $cssClass): void {}
 
+    /** gtk_widget_add_controller(): the widget holds the controller until removeController() or its own end. */
+    public function addController(GtkEventController $controller): void {}
+
+    public function removeController(GtkEventController $controller): void {}
+
+    /**
+     * gtk_widget_compute_point(): ($x, $y) in this widget's coordinates, in $target's.
+     *
+     * @return array{0: float, 1: float}|null null when the widgets share no common ancestor
+     */
+    public function computePoint(GtkWidget $target, float $x, float $y): ?array {}
+
+    /** gtk_widget_pick(): the innermost descendant at ($x, $y) in this widget's coordinates; $flags GTK_PICK_* ORed. */
+    public function pick(float $x, float $y, int $flags): ?GtkWidget {}
+
     public function hasCssClass(string $cssClass): bool {}
 
     /** @return array{minimum: int, natural: int, minimumBaseline: int, naturalBaseline: int} */

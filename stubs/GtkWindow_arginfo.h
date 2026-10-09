@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: bc27135be8d7ab052cb0add3bbcd37af76999452 */
+ * Stub hash: 7bc56e87804888ec270891ffa862259f33e2fce7 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 0)
 ZEND_END_ARG_INFO()
@@ -18,6 +18,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setDefaultSize, 
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindow_getSurfaceTransform arginfo_class_GtkWindow_getDefaultSize
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_getChild, 0, 0, GtkWidget, 1)
 ZEND_END_ARG_INFO()
@@ -113,6 +115,7 @@ ZEND_METHOD(GtkWindow, getTitle);
 ZEND_METHOD(GtkWindow, setTitle);
 ZEND_METHOD(GtkWindow, getDefaultSize);
 ZEND_METHOD(GtkWindow, setDefaultSize);
+ZEND_METHOD(GtkWindow, getSurfaceTransform);
 ZEND_METHOD(GtkWindow, getChild);
 ZEND_METHOD(GtkWindow, setChild);
 ZEND_METHOD(GtkWindow, present);
@@ -149,6 +152,7 @@ static const zend_function_entry class_GtkWindow_methods[] = {
 	ZEND_ME(GtkWindow, setTitle, arginfo_class_GtkWindow_setTitle, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getDefaultSize, arginfo_class_GtkWindow_getDefaultSize, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setDefaultSize, arginfo_class_GtkWindow_setDefaultSize, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, getSurfaceTransform, arginfo_class_GtkWindow_getSurfaceTransform, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getChild, arginfo_class_GtkWindow_getChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setChild, arginfo_class_GtkWindow_setChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, present, arginfo_class_GtkWindow_present, ZEND_ACC_PUBLIC)

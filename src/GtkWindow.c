@@ -89,6 +89,20 @@ ZEND_METHOD(GtkWindow, getDefaultSize)
 	add_next_index_long(return_value, height);
 }
 
+ZEND_METHOD(GtkWindow, getSurfaceTransform)
+{
+	double x;
+	double y;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_native_get_surface_transform(GTK_NATIVE(THIS_WINDOW), &x, &y);
+	array_init_size(return_value, 2);
+	add_next_index_double(return_value, x);
+	add_next_index_double(return_value, y);
+}
+
 ZEND_METHOD(GtkWindow, setDefaultSize)
 {
 	zend_long width;

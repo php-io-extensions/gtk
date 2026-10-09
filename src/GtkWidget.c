@@ -325,6 +325,71 @@ ZEND_METHOD(GtkWidget, removeCssClass)
 	gtk_widget_remove_css_class(THIS_WIDGET, ZSTR_VAL(css_class));
 }
 
+ZEND_METHOD(GtkWidget, addController)
+{
+	zend_object *controller;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(controller, phpgtk_ce_GtkEventController)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* gtk_widget_add_controller() takes the caller's reference; the PHP object keeps its own. */
+	gtk_widget_add_controller(THIS_WIDGET, GTK_EVENT_CONTROLLER(g_object_ref(PHPGTK_PTR(controller))));
+}
+
+ZEND_METHOD(GtkWidget, computePoint)
+{
+	zend_object *target;
+	double x;
+	double y;
+	graphene_point_t in;
+	graphene_point_t out;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS(target, phpgtk_ce_GtkWidget)
+		Z_PARAM_DOUBLE(x)
+		Z_PARAM_DOUBLE(y)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	graphene_point_init(&in, (float) x, (float) y);
+	if (!gtk_widget_compute_point(THIS_WIDGET, GTK_WIDGET(PHPGTK_PTR(target)), &in, &out)) {
+		RETURN_NULL();
+	}
+	array_init_size(return_value, 2);
+	add_next_index_double(return_value, out.x);
+	add_next_index_double(return_value, out.y);
+}
+
+ZEND_METHOD(GtkWidget, pick)
+{
+	double x;
+	double y;
+	zend_long flags;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_DOUBLE(x)
+		Z_PARAM_DOUBLE(y)
+		Z_PARAM_LONG(flags)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	phpgtk_box_gobject(return_value, gtk_widget_pick(THIS_WIDGET, x, y, (GtkPickFlags) flags));
+}
+
+ZEND_METHOD(GtkWidget, removeController)
+{
+	zend_object *controller;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(controller, phpgtk_ce_GtkEventController)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_widget_remove_controller(THIS_WIDGET, GTK_EVENT_CONTROLLER(PHPGTK_PTR(controller)));
+}
+
 ZEND_METHOD(GtkWidget, hasCssClass)
 {
 	zend_string *css_class;
