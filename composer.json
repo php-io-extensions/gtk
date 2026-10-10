@@ -32,6 +32,23 @@
     "extra": {
         "branch-alias": {
             "dev-main": "0.10.x-dev"
+        },
+        "venusian": {
+            "system": {
+                "apt": {
+                    "build": [
+                        "libgtk-4-dev"
+                    ],
+                    "recommends": [
+                        "libgtk-4-media-gstreamer"
+                    ]
+                },
+                "brew": {
+                    "build": [
+                        "gtk4"
+                    ]
+                }
+            }
         }
     },
     "php-ext": {

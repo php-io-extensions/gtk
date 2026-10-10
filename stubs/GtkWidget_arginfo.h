@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: f7ce9faf7470a69d263c10e1072d645656a7ae65 */
+ * Stub hash: f38e99abeaf3b24f2a1a91ab5a4f44904d5541ce */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -225,6 +225,38 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopoverMenuBar_setMenuM
 	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setParent, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, parent, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPopover_unparent arginfo_class_GtkWidget_show
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setPointingTo, 0, 4, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, x, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, y, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_getPointingTo, 0, 0, IS_ARRAY, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setHasArrow, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, hasArrow, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPopover_getHasArrow arginfo_class_GtkWidget_getVisible
+
+#define arginfo_class_GtkPopover_popup arginfo_class_GtkWidget_show
+
+#define arginfo_class_GtkPopover_popdown arginfo_class_GtkWidget_show
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopoverMenu_newFromModel, 0, 1, GtkPopoverMenu, 0)
+	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPopoverMenu_getMenuModel arginfo_class_GtkPopoverMenuBar_getMenuModel
+
 ZEND_METHOD(GtkWidget, show);
 ZEND_METHOD(GtkWidget, hide);
 ZEND_METHOD(GtkWidget, getVisible);
@@ -297,6 +329,16 @@ ZEND_METHOD(GtkFixed, getChildPosition);
 ZEND_METHOD(GtkPopoverMenuBar, newFromModel);
 ZEND_METHOD(GtkPopoverMenuBar, getMenuModel);
 ZEND_METHOD(GtkPopoverMenuBar, setMenuModel);
+ZEND_METHOD(GtkPopover, setParent);
+ZEND_METHOD(GtkPopover, unparent);
+ZEND_METHOD(GtkPopover, setPointingTo);
+ZEND_METHOD(GtkPopover, getPointingTo);
+ZEND_METHOD(GtkPopover, setHasArrow);
+ZEND_METHOD(GtkPopover, getHasArrow);
+ZEND_METHOD(GtkPopover, popup);
+ZEND_METHOD(GtkPopover, popdown);
+ZEND_METHOD(GtkPopoverMenu, newFromModel);
+ZEND_METHOD(GtkPopoverMenu, getMenuModel);
 
 static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, show, arginfo_class_GtkWidget_show, ZEND_ACC_PUBLIC)
@@ -387,6 +429,24 @@ static const zend_function_entry class_GtkPopoverMenuBar_methods[] = {
 	ZEND_ME(GtkPopoverMenuBar, newFromModel, arginfo_class_GtkPopoverMenuBar_newFromModel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkPopoverMenuBar, getMenuModel, arginfo_class_GtkPopoverMenuBar_getMenuModel, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkPopoverMenuBar, setMenuModel, arginfo_class_GtkPopoverMenuBar_setMenuModel, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkPopover_methods[] = {
+	ZEND_ME(GtkPopover, setParent, arginfo_class_GtkPopover_setParent, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, unparent, arginfo_class_GtkPopover_unparent, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, setPointingTo, arginfo_class_GtkPopover_setPointingTo, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, getPointingTo, arginfo_class_GtkPopover_getPointingTo, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, setHasArrow, arginfo_class_GtkPopover_setHasArrow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, getHasArrow, arginfo_class_GtkPopover_getHasArrow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, popup, arginfo_class_GtkPopover_popup, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, popdown, arginfo_class_GtkPopover_popdown, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkPopoverMenu_methods[] = {
+	ZEND_ME(GtkPopoverMenu, newFromModel, arginfo_class_GtkPopoverMenu_newFromModel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkPopoverMenu, getMenuModel, arginfo_class_GtkPopoverMenu_getMenuModel, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -482,6 +542,26 @@ static zend_class_entry *register_class_GtkPopoverMenuBar(zend_class_entry *clas
 
 	INIT_CLASS_ENTRY(ce, "GtkPopoverMenuBar", class_GtkPopoverMenuBar_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkPopover(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkPopover", class_GtkPopover_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkPopoverMenu(zend_class_entry *class_entry_GtkPopover)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkPopoverMenu", class_GtkPopoverMenu_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkPopover, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

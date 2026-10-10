@@ -220,3 +220,43 @@ class GtkPopoverMenuBar extends GtkWidget
 
     public function setMenuModel(?GMenuModel $model): void {}
 }
+
+/**
+ * @not-serializable
+ */
+class GtkPopover extends GtkWidget
+{
+    /**
+     * gtk_widget_set_parent(), bound for popovers only: a popover is attached to any widget this way
+     * and placed by itself. Refused while it has a parent. (GtkWidget has no unparent(): on a
+     * container's child it leaves the container's pointers dangling.)
+     */
+    public function setParent(GtkWidget $parent): void {}
+
+    /** gtk_widget_unparent(): takes the popover off the widget setParent() attached it to. */
+    public function unparent(): void {}
+
+    /** gtk_popover_set_pointing_to(): the rectangle, in its parent's coordinates, it points at. */
+    public function setPointingTo(int $x, int $y, int $width, int $height): void {}
+
+    /** @return array{int, int, int, int}|null x, y, width, height; null until set. Refused with no parent: GTK measures the parent when nothing was set. */
+    public function getPointingTo(): ?array {}
+
+    public function setHasArrow(bool $hasArrow): void {}
+
+    public function getHasArrow(): bool {}
+
+    public function popup(): void {}
+
+    public function popdown(): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkPopoverMenu extends GtkPopover
+{
+    public static function newFromModel(?GMenuModel $model): GtkPopoverMenu {}
+
+    public function getMenuModel(): ?GMenuModel {}
+}

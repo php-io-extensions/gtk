@@ -10,6 +10,13 @@ enum GtkPropagationPhase: int
     case TARGET = 3;
 }
 
+enum GtkEventSequenceState: int
+{
+    case NONE = 0;
+    case CLAIMED = 1;
+    case DENIED = 2;
+}
+
 enum GdkScrollUnit: int
 {
     case WHEEL = 0;
@@ -205,6 +212,8 @@ class GtkEventControllerFocus extends GtkEventController
  */
 class GtkGesture extends GtkEventController
 {
+    /** gtk_gesture_set_state(): every sequence the gesture holds; whether any changed. Claiming one cancels it in the other gestures. */
+    public function setState(GtkEventSequenceState $state): bool {}
 }
 
 /**

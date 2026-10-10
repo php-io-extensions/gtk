@@ -137,6 +137,8 @@ extern zend_class_entry *phpgtk_ce_GtkMediaStream;
 extern zend_class_entry *phpgtk_ce_GtkMediaFile;
 extern zend_class_entry *phpgtk_ce_GtkVideo;
 extern zend_class_entry *phpgtk_ce_GtkPopoverMenuBar;
+extern zend_class_entry *phpgtk_ce_GtkPopover;
+extern zend_class_entry *phpgtk_ce_GtkPopoverMenu;
 extern zend_class_entry *phpgtk_ce_GtkWindow;
 extern zend_class_entry *phpgtk_ce_GtkApplicationWindow;
 extern zend_class_entry *phpgtk_ce_GtkAboutDialog;

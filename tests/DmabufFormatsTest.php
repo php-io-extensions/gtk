@@ -14,6 +14,15 @@ it('answers the display a widget is on', function (): void {
     expect(GtkLabel::new('x')->getDisplay())->toBe(GdkDisplay::getDefault());
 });
 
+it('waits for the windowing system to handle every request sent', function (): void {
+    $window = GtkWindow::new();
+    $window->present();
+    GdkDisplay::getDefault()->sync();
+
+    expect($window->getRealized())->toBeTrue();
+    $window->destroy();
+});
+
 it('lists the dmabuf formats the display imports, and answers whether it imports one', function (): void {
     if (! method_exists(GdkDisplay::class, 'getDmabufFormats')) {
         $this->markTestSkipped('GdkDisplay::getDmabufFormats() needs GTK 4.14 headers');

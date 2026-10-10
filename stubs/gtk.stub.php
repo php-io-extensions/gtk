@@ -47,6 +47,12 @@ function gtk_get_minor_version(): int {}
 
 function gtk_get_micro_version(): int {}
 
+/** g_set_prgname(): the program name; GTK names the X11 WM_CLASS after it. Call before GTK starts. */
+function g_set_prgname(string $prgname): void {}
+
+/** g_get_prgname(): null until set. */
+function g_get_prgname(): ?string {}
+
 /**
  * @var int
  * @cvalue GTK_STYLE_PROVIDER_PRIORITY_APPLICATION

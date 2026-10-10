@@ -2,11 +2,15 @@
 
 ## 2026-10-09
 
+* [Surface](api/surface.md): GtkPopover and GtkPopoverMenu with their own setParent / unparent (popovers only; GtkWidget still has no unparent), GtkGesture::setState and GtkEventSequenceState. For context menus (HumanInput slice 27).
+* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
+* [Surface](api/surface.md): g_set_prgname / g_get_prgname: GTK's X11 WM_CLASS follows the program name.
 * [Surface](api/surface.md): event controllers for HumanInput's gtk engine. GtkEventController and its key, motion, scroll and focus controllers; GtkGesture, GtkGestureSingle, GtkGestureClick; GtkWidget add/removeController; gdk_keyval_to_unicode and gdk_keyval_to_lower; GtkPropagationPhase and GdkScrollUnit; the scroll-flag and modifier-mask constants. Signals hand keyvals, keycodes and modifier state over as ints.
 * [Surface](api/surface.md): GtkEventController::getCurrentEvent(), GdkEvent and GdkScrollEvent; on GTK 4.20+ GdkScrollEvent::getRelativeDirection() and GdkScrollRelativeDirection, so a reader can undo natural scrolling. SurfaceTest skips stub blocks the running GTK is older than.
 * [Surface](api/surface.md): GtkEventControllerLegacy; GdkEvent getEventType/getPosition/getPointerEmulated, GdkButtonEvent, GdkTouchEvent, GdkEventType; GtkIMContext and GtkIMMulticontext; GtkWidget::computePoint, GtkWindow::getSurfaceTransform. Signal GdkEvent arguments arrive as GdkEvent objects.
 * [Surface](api/surface.md): GtkWidget::pick and GTK_PICK_*; GdkEvent::getModifierState; GtkGestureSingle touch_only; GtkGestureLongPress. For right-click mail (HumanInput slice 26).
 * [Surface](api/surface.md): GtkSettings::getDefault and g_object_get_property, so a reader takes gtk-long-press-time and gtk-dnd-drag-threshold from GTK.
+* [Surface](api/surface.md): GdkDisplay::sync. GTK 4.18's Wayland input method binds its text-input on a round trip after the display's first use of it; a context focused before then stays GTK's focus past its finalize and the next focused window crashes. The IM test focuses with no client widget. Suite 165 + 5 skipped on Homebrew PHP 8.4 NTS and ZTS, 167 + 1 on the Pi.
 
 ## 2026-10-06
 

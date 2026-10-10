@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 033cf6f98d0b2e2da65a1d6780d5eb213e9c5411 */
+ * Stub hash: cec71f5ba4dc7efc62f24a26ac1fe5c8de031c3f */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkEvent_getEventType, 0, 0, GdkEventType, 0)
 ZEND_END_ARG_INFO()
@@ -81,6 +81,10 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkEventControllerFocus_new, 0, 0, GtkEventControllerFocus, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkGesture_setState, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(0, state, GtkEventSequenceState, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkGestureSingle_setButton, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, button, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -129,6 +133,7 @@ ZEND_METHOD(GtkIMContext, focusOut);
 ZEND_METHOD(GtkIMContext, reset);
 ZEND_METHOD(GtkIMMulticontext, new);
 ZEND_METHOD(GtkEventControllerFocus, new);
+ZEND_METHOD(GtkGesture, setState);
 ZEND_METHOD(GtkGestureSingle, setButton);
 ZEND_METHOD(GtkGestureSingle, getButton);
 ZEND_METHOD(GtkGestureSingle, getCurrentButton);
@@ -217,6 +222,11 @@ static const zend_function_entry class_GtkEventControllerFocus_methods[] = {
 	ZEND_FE_END
 };
 
+static const zend_function_entry class_GtkGesture_methods[] = {
+	ZEND_ME(GtkGesture, setState, arginfo_class_GtkGesture_setState, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
 static const zend_function_entry class_GtkGestureSingle_methods[] = {
 	ZEND_ME(GtkGestureSingle, setButton, arginfo_class_GtkGestureSingle_setButton, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkGestureSingle, getButton, arginfo_class_GtkGestureSingle_getButton, ZEND_ACC_PUBLIC)
@@ -255,6 +265,25 @@ static zend_class_entry *register_class_GtkPropagationPhase(void)
 	zval enum_case_TARGET_value;
 	ZVAL_LONG(&enum_case_TARGET_value, 3);
 	zend_enum_add_case_cstr(class_entry, "TARGET", &enum_case_TARGET_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkEventSequenceState(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkEventSequenceState", IS_LONG, NULL);
+
+	zval enum_case_NONE_value;
+	ZVAL_LONG(&enum_case_NONE_value, 0);
+	zend_enum_add_case_cstr(class_entry, "NONE", &enum_case_NONE_value);
+
+	zval enum_case_CLAIMED_value;
+	ZVAL_LONG(&enum_case_CLAIMED_value, 1);
+	zend_enum_add_case_cstr(class_entry, "CLAIMED", &enum_case_CLAIMED_value);
+
+	zval enum_case_DENIED_value;
+	ZVAL_LONG(&enum_case_DENIED_value, 2);
+	zend_enum_add_case_cstr(class_entry, "DENIED", &enum_case_DENIED_value);
 
 	return class_entry;
 }
@@ -556,7 +585,7 @@ static zend_class_entry *register_class_GtkGesture(zend_class_entry *class_entry
 {
 	zend_class_entry ce, *class_entry;
 
-	INIT_CLASS_ENTRY(ce, "GtkGesture", NULL);
+	INIT_CLASS_ENTRY(ce, "GtkGesture", class_GtkGesture_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkEventController, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;

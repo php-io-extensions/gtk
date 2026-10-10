@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: be52ce12a7c13d9c3966f58570ade7bd9ed2035a */
+ * Stub hash: 9c6a898277006eb52c13ee4bff7758e958c0de0d */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_init, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -15,6 +15,13 @@ ZEND_END_ARG_INFO()
 #define arginfo_gtk_get_minor_version arginfo_gtk_get_major_version
 
 #define arginfo_gtk_get_micro_version arginfo_gtk_get_major_version
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_set_prgname, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, prgname, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_get_prgname, 0, 0, IS_STRING, 1)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_style_context_add_provider_for_display, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, display, GdkDisplay, 0)
@@ -87,6 +94,8 @@ ZEND_FUNCTION(gtk_is_initialized);
 ZEND_FUNCTION(gtk_get_major_version);
 ZEND_FUNCTION(gtk_get_minor_version);
 ZEND_FUNCTION(gtk_get_micro_version);
+ZEND_FUNCTION(g_set_prgname);
+ZEND_FUNCTION(g_get_prgname);
 ZEND_FUNCTION(gtk_style_context_add_provider_for_display);
 ZEND_FUNCTION(gtk_style_context_remove_provider_for_display);
 ZEND_FUNCTION(gtk_media_backend_available);
@@ -109,6 +118,8 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(gtk_get_major_version, arginfo_gtk_get_major_version)
 	ZEND_FE(gtk_get_minor_version, arginfo_gtk_get_minor_version)
 	ZEND_FE(gtk_get_micro_version, arginfo_gtk_get_micro_version)
+	ZEND_FE(g_set_prgname, arginfo_g_set_prgname)
+	ZEND_FE(g_get_prgname, arginfo_g_get_prgname)
 	ZEND_FE(gtk_style_context_add_provider_for_display, arginfo_gtk_style_context_add_provider_for_display)
 	ZEND_FE(gtk_style_context_remove_provider_for_display, arginfo_gtk_style_context_remove_provider_for_display)
 	ZEND_FE(gtk_media_backend_available, arginfo_gtk_media_backend_available)

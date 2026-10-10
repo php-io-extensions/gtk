@@ -91,6 +91,8 @@ zend_class_entry *phpgtk_ce_GtkMediaStream;
 zend_class_entry *phpgtk_ce_GtkMediaFile;
 zend_class_entry *phpgtk_ce_GtkVideo;
 zend_class_entry *phpgtk_ce_GtkPopoverMenuBar;
+zend_class_entry *phpgtk_ce_GtkPopover;
+zend_class_entry *phpgtk_ce_GtkPopoverMenu;
 zend_class_entry *phpgtk_ce_GtkWindow;
 zend_class_entry *phpgtk_ce_GtkApplicationWindow;
 zend_class_entry *phpgtk_ce_GtkAboutDialog;
@@ -537,6 +539,33 @@ ZEND_FUNCTION(gtk_get_micro_version)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	RETURN_LONG(gtk_get_micro_version());
+}
+
+ZEND_FUNCTION(g_set_prgname)
+{
+	zend_string *prgname;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(prgname)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (ZSTR_LEN(prgname) == 0) {
+		zend_argument_value_error(1, "must not be empty");
+		RETURN_THROWS();
+	}
+
+	g_set_prgname(ZSTR_VAL(prgname));
+}
+
+ZEND_FUNCTION(g_get_prgname)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	const char *prgname = g_get_prgname();
+	if (prgname == NULL) {
+		RETURN_NULL();
+	}
+	RETURN_STRING(prgname);
 }
 
 /* ---- module ----------------------------------------------------------- */

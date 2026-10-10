@@ -2,6 +2,7 @@
 #include "../stubs/GtkEventController_arginfo.h"
 
 static zend_class_entry *phpgtk_ce_GtkPropagationPhase;
+static zend_class_entry *phpgtk_ce_GtkEventSequenceState;
 static zend_class_entry *phpgtk_ce_GdkScrollUnit;
 static zend_class_entry *phpgtk_ce_GdkEventType;
 #if GTK_CHECK_VERSION(4, 20, 0)
@@ -16,6 +17,7 @@ static zend_class_entry *phpgtk_ce_GdkScrollRelativeDirection;
 void phpgtk_register_GtkEventController(void)
 {
 	phpgtk_ce_GtkPropagationPhase = register_class_GtkPropagationPhase();
+	phpgtk_ce_GtkEventSequenceState = register_class_GtkEventSequenceState();
 	phpgtk_ce_GdkScrollUnit = register_class_GdkScrollUnit();
 #if GTK_CHECK_VERSION(4, 20, 0)
 	phpgtk_ce_GdkScrollRelativeDirection = register_class_GdkScrollRelativeDirection();
@@ -260,6 +262,19 @@ ZEND_METHOD(GtkEventControllerScroll, getUnit)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	phpgtk_return_enum(return_value, phpgtk_ce_GdkScrollUnit, gtk_event_controller_scroll_get_unit(THIS(GTK_EVENT_CONTROLLER_SCROLL)));
+}
+
+/* ---- GtkGesture --------------------------------------------------------- */
+
+ZEND_METHOD(GtkGesture, setState)
+{
+	zend_object *state;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(state, phpgtk_ce_GtkEventSequenceState)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_gesture_set_state(THIS(GTK_GESTURE), (GtkEventSequenceState) phpgtk_enum_value(state, GTK_EVENT_SEQUENCE_NONE)));
 }
 
 /* ---- GtkGestureSingle --------------------------------------------------- */

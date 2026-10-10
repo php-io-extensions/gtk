@@ -146,15 +146,18 @@ it('makes a legacy controller and an input method context that commits text to i
     $window = GtkWindow::new();
     $im = GtkIMMulticontext::new();
     $im->setClientWidget($window);
-    $im->focusIn();
     $committed = [];
     g_signal_connect($im, 'commit', function (GtkIMMulticontext $from, string $text) use (&$committed): void {
         $committed[] = $text;
     });
     g_signal_emit_by_name($im, 'commit', 'é');
+    $im->setClientWidget(null);
+    // Focus without a client widget: GTK 4.18's Wayland context, focused before its
+    // text-input has bound, keeps a pointer to itself past finalize unless the main
+    // loop runs before its focus goes, and the next window to take focus crashes.
+    $im->focusIn();
     $im->focusOut();
     $im->reset();
-    $im->setClientWidget(null);
 
     expect(GtkEventControllerLegacy::new())->toBeInstanceOf(GtkEventController::class)
         ->and($im)->toBeInstanceOf(GtkIMContext::class)

@@ -33,6 +33,7 @@ Naming, all fixed:
 | Binding | Native |
 |---|---|
 | `gtk_init()`, `gtk_init_check()`, `gtk_is_initialized()`, `gtk_get_{major,minor,micro}_version()` | same |
+| `g_set_prgname()`, `g_get_prgname()` | same; set it before GTK starts: GTK names the X11 `WM_CLASS` after it; an empty name is a ValueError |
 | `g_timeout_add(int $interval, callable $function): int` | `g_timeout_add_full` (default priority); callable returns bool = keep |
 | `g_idle_add(callable): int` | `g_idle_add_full` (default idle priority) |
 | `g_unix_fd_add(int\|resource\|Socket $fd, GIOCondition\|int, callable(int $fd, int $condition): bool): int` | `g_unix_fd_add_full` |
@@ -48,6 +49,7 @@ Naming, all fixed:
 | `GtkApplicationWindow` | new(app) — the application is a declared-optional, runtime-required parameter because PHP holds static methods to the parent's signature; show_menubar; get_id |
 | `GtkAboutDialog` | new; program name, version, copyright, comments, website |
 | `GtkBox`, `GtkPopoverMenuBar` | new(orientation, spacing), append/prepend/remove; new_from_model, menu model |
+| `GtkPopover`, `GtkPopoverMenu` | setPointingTo(x, y, w, h) (no negative size), getPointingTo(): ?array (null until set; refused with no parent, as GTK then measures the parent), has_arrow, popup, popdown, signal `closed`; GtkPopoverMenu::newFromModel, getMenuModel. Attach with `GtkPopover::setParent()` (refused while parented), take off with `unparent()`: `gtk_widget_set_parent`/`unparent` bound on popovers only, as GtkWidget keeps no unparent (dangling container pointers) |
 | `GMenuModel`, `GMenu`, `GMenuItem` | n_items, is_mutable; append/append_item/append_section/append_submenu/prepend/insert/remove/remove_all/freeze; label, detailed action, action+target, attribute values (`accel` etc.), submenu, section |
 | `GSimpleAction` | new(name, ?type), new_stateful(name, ?type, state), enabled, state, name, activate, change_state; signals `activate` (`?GVariant`), `change-state` (`GVariant`) |
 | `GSimpleActionGroup` | new; GActionMap add/remove/lookup; GActionGroup has/list/activate |
@@ -58,7 +60,7 @@ Naming, all fixed:
 | `GtkBox` (more) | insert_child_after, reorder_child_after (`null` sibling = first), spacing, homogeneous |
 | `GtkGrid` | new, `attach(child, column, row, width, height)` (width/height < 1 refused), remove, `get_child_at`, row/column spacing |
 | `GtkFixed` | new, put, move, remove, `get_child_position` (`[x, y]` floats; GTK applies the transform at layout, so read after the fixed has been allocated) |
-| `GtkCssProvider`, `GdkDisplay` | new (transfer full), `load_from_string`; `get_default`; `gtk_style_context_add_provider_for_display(display, provider, int $priority)`, `gtk_style_context_remove_provider_for_display`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
+| `GtkCssProvider`, `GdkDisplay` | new (transfer full), `load_from_string`; `get_default`, `sync` (`gdk_display_sync`: a round trip on Wayland); `gtk_style_context_add_provider_for_display(display, provider, int $priority)`, `gtk_style_context_remove_provider_for_display`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
 | `GdkSurface` | get_width, get_height; signal `layout(int width, int height)` |
 | `GdkGLContext`, enum `GdkGLAPI` (GL 1, GLES 2) | make_current, clear_current (static), get_current (static, null when none), realize (GError → GtkException), get_use_es, get_version (`[major, minor]`), get_api |
 | `GtkGLArea` | `new`, get_context (null before realize), make_current, attach_buffers, queue_render, get/set auto_render, has_depth_buffer, has_stencil_buffer, get/set allowed_apis (GdkGLAPI flags as int), set_required_version, get_error (message or null); signal `render(GtkGLArea, GdkGLContext): bool` with the context current and the area's framebuffer bound |
@@ -77,7 +79,7 @@ Naming, all fixed:
 | `GtkDropDown` | `new_from_strings(string[])`, selected (`GTK_INVALID_LIST_POSITION` = none), `get_selected_item`, `set_model(?GObject)` (GListModel required); `notify::selected` |
 | `GtkCalendar`, `GDateTime` | new, `get_date(): GDateTime` (new ref, boxed), `select_day(GDateTime)` inside `G_GNUC_BEGIN/END_IGNORE_DEPRECATIONS` (4.20 deprecates it for `set_date`, which 4.18 lacks); `day-selected` fires on a change only. GDateTime: `new_local(y, m, d, h, min, float s)` (invalid → ValueError), year, month, day_of_month, `to_unix` (system-local) |
 | `GtkProgressBar`, `GtkSpinner` | new, fraction, pulse, pulse_step; new, spinning |
-| `GtkEventController` + `Key`/`Motion`/`Scroll`/`Focus`, `GtkGesture`, `GtkGestureSingle`, `GtkGestureClick` | new, propagation_phase, widget, current_event (GdkEvent; GdkScrollEvent relative_direction, GTK 4.20+); scroll flags, unit; single button, current_button, touch_only; GtkGestureLongPress new |
+| `GtkEventController` + `Key`/`Motion`/`Scroll`/`Focus`, `GtkGesture`, `GtkGestureSingle`, `GtkGestureClick` | new, propagation_phase, widget, current_event (GdkEvent; GdkScrollEvent relative_direction, GTK 4.20+); scroll flags, unit; GtkGesture::setState(GtkEventSequenceState) (true when a sequence changed); single button, current_button, touch_only; GtkGestureLongPress new |
 | `GtkEventControllerLegacy`, `GdkEvent` + `GdkButtonEvent`/`GdkTouchEvent`/`GdkScrollEvent` | new; event_type (GdkEventType), position (surface coords), pointer_emulated, modifier_state; button; emulating_pointer. Signal GdkEvent arguments are boxed by type |
 | `GtkIMContext`, `GtkIMMulticontext` | multicontext new; client_widget, filter_keypress(GdkEvent), focus_in/out, reset; commit signal |
 | `GtkWidget`, `GtkWindow` | add_controller (takes its own reference), remove_controller, compute_point, pick (GTK_PICK_* constants); window surface_transform |

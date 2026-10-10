@@ -1,3 +1,5 @@
+#include <limits.h>
+
 #include "runtime.h"
 #include "../stubs/GtkWidget_arginfo.h"
 
@@ -25,6 +27,14 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_ce_GtkPopoverMenuBar = register_class_GtkPopoverMenuBar(phpgtk_ce_GtkWidget);
 	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenuBar);
 	phpgtk_map_gtype("GtkPopoverMenuBar", phpgtk_ce_GtkPopoverMenuBar);
+
+	phpgtk_ce_GtkPopover = register_class_GtkPopover(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkPopover);
+	phpgtk_map_gtype("GtkPopover", phpgtk_ce_GtkPopover);
+
+	phpgtk_ce_GtkPopoverMenu = register_class_GtkPopoverMenu(phpgtk_ce_GtkPopover);
+	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenu);
+	phpgtk_map_gtype("GtkPopoverMenu", phpgtk_ce_GtkPopoverMenu);
 }
 
 #define THIS_WIDGET GTK_WIDGET(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
@@ -809,4 +819,134 @@ ZEND_METHOD(GtkPopoverMenuBar, setMenuModel)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_popover_menu_bar_set_menu_model(THIS_BAR, (GMenuModel *) PHPGTK_OPTIONAL_PTR(model));
+}
+
+/* ---- GtkPopover --------------------------------------------------------- */
+
+#define THIS_POPOVER GTK_POPOVER(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkPopover, setParent)
+{
+	zend_object *parent;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(parent, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (gtk_widget_get_parent(GTK_WIDGET(THIS_POPOVER)) != NULL) {
+		zend_value_error("GtkPopover::setParent(): the popover already has a parent; unparent() it first");
+		RETURN_THROWS();
+	}
+
+	gtk_widget_set_parent(GTK_WIDGET(THIS_POPOVER), GTK_WIDGET(PHPGTK_PTR(parent)));
+}
+
+ZEND_METHOD(GtkPopover, unparent)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_widget_unparent(GTK_WIDGET(THIS_POPOVER));
+}
+
+ZEND_METHOD(GtkPopover, setPointingTo)
+{
+	zend_long x;
+	zend_long y;
+	zend_long width;
+	zend_long height;
+
+	ZEND_PARSE_PARAMETERS_START(4, 4)
+		Z_PARAM_LONG(x)
+		Z_PARAM_LONG(y)
+		Z_PARAM_LONG(width)
+		Z_PARAM_LONG(height)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (width < 0 || height < 0 || x < INT_MIN || x > INT_MAX || y < INT_MIN || y > INT_MAX || width > INT_MAX || height > INT_MAX) {
+		zend_value_error("GtkPopover::setPointingTo(): the rectangle must fit a GdkRectangle, with no negative size");
+		RETURN_THROWS();
+	}
+
+	GdkRectangle rect = { (int) x, (int) y, (int) width, (int) height };
+	gtk_popover_set_pointing_to(THIS_POPOVER, &rect);
+}
+
+ZEND_METHOD(GtkPopover, getPointingTo)
+{
+	GdkRectangle rect;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	/* With no rectangle set, GTK measures the parent. */
+	if (gtk_widget_get_parent(GTK_WIDGET(THIS_POPOVER)) == NULL) {
+		zend_value_error("GtkPopover::getPointingTo(): the popover has no parent");
+		RETURN_THROWS();
+	}
+	if (!gtk_popover_get_pointing_to(THIS_POPOVER, &rect)) {
+		RETURN_NULL();
+	}
+
+	array_init_size(return_value, 4);
+	add_next_index_long(return_value, rect.x);
+	add_next_index_long(return_value, rect.y);
+	add_next_index_long(return_value, rect.width);
+	add_next_index_long(return_value, rect.height);
+}
+
+ZEND_METHOD(GtkPopover, setHasArrow)
+{
+	bool has_arrow;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(has_arrow)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_popover_set_has_arrow(THIS_POPOVER, has_arrow);
+}
+
+ZEND_METHOD(GtkPopover, getHasArrow)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_popover_get_has_arrow(THIS_POPOVER));
+}
+
+ZEND_METHOD(GtkPopover, popup)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_popover_popup(THIS_POPOVER);
+}
+
+ZEND_METHOD(GtkPopover, popdown)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_popover_popdown(THIS_POPOVER);
+}
+
+/* ---- GtkPopoverMenu ----------------------------------------------------- */
+
+ZEND_METHOD(GtkPopoverMenu, newFromModel)
+{
+	zend_object *model = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(model, phpgtk_ce_GMenuModel)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED();
+
+	phpgtk_box_gobject(return_value, gtk_popover_menu_new_from_model((GMenuModel *) PHPGTK_OPTIONAL_PTR(model)));
+}
+
+ZEND_METHOD(GtkPopoverMenu, getMenuModel)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_popover_menu_get_menu_model(GTK_POPOVER_MENU(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))));
 }
