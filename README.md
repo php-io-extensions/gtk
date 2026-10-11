@@ -1,5 +1,7 @@
 # ext-gtk
 
+[![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/gtk/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/gtk/actions/workflows/ci.yml)
+
 1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
 in C against the Zend API. C functions keep their names (`g_timeout_add`,
 `g_signal_connect`); functions on a type are methods of the class named after it
