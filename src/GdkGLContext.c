@@ -43,7 +43,11 @@ ZEND_METHOD(GdkGLContext, realize)
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
 	if (!gdk_gl_context_realize(THIS_CONTEXT, &error)) {
-		phpgtk_throw_gerror(error);
+		if (error != NULL) {
+			phpgtk_throw_gerror(error);
+			g_error_free(error);
+		}
+		RETURN_THROWS();
 	}
 }
 

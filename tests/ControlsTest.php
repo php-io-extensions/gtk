@@ -214,3 +214,56 @@ it('hosts a child in a scrolled window beside a separator', function (): void {
     $scrolled->setChild(null);
     expect($scrolled->getChild())->toBeNull();
 });
+
+it('builds a link button over a URI, with its label, visited state and activate-link signal', function (): void {
+    $plain = GtkLinkButton::new('https://example.com/');
+    $link = GtkLinkButton::newWithLabel('https://example.com/a', 'Example');
+    $taken = [];
+    g_signal_connect($link, 'activate-link', function (GtkLinkButton $button) use (&$taken): bool {
+        $taken[] = $button->getUri();
+
+        return true;                 // handled: GTK's own handler, which opens the URI, does not run
+    });
+    $link->setUri('https://example.com/b');   // resets visited
+    $link->setVisited(true);
+    $handled = g_signal_emit_by_name($link, 'activate-link');
+
+    expect($plain->getUri())->toBe('https://example.com/')
+        ->and($plain->getLabel())->toBe('https://example.com/')
+        ->and($link->getLabel())->toBe('Example')
+        ->and($link->getUri())->toBe('https://example.com/b')
+        ->and($link->getVisited())->toBeTrue()
+        ->and($link)->toBeInstanceOf(GtkButton::class)
+        ->and(get_parent_class(GtkLinkButton::class))->toBe(GtkButton::class)
+        ->and($handled)->toBeTrue()
+        ->and($taken)->toBe(['https://example.com/b']);
+});
+
+it('shows Pango markup with a link, which its activate-link signal names', function (): void {
+    $label = GtkLabel::new(null);
+    $label->setMarkup('Read <a href="https://example.com/docs">the docs</a>');
+    $seen = [];
+    g_signal_connect($label, 'activate-link', function (GtkLabel $label, string $uri) use (&$seen): bool {
+        $seen[] = $uri;
+
+        return true;
+    });
+    g_signal_emit_by_name($label, 'activate-link', 'https://example.com/docs');
+    $marked = $label->getUseMarkup();
+    $shown = $label->getText();
+    $label->setUseMarkup(false);      // the label shows its markup as written from here
+
+    expect($shown)->toBe('Read the docs')
+        ->and($marked)->toBeTrue()
+        ->and($label->getUseMarkup())->toBeFalse()
+        ->and($label->getCurrentUri())->toBeNull()        // no link is being activated by the pointer or keys
+        ->and($seen)->toBe(['https://example.com/docs']);
+});
+
+it('refuses malformed Pango markup, keeping the label as it was', function (): void {
+    $label = GtkLabel::new('kept');
+
+    expect(fn () => $label->setMarkup('Read <a href="https://example.com/">the docs'))->toThrow(GError::class)
+        ->and($label->getText())->toBe('kept')
+        ->and($label->getUseMarkup())->toBeFalse();
+});

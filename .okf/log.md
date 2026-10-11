@@ -1,5 +1,10 @@
 # Log
 
+## 2026-10-10
+
+* GtkLinkButton, GtkLabel markup and current URI, GCancellable, GAsyncResult, GtkUriLauncher (ext-gtk's first ready callback); GdkGLContext::realize frees its GError (toolkit links). [surface](api/surface.md)
+* `GtkWindow::getFocus`, `GtkWidget::grabFocus`/`hasFocus` for the Edit menu and Mac text keys (HumanInput slice 29). [surface](api/surface.md)
+
 ## 2026-10-09
 
 * [Surface](api/surface.md): GtkPopover and GtkPopoverMenu with their own setParent / unparent (popovers only; GtkWidget still has no unparent), GtkGesture::setState and GtkEventSequenceState. For context menus (HumanInput slice 27).

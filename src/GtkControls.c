@@ -16,6 +16,7 @@ void phpgtk_register_GtkControls(void)
 
 	PHPGTK_WIDGET_CLASS(GtkLabel, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkButton, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkLinkButton, phpgtk_ce_GtkButton);
 	PHPGTK_WIDGET_CLASS(GtkCheckButton, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkSwitch, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkToggleButton, phpgtk_ce_GtkButton);
@@ -143,12 +144,123 @@ PHPGTK_SET_ENUM(GtkLabel, setEllipsize, GTK_LABEL, gtk_label_set_ellipsize, phpg
 PHPGTK_GET_DOUBLE(GtkLabel, getXalign, GTK_LABEL, gtk_label_get_xalign)
 PHPGTK_SET_DOUBLE(GtkLabel, setXalign, GTK_LABEL, gtk_label_set_xalign)
 PHPGTK_SET_ENUM(GtkLabel, setJustify, GTK_LABEL, gtk_label_set_justify, phpgtk_ce_GtkJustification, GtkJustification)
+/*
+ * GtkLabel markup is Pango markup plus <a href> links. GTK takes the links out with a GMarkup
+ * parse, hands the rest to Pango, and for either failing only logs a warning and blanks the
+ * label. The same two passes here turn either failure into the GError instead.
+ */
+static void phpgtk_markup_start(GMarkupParseContext *context, const gchar *name, const gchar **names, const gchar **values, gpointer data, GError **error)
+{
+	GString *pango = (GString *) data;
+
+	if (strcmp(name, "a") == 0) {
+		return;
+	}
+	g_string_append_printf(pango, "<%s", name);
+	for (int i = 0; names[i] != NULL; i++) {
+		gchar *escaped = g_markup_escape_text(values[i], -1);
+		g_string_append_printf(pango, " %s=\"%s\"", names[i], escaped);
+		g_free(escaped);
+	}
+	g_string_append_c(pango, '>');
+}
+
+static void phpgtk_markup_end(GMarkupParseContext *context, const gchar *name, gpointer data, GError **error)
+{
+	if (strcmp(name, "a") != 0) {
+		g_string_append_printf((GString *) data, "</%s>", name);
+	}
+}
+
+static void phpgtk_markup_text(GMarkupParseContext *context, const gchar *text, gsize length, gpointer data, GError **error)
+{
+	gchar *escaped = g_markup_escape_text(text, (gssize) length);
+
+	g_string_append((GString *) data, escaped);
+	g_free(escaped);
+}
+
+static gboolean phpgtk_label_markup_valid(const char *markup, gsize length, GError **error)
+{
+	static const GMarkupParser parser = { phpgtk_markup_start, phpgtk_markup_end, phpgtk_markup_text, NULL, NULL };
+	GString *pango = g_string_new(NULL);
+	GMarkupParseContext *context = g_markup_parse_context_new(&parser, 0, pango, NULL);
+	gboolean valid = g_markup_parse_context_parse(context, "<markup>", -1, error)
+		&& g_markup_parse_context_parse(context, markup, (gssize) length, error)
+		&& g_markup_parse_context_parse(context, "</markup>", -1, error)
+		&& g_markup_parse_context_end_parse(context, error)
+		&& pango_parse_markup(pango->str, -1, 0, NULL, NULL, NULL, error);
+
+	g_markup_parse_context_free(context);
+	g_string_free(pango, TRUE);
+
+	return valid;
+}
+
+ZEND_METHOD(GtkLabel, setMarkup)
+{
+	zend_string *str;
+	GError *error = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(str)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_label_markup_valid(ZSTR_VAL(str), ZSTR_LEN(str), &error)) {
+		if (error != NULL) {
+			phpgtk_throw_gerror(error);
+			g_error_free(error);
+		}
+		RETURN_THROWS();
+	}
+
+	gtk_label_set_markup(THIS(GTK_LABEL), ZSTR_VAL(str));
+}
+PHPGTK_GET_BOOL(GtkLabel, getUseMarkup, GTK_LABEL, gtk_label_get_use_markup)
+PHPGTK_SET_BOOL(GtkLabel, setUseMarkup, GTK_LABEL, gtk_label_set_use_markup)
+PHPGTK_GET_STRING(GtkLabel, getCurrentUri, GTK_LABEL, gtk_label_get_current_uri)
 
 /* ---- GtkButton --------------------------------------------------------- */
 
 PHPGTK_NEW_WITH_LABEL(GtkButton, gtk_button_new_with_label)
 PHPGTK_GET_STRING(GtkButton, getLabel, GTK_BUTTON, gtk_button_get_label)
 PHPGTK_SET_STRING(GtkButton, setLabel, GTK_BUTTON, gtk_button_set_label)
+
+/* ---- GtkLinkButton ----------------------------------------------------- */
+
+ZEND_METHOD(GtkLinkButton, new)
+{
+	zend_string *uri;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(uri)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED();
+
+	phpgtk_box_gobject(return_value, gtk_link_button_new(ZSTR_VAL(uri)));
+}
+
+ZEND_METHOD(GtkLinkButton, newWithLabel)
+{
+	zend_string *uri;
+	zend_string *label = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 2)
+		Z_PARAM_STR(uri)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_STR_OR_NULL(label)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED();
+
+	phpgtk_box_gobject(return_value, gtk_link_button_new_with_label(ZSTR_VAL(uri), label != NULL ? ZSTR_VAL(label) : NULL));
+}
+
+PHPGTK_GET_STRING(GtkLinkButton, getUri, GTK_LINK_BUTTON, gtk_link_button_get_uri)
+PHPGTK_SET_STRING(GtkLinkButton, setUri, GTK_LINK_BUTTON, gtk_link_button_set_uri)
+PHPGTK_GET_BOOL(GtkLinkButton, getVisited, GTK_LINK_BUTTON, gtk_link_button_get_visited)
+PHPGTK_SET_BOOL(GtkLinkButton, setVisited, GTK_LINK_BUTTON, gtk_link_button_set_visited)
 
 /* ---- GtkCheckButton ---------------------------------------------------- */
 

@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7bc56e87804888ec270891ffa862259f33e2fce7 */
+ * Stub hash: 085bcce3c45154df5372040ef7013284c59aeacc */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 0)
 ZEND_END_ARG_INFO()
@@ -37,6 +37,8 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_isActive, 0, 0, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindow_getFocus arginfo_class_GtkWindow_getChild
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_getTransientFor, 0, 0, GtkWindow, 1)
 ZEND_END_ARG_INFO()
@@ -122,6 +124,7 @@ ZEND_METHOD(GtkWindow, present);
 ZEND_METHOD(GtkWindow, close);
 ZEND_METHOD(GtkWindow, destroy);
 ZEND_METHOD(GtkWindow, isActive);
+ZEND_METHOD(GtkWindow, getFocus);
 ZEND_METHOD(GtkWindow, getTransientFor);
 ZEND_METHOD(GtkWindow, setTransientFor);
 ZEND_METHOD(GtkWindow, getApplication);
@@ -159,6 +162,7 @@ static const zend_function_entry class_GtkWindow_methods[] = {
 	ZEND_ME(GtkWindow, close, arginfo_class_GtkWindow_close, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, destroy, arginfo_class_GtkWindow_destroy, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, isActive, arginfo_class_GtkWindow_isActive, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, getFocus, arginfo_class_GtkWindow_getFocus, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getTransientFor, arginfo_class_GtkWindow_getTransientFor, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setTransientFor, arginfo_class_GtkWindow_setTransientFor, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getApplication, arginfo_class_GtkWindow_getApplication, ZEND_ACC_PUBLIC)

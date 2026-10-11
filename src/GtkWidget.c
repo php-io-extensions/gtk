@@ -283,6 +283,20 @@ ZEND_METHOD(GtkWidget, isSensitive)
 	RETURN_BOOL(gtk_widget_is_sensitive(THIS_WIDGET));
 }
 
+ZEND_METHOD(GtkWidget, grabFocus)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_widget_grab_focus(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, hasFocus)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_widget_has_focus(THIS_WIDGET));
+}
+
 ZEND_METHOD(GtkWidget, setSensitive)
 {
 	bool sensitive;

@@ -123,3 +123,24 @@ it('builds an about dialog transient for a window', function (): void {
     $about->destroy();
     $window->destroy();
 });
+
+it('grabs focus into an entry, whose GtkText the window then names as its focus', function (): void {
+    $window = GtkApplicationWindow::new(testApplication());
+    $entry = GtkEntry::new();
+    $window->setChild($entry);
+    $window->present();
+
+    $grabbed = $entry->grabFocus();
+    $focus = $window->getFocus();
+    // has-focus is the window's focus widget in an active window.
+    $active = iterateUntil(fn (): bool => $window->isActive());
+
+    expect($grabbed)->toBeTrue()
+        ->and($focus)->toBeInstanceOf(GtkWidget::class)
+        ->and($focus->typeName())->toBe('GtkText')
+        ->and($active)->toBeTrue()
+        ->and($focus->hasFocus())->toBeTrue()
+        ->and($entry->hasFocus())->toBeFalse();
+
+    $window->destroy();
+});

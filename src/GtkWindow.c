@@ -146,6 +146,13 @@ PHPGTK_VOID_CALL(GtkWindow, close, gtk_window_close, GTK_WINDOW)
 PHPGTK_VOID_CALL(GtkWindow, destroy, gtk_window_destroy, GTK_WINDOW)
 PHPGTK_BOOL_GETTER(GtkWindow, isActive, gtk_window_is_active, GTK_WINDOW)
 
+ZEND_METHOD(GtkWindow, getFocus)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_window_get_focus(THIS_WINDOW));
+}
+
 ZEND_METHOD(GtkWindow, getTransientFor)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

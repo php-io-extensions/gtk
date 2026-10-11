@@ -63,6 +63,10 @@ zend_class_entry *phpgtk_ce_GtkJustification;
 zend_class_entry *phpgtk_ce_GtkWrapMode;
 zend_class_entry *phpgtk_ce_GtkLabel;
 zend_class_entry *phpgtk_ce_GtkButton;
+zend_class_entry *phpgtk_ce_GtkLinkButton;
+zend_class_entry *phpgtk_ce_GCancellable;
+zend_class_entry *phpgtk_ce_GAsyncResult;
+zend_class_entry *phpgtk_ce_GtkUriLauncher;
 zend_class_entry *phpgtk_ce_GtkCheckButton;
 zend_class_entry *phpgtk_ce_GtkSwitch;
 zend_class_entry *phpgtk_ce_GtkToggleButton;
@@ -609,6 +613,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkColumnView();
 	phpgtk_register_GtkVideo();
 	phpgtk_register_GtkWindow();
+	phpgtk_register_GtkUriLauncher();
 	phpgtk_register_GMenu();
 	phpgtk_register_GAction();
 

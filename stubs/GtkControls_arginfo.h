@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 39905bd25ea1f9cda5f42f2ca7cfde82eedf0ae6 */
+ * Stub hash: 4a1228eacf6992f853d826bfbbce8fef839db507 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -34,15 +34,46 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_setJustify, 0, 1,
 	ZEND_ARG_OBJ_INFO(0, jtype, GtkJustification, 0)
 ZEND_END_ARG_INFO()
 
+#define arginfo_class_GtkLabel_setMarkup arginfo_class_GtkLabel_setText
+
+#define arginfo_class_GtkLabel_getUseMarkup arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_setUseMarkup, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, setting, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_getCurrentUri, 0, 0, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkButton_newWithLabel, 0, 1, GtkButton, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkButton_getLabel, 0, 0, IS_STRING, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkButton_getLabel arginfo_class_GtkLabel_getCurrentUri
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkButton_setLabel, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLinkButton_new, 0, 1, GtkLinkButton, 0)
+	ZEND_ARG_TYPE_INFO(0, uri, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLinkButton_newWithLabel, 0, 1, GtkLinkButton, 0)
+	ZEND_ARG_TYPE_INFO(0, uri, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, label, IS_STRING, 1, "null")
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkLinkButton_getUri arginfo_class_GtkLabel_getText
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLinkButton_setUri, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, uri, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkLinkButton_getVisited arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLinkButton_setVisited, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, visited, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCheckButton_newWithLabel, 0, 1, GtkCheckButton, 0)
@@ -51,11 +82,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkCheckButton_getActive arginfo_class_GtkLabel_getWrap
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkCheckButton_setActive, 0, 1, IS_VOID, 0)
-	ZEND_ARG_TYPE_INFO(0, setting, _IS_BOOL, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkCheckButton_setActive arginfo_class_GtkLabel_setUseMarkup
 
-#define arginfo_class_GtkCheckButton_getLabel arginfo_class_GtkButton_getLabel
+#define arginfo_class_GtkCheckButton_getLabel arginfo_class_GtkLabel_getCurrentUri
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkCheckButton_setLabel, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 1)
@@ -91,7 +120,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkEntry_getBuffer, 0, 0, GtkEntryBuffer, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkEntry_getPlaceholderText arginfo_class_GtkButton_getLabel
+#define arginfo_class_GtkEntry_getPlaceholderText arginfo_class_GtkLabel_getCurrentUri
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntry_setPlaceholderText, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 1)
@@ -127,7 +156,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkTextView_getEditable arginfo_class_GtkLabel_getWrap
 
-#define arginfo_class_GtkTextView_setEditable arginfo_class_GtkCheckButton_setActive
+#define arginfo_class_GtkTextView_setEditable arginfo_class_GtkLabel_setUseMarkup
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextView_setWrapMode, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, wrapMode, GtkWrapMode, 0)
@@ -294,9 +323,19 @@ ZEND_METHOD(GtkLabel, setEllipsize);
 ZEND_METHOD(GtkLabel, getXalign);
 ZEND_METHOD(GtkLabel, setXalign);
 ZEND_METHOD(GtkLabel, setJustify);
+ZEND_METHOD(GtkLabel, setMarkup);
+ZEND_METHOD(GtkLabel, getUseMarkup);
+ZEND_METHOD(GtkLabel, setUseMarkup);
+ZEND_METHOD(GtkLabel, getCurrentUri);
 ZEND_METHOD(GtkButton, newWithLabel);
 ZEND_METHOD(GtkButton, getLabel);
 ZEND_METHOD(GtkButton, setLabel);
+ZEND_METHOD(GtkLinkButton, new);
+ZEND_METHOD(GtkLinkButton, newWithLabel);
+ZEND_METHOD(GtkLinkButton, getUri);
+ZEND_METHOD(GtkLinkButton, setUri);
+ZEND_METHOD(GtkLinkButton, getVisited);
+ZEND_METHOD(GtkLinkButton, setVisited);
 ZEND_METHOD(GtkCheckButton, newWithLabel);
 ZEND_METHOD(GtkCheckButton, getActive);
 ZEND_METHOD(GtkCheckButton, setActive);
@@ -380,6 +419,10 @@ static const zend_function_entry class_GtkLabel_methods[] = {
 	ZEND_ME(GtkLabel, getXalign, arginfo_class_GtkLabel_getXalign, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setXalign, arginfo_class_GtkLabel_setXalign, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setJustify, arginfo_class_GtkLabel_setJustify, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, setMarkup, arginfo_class_GtkLabel_setMarkup, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, getUseMarkup, arginfo_class_GtkLabel_getUseMarkup, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, setUseMarkup, arginfo_class_GtkLabel_setUseMarkup, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, getCurrentUri, arginfo_class_GtkLabel_getCurrentUri, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -387,6 +430,16 @@ static const zend_function_entry class_GtkButton_methods[] = {
 	ZEND_ME(GtkButton, newWithLabel, arginfo_class_GtkButton_newWithLabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkButton, getLabel, arginfo_class_GtkButton_getLabel, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkButton, setLabel, arginfo_class_GtkButton_setLabel, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkLinkButton_methods[] = {
+	ZEND_ME(GtkLinkButton, new, arginfo_class_GtkLinkButton_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkLinkButton, newWithLabel, arginfo_class_GtkLinkButton_newWithLabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkLinkButton, getUri, arginfo_class_GtkLinkButton_getUri, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLinkButton, setUri, arginfo_class_GtkLinkButton_setUri, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLinkButton, getVisited, arginfo_class_GtkLinkButton_getVisited, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLinkButton, setVisited, arginfo_class_GtkLinkButton_setVisited, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -661,6 +714,16 @@ static zend_class_entry *register_class_GtkButton(zend_class_entry *class_entry_
 
 	INIT_CLASS_ENTRY(ce, "GtkButton", class_GtkButton_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkLinkButton(zend_class_entry *class_entry_GtkButton)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkLinkButton", class_GtkLinkButton_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkButton, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

@@ -88,6 +88,11 @@ class GtkWidget extends GObject
     /** gtk_widget_is_sensitive(): sensitive itself and every ancestor sensitive too */
     public function isSensitive(): bool {}
 
+    /** gtk_widget_grab_focus(): false when the widget cannot take focus. */
+    public function grabFocus(): bool {}
+
+    public function hasFocus(): bool {}
+
     public function setMarginStart(int $margin): void {}
 
     public function setMarginEnd(int $margin): void {}

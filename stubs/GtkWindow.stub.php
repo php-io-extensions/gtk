@@ -37,6 +37,9 @@ class GtkWindow extends GtkWidget
 
     public function isActive(): bool {}
 
+    /** gtk_window_get_focus(): the widget with keyboard focus inside the window, or null. */
+    public function getFocus(): ?GtkWidget {}
+
     public function getTransientFor(): ?GtkWindow {}
 
     public function setTransientFor(?GtkWindow $parent): void {}

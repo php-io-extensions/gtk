@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: f38e99abeaf3b24f2a1a91ab5a4f44904d5541ce */
+ * Stub hash: 53be047d174c8be78962145f61d52b368b8617c1 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -77,6 +77,10 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkWidget_getColor arginfo_class_GtkWidget_getSizeRequest
 
 #define arginfo_class_GtkWidget_isSensitive arginfo_class_GtkWidget_getVisible
+
+#define arginfo_class_GtkWidget_grabFocus arginfo_class_GtkWidget_getVisible
+
+#define arginfo_class_GtkWidget_hasFocus arginfo_class_GtkWidget_getVisible
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setMarginStart, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, margin, IS_LONG, 0)
@@ -284,6 +288,8 @@ ZEND_METHOD(GtkWidget, getSensitive);
 ZEND_METHOD(GtkWidget, setSensitive);
 ZEND_METHOD(GtkWidget, getColor);
 ZEND_METHOD(GtkWidget, isSensitive);
+ZEND_METHOD(GtkWidget, grabFocus);
+ZEND_METHOD(GtkWidget, hasFocus);
 ZEND_METHOD(GtkWidget, setMarginStart);
 ZEND_METHOD(GtkWidget, setMarginEnd);
 ZEND_METHOD(GtkWidget, setMarginTop);
@@ -368,6 +374,8 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setSensitive, arginfo_class_GtkWidget_setSensitive, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getColor, arginfo_class_GtkWidget_getColor, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, isSensitive, arginfo_class_GtkWidget_isSensitive, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, grabFocus, arginfo_class_GtkWidget_grabFocus, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, hasFocus, arginfo_class_GtkWidget_hasFocus, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setMarginStart, arginfo_class_GtkWidget_setMarginStart, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setMarginEnd, arginfo_class_GtkWidget_setMarginEnd, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setMarginTop, arginfo_class_GtkWidget_setMarginTop, ZEND_ACC_PUBLIC)

@@ -64,6 +64,16 @@ class GtkLabel extends GtkWidget
     public function setXalign(float $xalign): void {}
 
     public function setJustify(GtkJustification $jtype): void {}
+
+    /** gtk_label_set_markup(): Pango markup; also sets use-markup. Malformed markup throws GError and leaves the label alone. */
+    public function setMarkup(string $str): void {}
+
+    public function getUseMarkup(): bool {}
+
+    public function setUseMarkup(bool $setting): void {}
+
+    /** gtk_label_get_current_uri(): the link being activated by the pointer or keys, else null. Signal activate-link(uri). */
+    public function getCurrentUri(): ?string {}
 }
 
 /**
@@ -77,6 +87,29 @@ class GtkButton extends GtkWidget
     public function getLabel(): ?string {}
 
     public function setLabel(string $label): void {}
+}
+
+/**
+ * Signal activate-link: return true to handle it; otherwise GTK opens the URI.
+ *
+ * @not-serializable
+ */
+class GtkLinkButton extends GtkButton
+{
+    /** gtk_link_button_new(): the URI is the label too. */
+    public static function new(string $uri): GtkLinkButton {}
+
+    /** gtk_link_button_new_with_label() */
+    public static function newWithLabel(string $uri, ?string $label = null): GtkLinkButton {}
+
+    public function getUri(): string {}
+
+    /** Resets the visited state. */
+    public function setUri(string $uri): void {}
+
+    public function getVisited(): bool {}
+
+    public function setVisited(bool $visited): void {}
 }
 
 /**
