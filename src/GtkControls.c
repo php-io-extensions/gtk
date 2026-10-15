@@ -392,6 +392,184 @@ ZEND_METHOD(GtkTextBuffer, endUserAction)
 	gtk_text_buffer_end_user_action(THIS(GTK_TEXT_BUFFER));
 }
 
+#define THIS_BUFFER GTK_TEXT_BUFFER(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+/* An iter argument of this buffer: ValueError for another buffer's, GtkException once this buffer's text changed
+ * (GTK only logs a critical, or crashes). */
+static GtkTextIter *phpgtk_buffer_iter(GtkTextBuffer *buffer, zend_object *iter_obj, uint32_t arg_num)
+{
+	if (PHPGTK_ITER_BOX(iter_obj)->buffer != buffer) {
+		zend_argument_value_error(arg_num, "must be an iter of this buffer");
+		return NULL;
+	}
+	return phpgtk_fresh_iter(iter_obj);
+}
+
+ZEND_METHOD(GtkTextBuffer, getTagTable)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_text_buffer_get_tag_table(THIS_BUFFER));
+}
+
+ZEND_METHOD(GtkTextBuffer, getIterAtLine)
+{
+	zend_long line;
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(line)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!phpgtk_long_in_range(line, 0, G_MAXINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	if (!gtk_text_buffer_get_iter_at_line(THIS_BUFFER, &iter, (int) line)) {
+		RETURN_NULL();
+	}
+	phpgtk_box_text_iter(return_value, &iter);
+}
+
+ZEND_METHOD(GtkTextBuffer, getIterAtLineOffset)
+{
+	zend_long line, offset;
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(line)
+		Z_PARAM_LONG(offset)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!phpgtk_long_in_range(line, 0, G_MAXINT, 1) || !phpgtk_long_in_range(offset, 0, G_MAXINT, 2)) {
+		RETURN_THROWS();
+	}
+
+	if (!gtk_text_buffer_get_iter_at_line_offset(THIS_BUFFER, &iter, (int) line, (int) offset)) {
+		RETURN_NULL();
+	}
+	phpgtk_box_text_iter(return_value, &iter);
+}
+
+ZEND_METHOD(GtkTextBuffer, getStartIter)
+{
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_text_buffer_get_start_iter(THIS_BUFFER, &iter);
+	phpgtk_box_text_iter(return_value, &iter);
+}
+
+ZEND_METHOD(GtkTextBuffer, getEndIter)
+{
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_text_buffer_get_end_iter(THIS_BUFFER, &iter);
+	phpgtk_box_text_iter(return_value, &iter);
+}
+
+/* applyTag and removeTag: a tag of this buffer's table between two of its iters. */
+static void phpgtk_buffer_tag(INTERNAL_FUNCTION_PARAMETERS, bool apply)
+{
+	zend_object *tag_obj, *start_obj, *end_obj;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS(tag_obj, phpgtk_ce_GtkTextTag)
+		Z_PARAM_OBJ_OF_CLASS(start_obj, phpgtk_ce_GtkTextIter)
+		Z_PARAM_OBJ_OF_CLASS(end_obj, phpgtk_ce_GtkTextIter)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	GtkTextBuffer *buffer = THIS_BUFFER;
+	GtkTextTag *tag = GTK_TEXT_TAG(PHPGTK_PTR(tag_obj));
+	if (!phpgtk_tag_in_table(tag, gtk_text_buffer_get_tag_table(buffer))) {
+		zend_argument_value_error(1, "must be a tag in this buffer's tag table");
+		RETURN_THROWS();
+	}
+	GtkTextIter *start = phpgtk_buffer_iter(buffer, start_obj, 2);
+	GtkTextIter *end = start != NULL ? phpgtk_buffer_iter(buffer, end_obj, 3) : NULL;
+	if (end == NULL) {
+		RETURN_THROWS();
+	}
+
+	if (apply) {
+		gtk_text_buffer_apply_tag(buffer, tag, start, end);
+	} else {
+		gtk_text_buffer_remove_tag(buffer, tag, start, end);
+	}
+}
+
+ZEND_METHOD(GtkTextBuffer, applyTag) { phpgtk_buffer_tag(INTERNAL_FUNCTION_PARAM_PASSTHRU, true); }
+ZEND_METHOD(GtkTextBuffer, removeTag) { phpgtk_buffer_tag(INTERNAL_FUNCTION_PARAM_PASSTHRU, false); }
+
+ZEND_METHOD(GtkTextBuffer, getSelectionBounds)
+{
+	GtkTextIter start, end;
+	zval boxed;
+
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	if (!gtk_text_buffer_get_selection_bounds(THIS_BUFFER, &start, &end)) {
+		RETURN_NULL();
+	}
+	array_init_size(return_value, 2);
+	phpgtk_box_text_iter(&boxed, &start);
+	add_next_index_zval(return_value, &boxed);
+	phpgtk_box_text_iter(&boxed, &end);
+	add_next_index_zval(return_value, &boxed);
+}
+
+ZEND_METHOD(GtkTextBuffer, selectRange)
+{
+	zend_object *ins_obj, *bound_obj;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(ins_obj, phpgtk_ce_GtkTextIter)
+		Z_PARAM_OBJ_OF_CLASS(bound_obj, phpgtk_ce_GtkTextIter)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	GtkTextIter *ins = phpgtk_buffer_iter(THIS_BUFFER, ins_obj, 1);
+	GtkTextIter *bound = ins != NULL ? phpgtk_buffer_iter(THIS_BUFFER, bound_obj, 2) : NULL;
+	if (bound == NULL) {
+		RETURN_THROWS();
+	}
+	gtk_text_buffer_select_range(THIS_BUFFER, ins, bound);
+}
+
+ZEND_METHOD(GtkTextBuffer, getInsert)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_text_buffer_get_insert(THIS_BUFFER));
+}
+
+ZEND_METHOD(GtkTextBuffer, getIterAtMark)
+{
+	zend_object *mark_obj;
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(mark_obj, phpgtk_ce_GtkTextMark)
+	ZEND_PARSE_PARAMETERS_END();
+
+	GtkTextMark *mark = GTK_TEXT_MARK(PHPGTK_PTR(mark_obj));
+	if (gtk_text_mark_get_buffer(mark) != THIS_BUFFER) {
+		zend_argument_value_error(1, "must be a mark of this buffer");
+		RETURN_THROWS();
+	}
+	gtk_text_buffer_get_iter_at_mark(THIS_BUFFER, &iter, mark);
+	phpgtk_box_text_iter(return_value, &iter);
+}
+
+ZEND_METHOD(GtkTextBuffer, getLineCount)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG(gtk_text_buffer_get_line_count(THIS_BUFFER));
+}
+
 /* ---- GtkTextView ------------------------------------------------------- */
 
 PHPGTK_NEW_PLAIN(GtkTextView, gtk_text_view_new)
@@ -406,6 +584,31 @@ ZEND_METHOD(GtkTextView, getBuffer)
 PHPGTK_GET_BOOL(GtkTextView, getEditable, GTK_TEXT_VIEW, gtk_text_view_get_editable)
 PHPGTK_SET_BOOL(GtkTextView, setEditable, GTK_TEXT_VIEW, gtk_text_view_set_editable)
 PHPGTK_SET_ENUM(GtkTextView, setWrapMode, GTK_TEXT_VIEW, gtk_text_view_set_wrap_mode, phpgtk_ce_GtkWrapMode, GtkWrapMode)
+
+PHPGTK_GET_BOOL(GtkTextView, getMonospace, GTK_TEXT_VIEW, gtk_text_view_get_monospace)
+PHPGTK_SET_BOOL(GtkTextView, setMonospace, GTK_TEXT_VIEW, gtk_text_view_set_monospace)
+PHPGTK_GET_BOOL(GtkTextView, getCursorVisible, GTK_TEXT_VIEW, gtk_text_view_get_cursor_visible)
+PHPGTK_SET_BOOL(GtkTextView, setCursorVisible, GTK_TEXT_VIEW, gtk_text_view_set_cursor_visible)
+
+ZEND_METHOD(GtkTextView, getLineYrange)
+{
+	zend_object *iter_obj;
+	int y = 0, height = 0;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(iter_obj, phpgtk_ce_GtkTextIter)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	GtkTextIter *iter = phpgtk_buffer_iter(gtk_text_view_get_buffer(THIS(GTK_TEXT_VIEW)), iter_obj, 1);
+	if (iter == NULL) {
+		RETURN_THROWS();
+	}
+	gtk_text_view_get_line_yrange(THIS(GTK_TEXT_VIEW), iter, &y, &height);
+	array_init_size(return_value, 2);
+	add_next_index_long(return_value, y);
+	add_next_index_long(return_value, height);
+}
 
 /* ---- GtkScale ---------------------------------------------------------- */
 
@@ -808,4 +1011,18 @@ ZEND_METHOD(GtkScrolledWindow, setPolicy)
 
 	gtk_scrolled_window_set_policy(THIS(GTK_SCROLLED_WINDOW),
 		(GtkPolicyType) phpgtk_enum_value(hscrollbar_policy, 0), (GtkPolicyType) phpgtk_enum_value(vscrollbar_policy, 0));
+}
+
+ZEND_METHOD(GtkScrolledWindow, getHadjustment)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_scrolled_window_get_hadjustment(THIS(GTK_SCROLLED_WINDOW)));
+}
+
+ZEND_METHOD(GtkScrolledWindow, getVadjustment)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_scrolled_window_get_vadjustment(THIS(GTK_SCROLLED_WINDOW)));
 }

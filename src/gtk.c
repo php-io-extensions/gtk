@@ -34,6 +34,11 @@ zend_class_entry *phpgtk_ce_GtkEventControllerFocus;
 zend_class_entry *phpgtk_ce_GtkGesture;
 zend_class_entry *phpgtk_ce_GtkGestureSingle;
 zend_class_entry *phpgtk_ce_GtkGestureClick;
+zend_class_entry *phpgtk_ce_GtkTextIter;
+zend_class_entry *phpgtk_ce_GtkTextMark;
+zend_class_entry *phpgtk_ce_GtkTextTag;
+zend_class_entry *phpgtk_ce_GtkTextTagTable;
+zend_class_entry *phpgtk_ce_GtkAdjustment;
 zend_class_entry *phpgtk_ce_GtkGestureLongPress;
 zend_class_entry *phpgtk_ce_GdkEvent;
 zend_class_entry *phpgtk_ce_GdkScrollEvent;
@@ -306,15 +311,38 @@ ZEND_FUNCTION(g_signal_connect)
 	RETURN_LONG((zend_long) callout->handler_id);
 }
 
+/* A PHP int checked against the C type of a parameter or property before it is converted (the conversion would truncate it). */
+static bool phpgtk_long_fits(GType type, zend_long value, uint32_t arg_num, const char *subject)
+{
+	gint64 min = G_MININT64;
+	guint64 max = G_MAXINT64;
+
+	switch (G_TYPE_FUNDAMENTAL(type)) {
+		case G_TYPE_CHAR: min = G_MININT8; max = G_MAXINT8; break;
+		case G_TYPE_UCHAR: min = 0; max = G_MAXUINT8; break;
+		case G_TYPE_INT: case G_TYPE_ENUM: min = G_MININT; max = G_MAXINT; break;
+		case G_TYPE_UINT: case G_TYPE_FLAGS: min = 0; max = G_MAXUINT; break;
+		case G_TYPE_ULONG: case G_TYPE_UINT64: min = 0; break;
+		default: return true;
+	}
+
+	if (value < min || (value > 0 && (guint64) value > max)) {
+		zend_argument_value_error(arg_num, "does not fit the %s of %s", g_type_name(type), subject);
+		return false;
+	}
+
+	return true;
+}
+
 /* One PHP value into a signal parameter of type $type, checked against the type first. */
-static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t arg_num, const char *signal)
+static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t arg_num, const char *subject, const char *caller)
 {
 	ZVAL_DEREF(param);
 
 	switch (G_TYPE_FUNDAMENTAL(type)) {
 		case G_TYPE_BOOLEAN:
 			if (Z_TYPE_P(param) != IS_TRUE && Z_TYPE_P(param) != IS_FALSE) {
-				zend_argument_type_error(arg_num, "must be of type bool for %s, %s given", signal, zend_zval_value_name(param));
+				zend_argument_type_error(arg_num, "must be of type bool for %s, %s given", subject, zend_zval_value_name(param));
 				return false;
 			}
 			break;
@@ -324,28 +352,35 @@ static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t
 			/* Only an int-backed enum has a case value to fetch; a pure enum has no value slot. */
 			if (Z_TYPE_P(param) == IS_OBJECT && (Z_OBJCE_P(param)->ce_flags & ZEND_ACC_ENUM)
 					&& Z_OBJCE_P(param)->enum_backing_type == IS_LONG) {
+				zend_long case_value = Z_LVAL_P(zend_enum_fetch_case_value(Z_OBJ_P(param)));
+				if (!phpgtk_long_fits(type, case_value, arg_num, subject)) {
+					return false;
+				}
 				g_value_init(value, type);
 				zval as_long;
-				ZVAL_LONG(&as_long, Z_LVAL_P(zend_enum_fetch_case_value(Z_OBJ_P(param))));
+				ZVAL_LONG(&as_long, case_value);
 				phpgtk_zval_to_gvalue(value, &as_long);
 				return true;
 			}
 			if (Z_TYPE_P(param) != IS_LONG) {
-				zend_argument_type_error(arg_num, "must be of type int for %s, %s given", signal, zend_zval_value_name(param));
+				zend_argument_type_error(arg_num, "must be of type int for %s, %s given", subject, zend_zval_value_name(param));
+				return false;
+			}
+			if (!phpgtk_long_fits(type, Z_LVAL_P(param), arg_num, subject)) {
 				return false;
 			}
 			break;
 
 		case G_TYPE_FLOAT: case G_TYPE_DOUBLE:
 			if (Z_TYPE_P(param) != IS_LONG && Z_TYPE_P(param) != IS_DOUBLE) {
-				zend_argument_type_error(arg_num, "must be of type float for %s, %s given", signal, zend_zval_value_name(param));
+				zend_argument_type_error(arg_num, "must be of type float for %s, %s given", subject, zend_zval_value_name(param));
 				return false;
 			}
 			break;
 
 		case G_TYPE_STRING:
 			if (Z_TYPE_P(param) != IS_STRING && Z_TYPE_P(param) != IS_NULL) {
-				zend_argument_type_error(arg_num, "must be of type ?string for %s, %s given", signal, zend_zval_value_name(param));
+				zend_argument_type_error(arg_num, "must be of type ?string for %s, %s given", subject, zend_zval_value_name(param));
 				return false;
 			}
 			break;
@@ -359,14 +394,14 @@ static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t
 			if (Z_TYPE_P(param) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(param), phpgtk_ce_GObject)
 					|| !g_type_is_a(G_OBJECT_TYPE(PHPGTK_PTR(Z_OBJ_P(param))), type)) {
 				g_value_unset(value);
-				zend_argument_type_error(arg_num, "must be a %s or null for %s, %s given", g_type_name(type), signal, zend_zval_value_name(param));
+				zend_argument_type_error(arg_num, "must be a %s or null for %s, %s given", g_type_name(type), subject, zend_zval_value_name(param));
 				return false;
 			}
 			g_value_set_object(value, PHPGTK_PTR(Z_OBJ_P(param)));
 			return true;
 
 		default:
-			zend_argument_value_error(arg_num, "is a %s parameter of %s, which g_signal_emit_by_name() cannot pass", g_type_name(type), signal);
+			zend_argument_value_error(arg_num, "is a %s value for %s, which %s cannot pass", g_type_name(type), subject, caller);
 			return false;
 	}
 
@@ -405,6 +440,9 @@ ZEND_FUNCTION(g_signal_emit_by_name)
 		RETURN_THROWS();
 	}
 
+	char signal_subject[160];
+	g_snprintf(signal_subject, sizeof(signal_subject), "signal %s", ZSTR_VAL(detailed_signal));
+
 	GValue *values = ecalloc(param_count + 1, sizeof(GValue));
 	g_value_init(&values[0], G_OBJECT_TYPE(object));
 	g_value_set_object(&values[0], object);
@@ -412,7 +450,7 @@ ZEND_FUNCTION(g_signal_emit_by_name)
 	uint32_t filled = 0;
 	for (; filled < param_count; filled++) {
 		GType type = query.param_types[filled] & ~G_SIGNAL_TYPE_STATIC_SCOPE;
-		if (!phpgtk_signal_param(&values[filled + 1], type, &params[filled], filled + 3, ZSTR_VAL(detailed_signal))) {
+		if (!phpgtk_signal_param(&values[filled + 1], type, &params[filled], filled + 3, signal_subject, "g_signal_emit_by_name()")) {
 			break;
 		}
 	}
@@ -497,6 +535,48 @@ ZEND_FUNCTION(g_object_get_property)
 	g_object_get_property(object, ZSTR_VAL(property), &value);
 	phpgtk_gvalue_to_zval(return_value, &value);
 	g_value_unset(&value);
+}
+
+ZEND_FUNCTION(g_object_set_property)
+{
+	zend_object *instance;
+	zend_string *property;
+	zval *value;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS(instance, phpgtk_ce_GObject)
+		Z_PARAM_STR(property)
+		Z_PARAM_ZVAL(value)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	GObject *object = G_OBJECT(PHPGTK_PTR(instance));
+	GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(object), ZSTR_VAL(property));
+	if (spec == NULL) {
+		zend_argument_value_error(2, "is not a property of %s", G_OBJECT_TYPE_NAME(object));
+		RETURN_THROWS();
+	}
+	if (!(spec->flags & G_PARAM_WRITABLE) || (spec->flags & G_PARAM_CONSTRUCT_ONLY)) {
+		zend_argument_value_error(2, "is not a writable property of %s", G_OBJECT_TYPE_NAME(object));
+		RETURN_THROWS();
+	}
+
+	GType value_type = G_PARAM_SPEC_VALUE_TYPE(spec);
+	char subject[160];
+	g_snprintf(subject, sizeof(subject), "property %s", ZSTR_VAL(property));
+	GValue gvalue = G_VALUE_INIT;
+	if (!phpgtk_signal_param(&gvalue, value_type, value, 3, subject, "g_object_set_property()")) {
+		RETURN_THROWS();
+	}
+	if ((G_TYPE_FUNDAMENTAL(value_type) == G_TYPE_DOUBLE && isnan(g_value_get_double(&gvalue)))
+			|| (G_TYPE_FUNDAMENTAL(value_type) == G_TYPE_FLOAT && isnan(g_value_get_float(&gvalue)))
+			|| g_param_value_validate(spec, &gvalue)) {
+		g_value_unset(&gvalue);
+		zend_argument_value_error(3, "is out of range for property %s of %s", ZSTR_VAL(property), G_OBJECT_TYPE_NAME(object));
+		RETURN_THROWS();
+	}
+	g_object_set_property(object, ZSTR_VAL(property), &gvalue);
+	g_value_unset(&gvalue);
 }
 
 /* ---- GTK -------------------------------------------------------------- */
@@ -607,6 +687,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GdkTexture();
 	phpgtk_register_GtkWidget();
 	phpgtk_register_GtkEventController();
+	phpgtk_register_GtkText();
 	phpgtk_register_GtkControls();
 	phpgtk_register_GdkGLContext();
 	phpgtk_register_GtkGLArea();

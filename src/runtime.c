@@ -53,6 +53,10 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_EVENT:
 				gdk_event_unref((GdkEvent *) intern->ptr);
 				break;
+			case PHPGTK_TEXT_ITER:
+				g_object_unref(((phpgtk_text_iter *) intern->ptr)->buffer);
+				g_free(intern->ptr);
+				break;
 			case PHPGTK_DMABUF_FORMATS:
 #if GTK_CHECK_VERSION(4, 14, 0)
 				gdk_dmabuf_formats_unref((GdkDmabufFormats *) intern->ptr);
@@ -117,6 +121,8 @@ static void phpgtk_box_new(zval *rv, zend_class_entry *ce, void *referenced, php
 	ZVAL_OBJ(rv, object);
 }
 
+static guint *phpgtk_buffer_generation(GtkTextBuffer *buffer);
+
 /* Takes PHP's own reference (sinking a floating one); the caller keeps whatever it held. */
 void phpgtk_box_gobject(zval *rv, gpointer object)
 {
@@ -142,6 +148,11 @@ void phpgtk_box_gobject(zval *rv, gpointer object)
 	}
 
 	phpgtk_box_new(rv, ce, g_object_ref_sink(object), PHPGTK_GOBJECT);
+
+	/* PHP can only connect a handler once the buffer is a PHP object: count its text changes from then on, so no handler runs before the counter. */
+	if (GTK_IS_TEXT_BUFFER(object)) {
+		phpgtk_buffer_generation(GTK_TEXT_BUFFER(object));
+	}
 }
 
 void phpgtk_box_main_context(zval *rv, GMainContext *context)
@@ -171,6 +182,98 @@ void phpgtk_box_variant(zval *rv, GVariant *variant)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_GVariant, g_variant_ref_sink(variant), PHPGTK_VARIANT);
+}
+
+#define PHPGTK_GENERATION_KEY "phpgtk-text-generation"
+#define PHPGTK_TAG_TABLE_KEY "phpgtk-tag-table"
+
+static void phpgtk_generation_bump(guint *generation)
+{
+	(*generation)++;
+}
+
+static void phpgtk_generation_on_insert(GtkTextBuffer *buffer, GtkTextIter *location, gchar *text, gint len, gpointer generation)
+{
+	phpgtk_generation_bump(generation);
+}
+
+static void phpgtk_generation_on_delete(GtkTextBuffer *buffer, GtkTextIter *start, GtkTextIter *end, gpointer generation)
+{
+	phpgtk_generation_bump(generation);
+}
+
+/* The buffer's text generation: bumped before and after every insert and delete, counting from the buffer's boxing. */
+static guint *phpgtk_buffer_generation(GtkTextBuffer *buffer)
+{
+	guint *generation = g_object_get_data(G_OBJECT(buffer), PHPGTK_GENERATION_KEY);
+
+	if (generation == NULL) {
+		generation = g_new0(guint, 1);
+		g_object_set_data_full(G_OBJECT(buffer), PHPGTK_GENERATION_KEY, generation, g_free);
+		g_signal_connect(buffer, "insert-text", G_CALLBACK(phpgtk_generation_on_insert), generation);
+		g_signal_connect(buffer, "delete-range", G_CALLBACK(phpgtk_generation_on_delete), generation);
+		/* Both signals run last: bumping again after the default handler makes an iter taken inside a PHP handler stale once the change lands. */
+		g_signal_connect_after(buffer, "insert-text", G_CALLBACK(phpgtk_generation_on_insert), generation);
+		g_signal_connect_after(buffer, "delete-range", G_CALLBACK(phpgtk_generation_on_delete), generation);
+	}
+
+	return generation;
+}
+
+GtkTextIter *phpgtk_fresh_iter(zend_object *iter_obj)
+{
+	phpgtk_text_iter *box = PHPGTK_ITER_BOX(iter_obj);
+	guint *generation = g_object_get_data(G_OBJECT(box->buffer), PHPGTK_GENERATION_KEY);
+
+	if (generation == NULL || *generation != box->generation) {
+		zend_throw_exception(phpgtk_ce_GtkException, "GtkTextIter is stale: its buffer's text changed since it was taken", 0);
+		return NULL;
+	}
+
+	return &box->iter;
+}
+
+static void phpgtk_weak_ref_free(gpointer data)
+{
+	g_weak_ref_clear(data);
+	g_free(data);
+}
+
+bool phpgtk_tag_in_table(GtkTextTag *tag, GtkTextTagTable *table)
+{
+	GWeakRef *ref = g_object_get_data(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY);
+	gpointer held = ref != NULL ? g_weak_ref_get(ref) : NULL;
+	bool found = held != NULL && (table == NULL || held == (gpointer) table);
+
+	if (held != NULL) {
+		g_object_unref(held);
+	}
+
+	return found;
+}
+
+/* GTK keeps a tag's table private; this weak record lets applyTag() and add() tell, and a freed table reads as none. */
+void phpgtk_tag_set_table(GtkTextTag *tag, GtkTextTagTable *table)
+{
+	GWeakRef *ref = g_object_get_data(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY);
+
+	if (ref == NULL) {
+		ref = g_new0(GWeakRef, 1);
+		g_weak_ref_init(ref, NULL);
+		g_object_set_data_full(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY, ref, phpgtk_weak_ref_free);
+	}
+	g_weak_ref_set(ref, table);
+}
+
+/* A copy PHP owns, holding a reference on the iter's buffer: GTK's iters are stack values valid until the buffer's text changes. */
+void phpgtk_box_text_iter(zval *rv, const GtkTextIter *iter)
+{
+	phpgtk_text_iter *box = g_new(phpgtk_text_iter, 1);
+
+	box->iter = *iter;
+	box->buffer = g_object_ref(gtk_text_iter_get_buffer(iter));
+	box->generation = *phpgtk_buffer_generation(box->buffer);
+	phpgtk_box_new(rv, phpgtk_ce_GtkTextIter, box, PHPGTK_TEXT_ITER);
 }
 
 /* Takes ownership of the reference handed in (g_date_time_new_*() and gtk_calendar_get_date() return new ones). */

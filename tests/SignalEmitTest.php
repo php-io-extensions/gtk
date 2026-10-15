@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 beforeEach(fn () => testApplication());
 
+enum SignalEmitTooWide: int
+{
+    case HUGE = 2 ** 40;
+}
+
 enum SignalEmitPure
 {
     case A;
@@ -45,8 +50,8 @@ it('passes objects of the declared type, or null', function (): void {
         ->and(fn () => g_signal_emit_by_name($label, 'query-tooltip', 1, 2, true, GtkLabel::new('not a tooltip')))->toThrow(TypeError::class, 'GtkTooltip');
 });
 
-it('refuses what it cannot pass', function (Closure $call, string $error): void {
-    expect($call)->toThrow($error);
+it('refuses what it cannot pass', function (Closure $call, string $error, ?string $message = null): void {
+    expect($call)->toThrow($error, $message);
 })->with([
     'unknown signal' => [fn () => g_signal_emit_by_name(GtkEntry::new(), 'nope'), ValueError::class],
     'too few parameters' => [fn () => g_signal_emit_by_name(GtkScale::newWithRange(GtkOrientation::HORIZONTAL, 0.0, 1.0, 0.5), 'change-value', 1), ArgumentCountError::class],
@@ -54,6 +59,8 @@ it('refuses what it cannot pass', function (Closure $call, string $error): void 
     'wrong scalar type' => [fn () => g_signal_emit_by_name(GtkScale::newWithRange(GtkOrientation::HORIZONTAL, 0.0, 1.0, 0.5), 'change-value', 'one', 0.5), TypeError::class],
     'GParamSpec parameter' => [fn () => g_signal_emit_by_name(GtkEntry::new(), 'notify::visibility', null), ValueError::class],
     'boxed parameter' => [fn () => g_signal_emit_by_name(GtkTextView::new()->getBuffer(), 'insert-text', 0, 'x', 1), ValueError::class],
+    'enum case past the parameter\'s C type' => [fn () => g_signal_emit_by_name(GtkScale::newWithRange(GtkOrientation::HORIZONTAL, 0.0, 1.0, 0.5), 'move-slider', SignalEmitTooWide::HUGE), ValueError::class, 'does not fit the GtkScrollType of signal move-slider'],
+    'int past the parameter\'s C type' => [fn () => g_signal_emit_by_name(GtkLabel::new(''), 'query-tooltip', 2 ** 40, 0, false, null), ValueError::class, 'does not fit the gint of signal query-tooltip'],
 ]);
 
 it('groups text buffer edits into user actions', function (): void {
@@ -64,6 +71,8 @@ it('groups text buffer edits into user actions', function (): void {
     g_signal_connect($buffer, 'changed', function () use (&$events): void { $events[] = 'changed'; });
 
     $buffer->setText('old');
+    // setText inside a user action starts an irreversible action GTK's undo history refuses there.
+    g_object_set_property($buffer, 'enable-undo', false);
     $events = [];
     $buffer->beginUserAction();
     $buffer->beginUserAction();

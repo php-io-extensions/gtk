@@ -115,6 +115,13 @@ function g_signal_handler_is_connected(GObject $instance, int $handler_id): bool
  */
 function g_object_get_property(GObject $instance, string $property): mixed {}
 
+/**
+ * g_object_set_property(): a writable property set from PHP, converted as g_signal_emit_by_name()
+ * converts parameters (enum cases to their values). ValueError for an unknown, read-only or
+ * construct-only property, or a type it cannot convert; TypeError for a value of the wrong type.
+ */
+function g_object_set_property(GObject $instance, string $property, mixed $value): void {}
+
 function gdk_keyval_to_unicode(int $keyval): int {}
 
 function gdk_keyval_to_lower(int $keyval): int {}

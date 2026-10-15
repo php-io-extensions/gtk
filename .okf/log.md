@@ -1,5 +1,10 @@
 # Log
 
+## 2026-10-14
+
+* GtkTextIter (a copied boxed kind), GtkTextMark, GtkTextTag, GtkTextTagTable, GtkAdjustment; buffer tags, iters, selection and insert mark; text view monospace, cursor visibility and line y-range; scrolled-window adjustments; g_object_set_property (compare-app text panes, C1). 0.10.2. [surface](api/surface.md)
+* g_signal_emit_by_name refuses an int that does not fit its parameter's C type, through the same check g_object_set_property uses (C1 final review). [surface](api/surface.md)
+
 ## 2026-10-10
 
 * GtkLinkButton, GtkLabel markup and current URI, GCancellable, GAsyncResult, GtkUriLauncher (ext-gtk's first ready callback); GdkGLContext::realize frees its GError (toolkit links). [surface](api/surface.md)

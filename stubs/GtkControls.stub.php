@@ -200,6 +200,35 @@ class GtkTextBuffer extends GObject
 
     /** gtk_text_buffer_get_text() between gtk_text_buffer_get_iter_at_offset() iters; -1 = the end */
     public function getText(int $startOffset, int $endOffset, bool $includeHidden = false): string {}
+
+    public function getTagTable(): GtkTextTagTable {}
+
+    /** Null past the last line. */
+    public function getIterAtLine(int $line): ?GtkTextIter {}
+
+    /** Null past the last line or the line's end. */
+    public function getIterAtLineOffset(int $line, int $offset): ?GtkTextIter {}
+
+    public function getStartIter(): GtkTextIter {}
+
+    public function getEndIter(): GtkTextIter {}
+
+    /** The tag must be in this buffer's table and the iters this buffer's (ValueError otherwise). */
+    public function applyTag(GtkTextTag $tag, GtkTextIter $start, GtkTextIter $end): void {}
+
+    public function removeTag(GtkTextTag $tag, GtkTextIter $start, GtkTextIter $end): void {}
+
+    /** @return array{GtkTextIter, GtkTextIter}|null start and end, or null with nothing selected */
+    public function getSelectionBounds(): ?array {}
+
+    /** Moves the insert mark to $ins and the selection bound to $bound in one step. */
+    public function selectRange(GtkTextIter $ins, GtkTextIter $bound): void {}
+
+    public function getInsert(): GtkTextMark {}
+
+    public function getIterAtMark(GtkTextMark $mark): GtkTextIter {}
+
+    public function getLineCount(): int {}
 }
 
 /**
@@ -216,6 +245,20 @@ class GtkTextView extends GtkWidget
     public function setEditable(bool $setting): void {}
 
     public function setWrapMode(GtkWrapMode $wrapMode): void {}
+
+    public function getMonospace(): bool {}
+
+    public function setMonospace(bool $monospace): void {}
+
+    public function getCursorVisible(): bool {}
+
+    public function setCursorVisible(bool $setting): void {}
+
+    /**
+     * @return array{int, int} the line's top y and height, in buffer coordinates; GTK's estimate
+     *                         ([0, 0] before the view is laid out)
+     */
+    public function getLineYrange(GtkTextIter $iter): array {}
 }
 
 /**
@@ -391,4 +434,8 @@ class GtkScrolledWindow extends GtkWidget
     public function setChild(?GtkWidget $child): void {}
 
     public function setPolicy(GtkPolicyType $hscrollbarPolicy, GtkPolicyType $vscrollbarPolicy): void {}
+
+    public function getHadjustment(): GtkAdjustment {}
+
+    public function getVadjustment(): GtkAdjustment {}
 }

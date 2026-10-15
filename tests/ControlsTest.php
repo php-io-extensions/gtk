@@ -159,9 +159,11 @@ it('selects from a drop-down over a string list', function (): void {
 
 it('selects a day on a calendar and reads it back as a GDateTime', function (): void {
     $calendar = GtkCalendar::new();
+    // GTK emits day-selected only when the day of the month changes, and a calendar opens on
+    // today, so it starts from a known day: the 14th, then the 15th.
+    $calendar->selectDay(GDateTime::newLocal(2020, 3, 14, 0, 0, 0.0));
     $days = 0;
     g_signal_connect($calendar, 'day-selected', function () use (&$days): void { $days++; });
-    // A calendar opens on today; a day it is not already on, so the selection changes.
     $date = GDateTime::newLocal(2020, 3, 15, 0, 0, 0.0);
     $calendar->selectDay($date);
 

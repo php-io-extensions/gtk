@@ -60,7 +60,7 @@ it('exposes every function, class, enum and method the stubs declare', function 
 });
 
 it('reports its version', function (): void {
-    expect(phpversion('gtk'))->toBe('0.10.1');
+    expect(phpversion('gtk'))->toBe('0.10.2');
 });
 
 it('keeps the native class hierarchy', function (): void {
@@ -98,6 +98,11 @@ it('keeps the native class hierarchy', function (): void {
         ->and(get_parent_class(GtkSeparator::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GtkScrolledWindow::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GDateTime::class))->toBeFalse()
+        ->and(get_parent_class(GtkTextIter::class))->toBeFalse()
+        ->and(get_parent_class(GtkTextMark::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkTextTag::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkTextTagTable::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkAdjustment::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkSignalListItemFactory::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkListItem::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkColumnViewColumn::class))->toBe(GObject::class)
@@ -115,7 +120,7 @@ it('keeps the native class hierarchy', function (): void {
 
 it('cannot construct native wrappers from PHP', function (string $class): void {
     expect(fn () => new $class())->toThrow(Error::class);
-})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class, GDateTime::class]);
+})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class, GDateTime::class, GtkTextIter::class]);
 
 it('refuses to clone or serialize a native wrapper', function (): void {
     $ctx = GMainContext::default();

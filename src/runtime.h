@@ -45,7 +45,26 @@ typedef enum {
 	PHPGTK_DATE_TIME = 3,          /* g_date_time_ref / g_date_time_unref */
 	PHPGTK_DMABUF_FORMATS = 4,     /* gdk_dmabuf_formats_ref / gdk_dmabuf_formats_unref (GTK 4.14+) */
 	PHPGTK_EVENT = 5,              /* gdk_event_ref / gdk_event_unref */
+	PHPGTK_TEXT_ITER = 6,          /* phpgtk_text_iter: struct copy of the iter + g_object_ref of its buffer on box, g_object_unref and g_free on free */
 } phpgtk_kind;
+
+/* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
+ * and the buffer's text generation when it was taken (GTK invalidates an iter once the text changes). */
+typedef struct {
+	GtkTextIter iter;
+	GtkTextBuffer *buffer;
+	guint generation;
+} phpgtk_text_iter;
+
+/* The box of a GtkTextIter object. */
+#define PHPGTK_ITER_BOX(zobj) ((phpgtk_text_iter *) PHPGTK_PTR(zobj))
+
+/* The GtkTextIter inside a GtkTextIter object's box, or NULL with a GtkException once its buffer's text changed. */
+GtkTextIter *phpgtk_fresh_iter(zend_object *iter_obj);
+
+/* Whether $tag is recorded as in $table (NULL: in any table); a table that was freed counts as none. */
+bool phpgtk_tag_in_table(GtkTextTag *tag, GtkTextTagTable *table);
+void phpgtk_tag_set_table(GtkTextTag *tag, GtkTextTagTable *table);
 
 typedef struct {
 	void *ptr;                     /* referenced native object, NULL before boxing */
@@ -69,6 +88,11 @@ extern zend_class_entry *phpgtk_ce_GApplication;
 extern zend_class_entry *phpgtk_ce_GApplicationFlags;
 extern zend_class_entry *phpgtk_ce_GtkApplication;
 extern zend_class_entry *phpgtk_ce_GMainContext;
+extern zend_class_entry *phpgtk_ce_GtkTextIter;
+extern zend_class_entry *phpgtk_ce_GtkTextMark;
+extern zend_class_entry *phpgtk_ce_GtkTextTag;
+extern zend_class_entry *phpgtk_ce_GtkTextTagTable;
+extern zend_class_entry *phpgtk_ce_GtkAdjustment;
 extern zend_class_entry *phpgtk_ce_GtkOrientation;
 extern zend_class_entry *phpgtk_ce_GtkAlign;
 extern zend_class_entry *phpgtk_ce_GtkWidget;
@@ -167,6 +191,7 @@ void phpgtk_register_GdkSurface(void);
 void phpgtk_register_GdkGLContext(void);
 void phpgtk_register_GtkGLArea(void);
 void phpgtk_register_GdkTexture(void);
+void phpgtk_register_GtkText(void);
 void phpgtk_register_GtkControls(void);
 void phpgtk_register_GtkUriLauncher(void);
 void phpgtk_register_GtkColumnView(void);
@@ -181,6 +206,7 @@ void phpgtk_map_gtype(const char *type_name, zend_class_entry *ce);
 void phpgtk_box_gobject(zval *rv, gpointer object);
 void phpgtk_box_main_context(zval *rv, GMainContext *context);
 void phpgtk_box_variant(zval *rv, GVariant *variant);
+void phpgtk_box_text_iter(zval *rv, const GtkTextIter *iter);
 void phpgtk_box_date_time(zval *rv, GDateTime *date_time);
 #if GTK_CHECK_VERSION(4, 14, 0)
 void phpgtk_box_dmabuf_formats(zval *rv, GdkDmabufFormats *formats);

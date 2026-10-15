@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 9c6a898277006eb52c13ee4bff7758e958c0de0d */
+ * Stub hash: 9f8bd926180dc6c647ad62c05f37049356d21a1f */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_init, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -82,6 +82,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_object_get_property, 0, 2, IS_
 	ZEND_ARG_TYPE_INFO(0, property, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_object_set_property, 0, 3, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, instance, GObject, 0)
+	ZEND_ARG_TYPE_INFO(0, property, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gdk_keyval_to_unicode, 0, 1, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, keyval, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -108,6 +114,7 @@ ZEND_FUNCTION(g_signal_emit_by_name);
 ZEND_FUNCTION(g_signal_handler_disconnect);
 ZEND_FUNCTION(g_signal_handler_is_connected);
 ZEND_FUNCTION(g_object_get_property);
+ZEND_FUNCTION(g_object_set_property);
 ZEND_FUNCTION(gdk_keyval_to_unicode);
 ZEND_FUNCTION(gdk_keyval_to_lower);
 
@@ -132,6 +139,7 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(g_signal_handler_disconnect, arginfo_g_signal_handler_disconnect)
 	ZEND_FE(g_signal_handler_is_connected, arginfo_g_signal_handler_is_connected)
 	ZEND_FE(g_object_get_property, arginfo_g_object_get_property)
+	ZEND_FE(g_object_set_property, arginfo_g_object_set_property)
 	ZEND_FE(gdk_keyval_to_unicode, arginfo_gdk_keyval_to_unicode)
 	ZEND_FE(gdk_keyval_to_lower, arginfo_gdk_keyval_to_lower)
 	ZEND_FE_END
