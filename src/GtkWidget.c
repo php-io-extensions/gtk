@@ -3,10 +3,45 @@
 #include "runtime.h"
 #include "../stubs/GtkWidget_arginfo.h"
 
+ZEND_METHOD(GtkNative, getForSurface);
+ZEND_METHOD(GtkNative, realize);
+ZEND_METHOD(GtkNative, unrealize);
+ZEND_METHOD(GtkNative, getSurface);
+ZEND_METHOD(GtkNative, getSurfaceTransform); /* GtkWindow.c */
+ZEND_METHOD(GtkRoot, getDisplay);
+ZEND_METHOD(GtkRoot, setFocus);
+ZEND_METHOD(GtkRoot, getFocus);
+
+static const phpgtk_interface_method phpgtk_GtkNative_bodies[] = {
+	{"getForSurface", zim_GtkNative_getForSurface},
+	{"realize", zim_GtkNative_realize},
+	{"unrealize", zim_GtkNative_unrealize},
+	{"getSurface", zim_GtkNative_getSurface},
+	{"getSurfaceTransform", zim_GtkNative_getSurfaceTransform},
+	{NULL, NULL},
+};
+
+static const phpgtk_interface_method phpgtk_GtkRoot_bodies[] = {
+	{"getDisplay", zim_GtkRoot_getDisplay},
+	{"setFocus", zim_GtkRoot_setFocus},
+	{"getFocus", zim_GtkRoot_getFocus},
+	{NULL, NULL},
+};
+
 void phpgtk_register_GtkWidget(void)
 {
 	phpgtk_ce_GtkOrientation = register_class_GtkOrientation();
 	phpgtk_ce_GtkAlign = register_class_GtkAlign();
+	phpgtk_ce_GraphenePoint = register_class_GraphenePoint();
+	phpgtk_ce_GrapheneSize = register_class_GrapheneSize();
+	phpgtk_ce_GrapheneRect = register_class_GrapheneRect();
+
+	phpgtk_ce_GtkNative = register_class_GtkNative();
+	phpgtk_interface_bodies(phpgtk_ce_GtkNative, phpgtk_GtkNative_bodies);
+	phpgtk_ce_GtkNative->interface_gets_implemented = phpgtk_interface_native_only;
+	phpgtk_ce_GtkRoot = register_class_GtkRoot();
+	phpgtk_interface_bodies(phpgtk_ce_GtkRoot, phpgtk_GtkRoot_bodies);
+	phpgtk_ce_GtkRoot->interface_gets_implemented = phpgtk_interface_native_only;
 
 	phpgtk_ce_GtkWidget = register_class_GtkWidget(phpgtk_ce_GObject);
 	phpgtk_object_setup(phpgtk_ce_GtkWidget);
@@ -28,7 +63,7 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenuBar);
 	phpgtk_map_gtype("GtkPopoverMenuBar", phpgtk_ce_GtkPopoverMenuBar);
 
-	phpgtk_ce_GtkPopover = register_class_GtkPopover(phpgtk_ce_GtkWidget);
+	phpgtk_ce_GtkPopover = register_class_GtkPopover(phpgtk_ce_GtkWidget, phpgtk_ce_GtkNative);
 	phpgtk_object_setup(phpgtk_ce_GtkPopover);
 	phpgtk_map_gtype("GtkPopover", phpgtk_ce_GtkPopover);
 
@@ -43,14 +78,20 @@ ZEND_METHOD(GtkWidget, show)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	gtk_widget_set_visible(THIS_WIDGET, TRUE);
+	/* Deprecated in GTK 4.10, still in its headers. */
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+	gtk_widget_show(THIS_WIDGET);
+	G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 ZEND_METHOD(GtkWidget, hide)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	gtk_widget_set_visible(THIS_WIDGET, FALSE);
+	/* Deprecated in GTK 4.10, still in its headers. */
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+	gtk_widget_hide(THIS_WIDGET);
+	G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 ZEND_METHOD(GtkWidget, getVisible)
@@ -146,7 +187,7 @@ ZEND_METHOD(GtkWidget, insertActionGroup)
 	gtk_widget_insert_action_group(THIS_WIDGET, ZSTR_VAL(name), group != NULL ? G_ACTION_GROUP(PHPGTK_PTR(group)) : NULL);
 }
 
-ZEND_METHOD(GtkWidget, activateAction)
+ZEND_METHOD(GtkWidget, activateActionVariant)
 {
 	zend_string *name;
 	zend_object *args = NULL;
@@ -212,7 +253,7 @@ ZEND_METHOD(GtkWidget, setSizeRequest)
 		Z_PARAM_LONG(height)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_long_in_range(width, -1, G_MAXINT, 1) || !phpgtk_long_in_range(height, -1, G_MAXINT, 2)) {
+	if (!phpgtk_long_in_range(width, G_MININT, G_MAXINT, 1) || !phpgtk_long_in_range(height, G_MININT, G_MAXINT, 2)) {
 		RETURN_THROWS();
 	}
 
@@ -316,7 +357,7 @@ ZEND_METHOD(GtkWidget, name) \
 	ZEND_PARSE_PARAMETERS_START(1, 1) \
 		Z_PARAM_LONG(margin) \
 	ZEND_PARSE_PARAMETERS_END(); \
-	if (!phpgtk_long_in_range(margin, G_MININT16, G_MAXINT16, 1)) { \
+	if (!phpgtk_long_in_range(margin, G_MININT, G_MAXINT, 1)) { \
 		RETURN_THROWS(); \
 	} \
 	call(THIS_WIDGET, (int) margin); \
@@ -365,25 +406,24 @@ ZEND_METHOD(GtkWidget, addController)
 ZEND_METHOD(GtkWidget, computePoint)
 {
 	zend_object *target;
-	double x;
-	double y;
-	graphene_point_t in;
-	graphene_point_t out;
+	zend_object *point;
+	zval *out_point_ref;
+	graphene_point_t out = GRAPHENE_POINT_INIT_ZERO;
+	zval boxed;
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJ_OF_CLASS(target, phpgtk_ce_GtkWidget)
-		Z_PARAM_DOUBLE(x)
-		Z_PARAM_DOUBLE(y)
+		Z_PARAM_OBJ_OF_CLASS(point, phpgtk_ce_GraphenePoint)
+		Z_PARAM_ZVAL(out_point_ref)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	graphene_point_init(&in, (float) x, (float) y);
-	if (!gtk_widget_compute_point(THIS_WIDGET, GTK_WIDGET(PHPGTK_PTR(target)), &in, &out)) {
-		RETURN_NULL();
-	}
-	array_init_size(return_value, 2);
-	add_next_index_double(return_value, out.x);
-	add_next_index_double(return_value, out.y);
+	graphene_point_t in = phpgtk_graphene_point_from(point);
+	gboolean computed = gtk_widget_compute_point(THIS_WIDGET, GTK_WIDGET(PHPGTK_PTR(target)), &in, &out);
+
+	phpgtk_graphene_point_to(&boxed, &out);
+	ZEND_TRY_ASSIGN_REF_TMP(out_point_ref, &boxed);
+	RETURN_BOOL(computed);
 }
 
 ZEND_METHOD(GtkWidget, pick)
@@ -439,7 +479,7 @@ ZEND_METHOD(GtkWidget, measure)
 		Z_PARAM_LONG(for_size)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_long_in_range(for_size, -1, G_MAXINT, 2)) {
+	if (!phpgtk_long_in_range(for_size, G_MININT, G_MAXINT, 2)) {
 		RETURN_THROWS();
 	}
 
@@ -463,21 +503,20 @@ ZEND_METHOD(GtkWidget, getNative)
 ZEND_METHOD(GtkWidget, computeBounds)
 {
 	zend_object *target;
-	graphene_rect_t bounds;
+	zval *out_bounds_ref;
+	graphene_rect_t bounds = GRAPHENE_RECT_INIT_ZERO;
+	zval boxed;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
+	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_OBJ_OF_CLASS(target, phpgtk_ce_GtkWidget)
+		Z_PARAM_ZVAL(out_bounds_ref)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!gtk_widget_compute_bounds(THIS_WIDGET, GTK_WIDGET(PHPGTK_PTR(target)), &bounds)) {
-		RETURN_NULL();
-	}
+	gboolean computed = gtk_widget_compute_bounds(THIS_WIDGET, GTK_WIDGET(PHPGTK_PTR(target)), &bounds);
 
-	array_init_size(return_value, 4);
-	add_next_index_double(return_value, bounds.origin.x);
-	add_next_index_double(return_value, bounds.origin.y);
-	add_next_index_double(return_value, bounds.size.width);
-	add_next_index_double(return_value, bounds.size.height);
+	phpgtk_graphene_rect_to(&boxed, &bounds);
+	ZEND_TRY_ASSIGN_REF_TMP(out_bounds_ref, &boxed);
+	RETURN_BOOL(computed);
 }
 
 ZEND_METHOD(GtkWidget, getFirstChild)
@@ -508,15 +547,146 @@ ZEND_METHOD(GtkWidget, getRoot)
 	phpgtk_box_gobject(return_value, gtk_widget_get_root(THIS_WIDGET));
 }
 
-ZEND_METHOD(GtkWidget, getSurface)
+/* ---- GraphenePoint ----------------------------------------------------- */
+
+ZEND_METHOD(GraphenePoint, __construct)
+{
+	double x, y;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_DOUBLE(x)
+		Z_PARAM_DOUBLE(y)
+	ZEND_PARSE_PARAMETERS_END();
+
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 0), x);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 1), y);
+}
+
+/* The struct a GraphenePoint object holds: x, y. */
+graphene_point_t phpgtk_graphene_point_from(zend_object *point)
+{
+	graphene_point_t out = GRAPHENE_POINT_INIT((float) zval_get_double(OBJ_PROP_NUM(point, 0)), (float) zval_get_double(OBJ_PROP_NUM(point, 1)));
+
+	return out;
+}
+
+void phpgtk_graphene_point_to(zval *rv, const graphene_point_t *point)
+{
+	object_init_ex(rv, phpgtk_ce_GraphenePoint);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(rv), 0), point->x);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(rv), 1), point->y);
+}
+
+/* ---- GrapheneSize / GrapheneRect --------------------------------------- */
+
+ZEND_METHOD(GrapheneSize, __construct)
+{
+	double width, height;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_DOUBLE(width)
+		Z_PARAM_DOUBLE(height)
+	ZEND_PARSE_PARAMETERS_END();
+
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 0), width);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 1), height);
+}
+
+ZEND_METHOD(GrapheneRect, __construct)
+{
+	zend_object *origin;
+	zend_object *size;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(origin, phpgtk_ce_GraphenePoint)
+		Z_PARAM_OBJ_OF_CLASS(size, phpgtk_ce_GrapheneSize)
+	ZEND_PARSE_PARAMETERS_END();
+
+	/* A second __construct() call replaces the fields it set before. */
+	zval *origin_slot = OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 0);
+	zval *size_slot = OBJ_PROP_NUM(Z_OBJ_P(ZEND_THIS), 1);
+	zval_ptr_dtor(origin_slot);
+	ZVAL_OBJ_COPY(origin_slot, origin);
+	zval_ptr_dtor(size_slot);
+	ZVAL_OBJ_COPY(size_slot, size);
+}
+
+/* A new GrapheneRect holding a new GraphenePoint origin and GrapheneSize size. */
+void phpgtk_graphene_rect_to(zval *rv, const graphene_rect_t *rect)
+{
+	zval origin, size;
+
+	phpgtk_graphene_point_to(&origin, &rect->origin);
+	object_init_ex(&size, phpgtk_ce_GrapheneSize);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ(size), 0), rect->size.width);
+	ZVAL_DOUBLE(OBJ_PROP_NUM(Z_OBJ(size), 1), rect->size.height);
+
+	object_init_ex(rv, phpgtk_ce_GrapheneRect);
+	ZVAL_COPY_VALUE(OBJ_PROP_NUM(Z_OBJ_P(rv), 0), &origin);
+	ZVAL_COPY_VALUE(OBJ_PROP_NUM(Z_OBJ_P(rv), 1), &size);
+}
+
+/* ---- GtkNative / GtkRoot ----------------------------------------------- */
+
+/* $this's native object, implementing GtkNative (GtkWindow, GtkPopover) or GtkRoot (GtkWindow). */
+#define THIS_NATIVE GTK_NATIVE(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+#define THIS_ROOT GTK_ROOT(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkNative, getForSurface)
+{
+	zend_object *surface;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(surface, phpgtk_ce_GdkSurface)
+	ZEND_PARSE_PARAMETERS_END();
+
+	phpgtk_box_gobject(return_value, gtk_native_get_for_surface(GDK_SURFACE(PHPGTK_PTR(surface))));
+}
+
+ZEND_METHOD(GtkNative, realize)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	if (!GTK_IS_NATIVE(THIS_WIDGET)) {
-		RETURN_NULL();
-	}
+	gtk_native_realize(THIS_NATIVE);
+}
 
-	phpgtk_box_gobject(return_value, gtk_native_get_surface(GTK_NATIVE(THIS_WIDGET)));
+ZEND_METHOD(GtkNative, unrealize)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_native_unrealize(THIS_NATIVE);
+}
+
+ZEND_METHOD(GtkNative, getSurface)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_native_get_surface(THIS_NATIVE));
+}
+
+ZEND_METHOD(GtkRoot, getDisplay)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_root_get_display(THIS_ROOT));
+}
+
+ZEND_METHOD(GtkRoot, setFocus)
+{
+	zend_object *focus = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(focus, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_root_set_focus(THIS_ROOT, focus != NULL ? GTK_WIDGET(PHPGTK_PTR(focus)) : NULL);
+}
+
+ZEND_METHOD(GtkRoot, getFocus)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_root_get_focus(THIS_ROOT));
 }
 
 /* ---- GtkBox ------------------------------------------------------------ */
@@ -538,25 +708,22 @@ ZEND_METHOD(GtkBox, new)
 	phpgtk_box_gobject(return_value, gtk_box_new((GtkOrientation) phpgtk_enum_value(orientation, 0), (int) spacing));
 }
 
-/* Inserts need an unparented child, removes need our own child: GTK asserts both. */
-#define PHPGTK_BOX_CHILD_METHOD(name, call, expected_parent) \
+/* GTK asserts the child's parent: NULL for an insert, this box for a remove or a move. */
+#define PHPGTK_BOX_CHILD_METHOD(name, call) \
 ZEND_METHOD(GtkBox, name) \
 { \
 	zend_object *child; \
 	ZEND_PARSE_PARAMETERS_START(1, 1) \
 		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget) \
 	ZEND_PARSE_PARAMETERS_END(); \
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), expected_parent, 1)) { \
-		RETURN_THROWS(); \
-	} \
 	call(THIS_BOX, GTK_WIDGET(PHPGTK_PTR(child))); \
 }
 
-PHPGTK_BOX_CHILD_METHOD(append, gtk_box_append, NULL)
-PHPGTK_BOX_CHILD_METHOD(prepend, gtk_box_prepend, NULL)
-PHPGTK_BOX_CHILD_METHOD(remove, gtk_box_remove, GTK_WIDGET(THIS_BOX))
+PHPGTK_BOX_CHILD_METHOD(append, gtk_box_append)
+PHPGTK_BOX_CHILD_METHOD(prepend, gtk_box_prepend)
+PHPGTK_BOX_CHILD_METHOD(remove, gtk_box_remove)
 
-#define PHPGTK_BOX_SIBLING_METHOD(name, call, child_parent) \
+#define PHPGTK_BOX_SIBLING_METHOD(name, call) \
 ZEND_METHOD(GtkBox, name) \
 { \
 	zend_object *child; \
@@ -565,17 +732,11 @@ ZEND_METHOD(GtkBox, name) \
 		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget) \
 		Z_PARAM_OBJ_OF_CLASS_OR_NULL(sibling, phpgtk_ce_GtkWidget) \
 	ZEND_PARSE_PARAMETERS_END(); \
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), child_parent, 1)) { \
-		RETURN_THROWS(); \
-	} \
-	if (sibling != NULL && !phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(sibling)), GTK_WIDGET(THIS_BOX), 2)) { \
-		RETURN_THROWS(); \
-	} \
 	call(THIS_BOX, GTK_WIDGET(PHPGTK_PTR(child)), (GtkWidget *) PHPGTK_OPTIONAL_PTR(sibling)); \
 }
 
-PHPGTK_BOX_SIBLING_METHOD(insertChildAfter, gtk_box_insert_child_after, NULL)
-PHPGTK_BOX_SIBLING_METHOD(reorderChildAfter, gtk_box_reorder_child_after, GTK_WIDGET(THIS_BOX))
+PHPGTK_BOX_SIBLING_METHOD(insertChildAfter, gtk_box_insert_child_after)
+PHPGTK_BOX_SIBLING_METHOD(reorderChildAfter, gtk_box_reorder_child_after)
 
 ZEND_METHOD(GtkBox, getSpacing)
 {
@@ -642,11 +803,11 @@ ZEND_METHOD(GtkGrid, attach)
 		Z_PARAM_LONG(height)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), NULL, 1)
-			|| !phpgtk_long_in_range(column, G_MININT, G_MAXINT, 2)
+	/* All four are ints; GTK judges a parented child and a span below 1 (criticals). */
+	if (!phpgtk_long_in_range(column, G_MININT, G_MAXINT, 2)
 			|| !phpgtk_long_in_range(row, G_MININT, G_MAXINT, 3)
-			|| !phpgtk_long_in_range(width, 1, G_MAXINT, 4)
-			|| !phpgtk_long_in_range(height, 1, G_MAXINT, 5)) {
+			|| !phpgtk_long_in_range(width, G_MININT, G_MAXINT, 4)
+			|| !phpgtk_long_in_range(height, G_MININT, G_MAXINT, 5)) {
 		RETURN_THROWS();
 	}
 
@@ -660,10 +821,6 @@ ZEND_METHOD(GtkGrid, remove)
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), GTK_WIDGET(THIS_GRID), 1)) {
-		RETURN_THROWS();
-	}
 
 	gtk_grid_remove(THIS_GRID, GTK_WIDGET(PHPGTK_PTR(child)));
 }
@@ -700,8 +857,8 @@ ZEND_METHOD(GtkGrid, setRowSpacing)
 		Z_PARAM_LONG(spacing)
 	ZEND_PARSE_PARAMETERS_END();
 
-	/* GTK asserts spacing <= G_MAXINT16; a negative long would wrap to a huge guint. */
-	if (!phpgtk_long_in_range(spacing, 0, G_MAXINT16, 1)) {
+	/* A spacing is a guint; GTK judges one past G_MAXINT16 (a critical). */
+	if (!phpgtk_long_in_range(spacing, 0, (zend_long) G_MAXUINT, 1)) {
 		RETURN_THROWS();
 	}
 
@@ -723,7 +880,7 @@ ZEND_METHOD(GtkGrid, setColumnSpacing)
 		Z_PARAM_LONG(spacing)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_long_in_range(spacing, 0, G_MAXINT16, 1)) {
+	if (!phpgtk_long_in_range(spacing, 0, (zend_long) G_MAXUINT, 1)) {
 		RETURN_THROWS();
 	}
 
@@ -743,8 +900,8 @@ ZEND_METHOD(GtkFixed, new)
 	phpgtk_box_gobject(return_value, gtk_fixed_new());
 }
 
-/* put needs an unparented child, move needs our own child: GTK asserts both. */
-#define PHPGTK_FIXED_POSITION_METHOD(name, call, expected_parent) \
+/* GTK asserts the child's parent: NULL for put, this fixed for move. */
+#define PHPGTK_FIXED_POSITION_METHOD(name, call) \
 ZEND_METHOD(GtkFixed, name) \
 { \
 	zend_object *child; \
@@ -755,14 +912,11 @@ ZEND_METHOD(GtkFixed, name) \
 		Z_PARAM_DOUBLE(x) \
 		Z_PARAM_DOUBLE(y) \
 	ZEND_PARSE_PARAMETERS_END(); \
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), expected_parent, 1)) { \
-		RETURN_THROWS(); \
-	} \
 	call(THIS_FIXED, GTK_WIDGET(PHPGTK_PTR(child)), x, y); \
 }
 
-PHPGTK_FIXED_POSITION_METHOD(put, gtk_fixed_put, NULL)
-PHPGTK_FIXED_POSITION_METHOD(move, gtk_fixed_move, GTK_WIDGET(THIS_FIXED))
+PHPGTK_FIXED_POSITION_METHOD(put, gtk_fixed_put)
+PHPGTK_FIXED_POSITION_METHOD(move, gtk_fixed_move)
 
 ZEND_METHOD(GtkFixed, remove)
 {
@@ -771,10 +925,6 @@ ZEND_METHOD(GtkFixed, remove)
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), GTK_WIDGET(THIS_FIXED), 1)) {
-		RETURN_THROWS();
-	}
 
 	gtk_fixed_remove(THIS_FIXED, GTK_WIDGET(PHPGTK_PTR(child)));
 }
@@ -789,10 +939,7 @@ ZEND_METHOD(GtkFixed, getChildPosition)
 		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_require_parent(GTK_WIDGET(PHPGTK_PTR(child)), GTK_WIDGET(THIS_FIXED), 1)) {
-		RETURN_THROWS();
-	}
-
+	/* GTK leaves x and y unwritten (with a critical) for a widget that is not its child: they answer 0.0. */
 	gtk_fixed_get_child_position(THIS_FIXED, GTK_WIDGET(PHPGTK_PTR(child)), &x, &y);
 
 	array_init_size(return_value, 2);
@@ -848,11 +995,6 @@ ZEND_METHOD(GtkPopover, setParent)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	if (gtk_widget_get_parent(GTK_WIDGET(THIS_POPOVER)) != NULL) {
-		zend_value_error("GtkPopover::setParent(): the popover already has a parent; unparent() it first");
-		RETURN_THROWS();
-	}
-
 	gtk_widget_set_parent(GTK_WIDGET(THIS_POPOVER), GTK_WIDGET(PHPGTK_PTR(parent)));
 }
 
@@ -866,19 +1008,24 @@ ZEND_METHOD(GtkPopover, unparent)
 
 ZEND_METHOD(GtkPopover, setPointingTo)
 {
-	zend_long x;
-	zend_long y;
-	zend_long width;
-	zend_long height;
+	zend_object *rectangle = NULL;
 
-	ZEND_PARSE_PARAMETERS_START(4, 4)
-		Z_PARAM_LONG(x)
-		Z_PARAM_LONG(y)
-		Z_PARAM_LONG(width)
-		Z_PARAM_LONG(height)
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(rectangle, phpgtk_ce_GdkRectangle)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (width < 0 || height < 0 || x < INT_MIN || x > INT_MAX || y < INT_MIN || y > INT_MAX || width > INT_MAX || height > INT_MAX) {
+	if (rectangle == NULL) {
+		gtk_popover_set_pointing_to(THIS_POPOVER, NULL);
+		return;
+	}
+
+	zend_long x = zval_get_long(OBJ_PROP_NUM(rectangle, 0));
+	zend_long y = zval_get_long(OBJ_PROP_NUM(rectangle, 1));
+	zend_long width = zval_get_long(OBJ_PROP_NUM(rectangle, 2));
+	zend_long height = zval_get_long(OBJ_PROP_NUM(rectangle, 3));
+
+	/* Each field is an int; GTK stores the rectangle as given. */
+	if (x < INT_MIN || x > INT_MAX || y < INT_MIN || y > INT_MAX || width < INT_MIN || width > INT_MAX || height < INT_MIN || height > INT_MAX) {
 		zend_value_error("GtkPopover::setPointingTo(): the rectangle must fit a GdkRectangle, with no negative size");
 		RETURN_THROWS();
 	}
@@ -889,24 +1036,20 @@ ZEND_METHOD(GtkPopover, setPointingTo)
 
 ZEND_METHOD(GtkPopover, getPointingTo)
 {
-	GdkRectangle rect;
+	zval *rect_ref;
+	GdkRectangle rect = { 0, 0, 0, 0 };
+	zval boxed;
 
-	ZEND_PARSE_PARAMETERS_NONE();
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ZVAL(rect_ref)
+	ZEND_PARSE_PARAMETERS_END();
 
-	/* With no rectangle set, GTK measures the parent. */
-	if (gtk_widget_get_parent(GTK_WIDGET(THIS_POPOVER)) == NULL) {
-		zend_value_error("GtkPopover::getPointingTo(): the popover has no parent");
-		RETURN_THROWS();
-	}
-	if (!gtk_popover_get_pointing_to(THIS_POPOVER, &rect)) {
-		RETURN_NULL();
-	}
+	/* With no rectangle set, GTK measures the parent: with none, a critical, FALSE and a zeroed rectangle. */
+	gboolean set = gtk_popover_get_pointing_to(THIS_POPOVER, &rect);
 
-	array_init_size(return_value, 4);
-	add_next_index_long(return_value, rect.x);
-	add_next_index_long(return_value, rect.y);
-	add_next_index_long(return_value, rect.width);
-	add_next_index_long(return_value, rect.height);
+	phpgtk_rectangle_to(&boxed, &rect);
+	ZEND_TRY_ASSIGN_REF_TMP(rect_ref, &boxed);
+	RETURN_BOOL(set);
 }
 
 ZEND_METHOD(GtkPopover, setHasArrow)

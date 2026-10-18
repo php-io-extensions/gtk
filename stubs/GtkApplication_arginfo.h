@@ -1,7 +1,7 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 5f744d06a82756332a7c5b11f1db97b8beb1195d */
+ * Stub hash: fd1979e6c1d31d7ffd0b82875dd54a409f15e58c */
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkApplication_new, 0, 2, GtkApplication, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkApplication_new, 0, 2, GtkApplication, 1)
 	ZEND_ARG_TYPE_INFO(0, applicationId, IS_STRING, 1)
 	ZEND_ARG_OBJ_TYPE_MASK(0, flags, GApplicationFlags, MAY_BE_LONG, NULL)
 ZEND_END_ARG_INFO()

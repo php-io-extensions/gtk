@@ -1,10 +1,10 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 07aa69be389f572591045c5465baf4993bf47ffa */
+ * Stub hash: 668a9d360de1733bfe464c5cd12856ceecc7cd3e */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GDateTime___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GDateTime_newLocal, 0, 6, GDateTime, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GDateTime_newLocal, 0, 6, GDateTime, 1)
 	ZEND_ARG_TYPE_INFO(0, year, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, month, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, day, IS_LONG, 0)

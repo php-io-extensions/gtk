@@ -18,6 +18,36 @@ enum GtkAlign: int
     case BASELINE_CENTER = 5;
 }
 
+/** graphene_point_t: a point, x and y. */
+final class GraphenePoint
+{
+    public float $x;
+
+    public float $y;
+
+    public function __construct(float $x, float $y) {}
+}
+
+/** graphene_size_t: a size, width and height. */
+final class GrapheneSize
+{
+    public float $width;
+
+    public float $height;
+
+    public function __construct(float $width, float $height) {}
+}
+
+/** graphene_rect_t: a rectangle, its origin and its size. */
+final class GrapheneRect
+{
+    public GraphenePoint $origin;
+
+    public GrapheneSize $size;
+
+    public function __construct(GraphenePoint $origin, GrapheneSize $size) {}
+}
+
 /**
  * @not-serializable
  */
@@ -45,11 +75,10 @@ class GtkWidget extends GObject
 
     public function getParent(): ?GtkWidget {}
 
-    /** @param GObject|null $group a GActionGroup, or null to remove the prefix */
-    public function insertActionGroup(string $name, ?GObject $group): void {}
+    /** $group null removes the prefix. */
+    public function insertActionGroup(string $name, ?GActionGroup $group): void {}
 
-    /** gtk_widget_activate_action_variant() */
-    public function activateAction(string $name, ?GVariant $args): bool {}
+    public function activateActionVariant(string $name, ?GVariant $args): bool {}
 
     /** gtk_widget_activate(): false when the widget is not activatable */
     public function activate(): bool {}
@@ -111,11 +140,10 @@ class GtkWidget extends GObject
     public function removeController(GtkEventController $controller): void {}
 
     /**
-     * gtk_widget_compute_point(): ($x, $y) in this widget's coordinates, in $target's.
-     *
-     * @return array{0: float, 1: float}|null null when the widgets share no common ancestor
+     * gtk_widget_compute_point(): $point in this widget's coordinates, written to $outPoint in $target's.
+     * False when the widgets share no common ancestor.
      */
-    public function computePoint(GtkWidget $target, float $x, float $y): ?array {}
+    public function computePoint(GtkWidget $target, GraphenePoint $point, ?GraphenePoint &$outPoint): bool {}
 
     /** gtk_widget_pick(): the innermost descendant at ($x, $y) in this widget's coordinates; $flags GTK_PICK_* ORed. */
     public function pick(float $x, float $y, int $flags): ?GtkWidget {}
@@ -125,15 +153,14 @@ class GtkWidget extends GObject
     /** @return array{minimum: int, natural: int, minimumBaseline: int, naturalBaseline: int} */
     public function measure(GtkOrientation $orientation, int $forSize): array {}
 
-    /** gtk_widget_get_native(): the GtkNative ancestor (a window), boxed as its widget class */
-    public function getNative(): ?GtkWidget {}
+    /** gtk_widget_get_native(): the GtkNative ancestor (a window or popover), boxed as its widget class */
+    public function getNative(): ?GtkNative {}
 
     /**
-     * gtk_widget_compute_bounds(): this widget's border box in $target's coordinates.
-     *
-     * @return array{float, float, float, float}|null [x, y, width, height]; null when the two share no common ancestor
+     * gtk_widget_compute_bounds(): this widget's border box in $target's coordinates, written to $outBounds.
+     * False when the two share no common ancestor.
      */
-    public function computeBounds(GtkWidget $target): ?array {}
+    public function computeBounds(GtkWidget $target, ?GrapheneRect &$outBounds): bool {}
 
     public function getFirstChild(): ?GtkWidget {}
 
@@ -143,10 +170,32 @@ class GtkWidget extends GObject
     public function getDisplay(): GdkDisplay {}
 
     /** gtk_widget_get_root(): the GtkRoot ancestor (a window), boxed as its widget class */
-    public function getRoot(): ?GtkWidget {}
+    public function getRoot(): ?GtkRoot {}
+}
 
-    /** gtk_native_get_surface() when this widget is a GtkNative (a window), else null */
-    public function getSurface(): ?GdkSurface {}
+/** GtkNative: a widget with its own GdkSurface, implemented by GtkWindow and GtkPopover. */
+interface GtkNative
+{
+    public static function getForSurface(GdkSurface $surface): ?GtkNative;
+
+    public function realize(): void;
+
+    public function unrealize(): void;
+
+    public function getSurface(): ?GdkSurface;
+
+    /** gtk_native_get_surface_transform(): the widget's origin in its surface, where event positions are, written to $x and $y. */
+    public function getSurfaceTransform(?float &$x, ?float &$y): void;
+}
+
+/** GtkRoot: the root of a widget tree, implemented by GtkWindow. */
+interface GtkRoot
+{
+    public function getDisplay(): GdkDisplay;
+
+    public function setFocus(?GtkWidget $focus): void;
+
+    public function getFocus(): ?GtkWidget;
 }
 
 /**
@@ -229,11 +278,11 @@ class GtkPopoverMenuBar extends GtkWidget
 /**
  * @not-serializable
  */
-class GtkPopover extends GtkWidget
+class GtkPopover extends GtkWidget implements GtkNative
 {
     /**
      * gtk_widget_set_parent(), bound for popovers only: a popover is attached to any widget this way
-     * and placed by itself. Refused while it has a parent. (GtkWidget has no unparent(): on a
+     * and placed by itself. GTK answers a popover that has a parent with a critical. (GtkWidget has no unparent(): on a
      * container's child it leaves the container's pointers dangling.)
      */
     public function setParent(GtkWidget $parent): void {}
@@ -241,11 +290,14 @@ class GtkPopover extends GtkWidget
     /** gtk_widget_unparent(): takes the popover off the widget setParent() attached it to. */
     public function unparent(): void {}
 
-    /** gtk_popover_set_pointing_to(): the rectangle, in its parent's coordinates, it points at. */
-    public function setPointingTo(int $x, int $y, int $width, int $height): void {}
+    /** gtk_popover_set_pointing_to(): the rectangle, in its parent's coordinates, it points at; null unsets it. */
+    public function setPointingTo(?GdkRectangle $rect): void {}
 
-    /** @return array{int, int, int, int}|null x, y, width, height; null until set. Refused with no parent: GTK measures the parent when nothing was set. */
-    public function getPointingTo(): ?array {}
+    /**
+     * gtk_popover_get_pointing_to(): the rectangle written to $rect; false when none was set, with $rect
+     * the parent's bounds. With neither a rectangle nor a parent, GTK logs a critical: false and a zeroed $rect.
+     */
+    public function getPointingTo(?GdkRectangle &$rect): bool {}
 
     public function setHasArrow(bool $hasArrow): void {}
 

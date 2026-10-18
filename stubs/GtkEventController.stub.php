@@ -74,8 +74,8 @@ class GdkEvent
 {
     public function getEventType(): GdkEventType {}
 
-    /** @return array{0: float, 1: float}|null [x, y] in the event's surface coordinates; null for an event with none */
-    public function getPosition(): ?array {}
+    /** gdk_event_get_position(): the position in the event's surface coordinates, written to $x and $y; false for an event with none. */
+    public function getPosition(?float &$x, ?float &$y): bool {}
 
     public function getPointerEmulated(): bool {}
 
@@ -170,7 +170,7 @@ class GtkEventControllerLegacy extends GtkEventController
  *
  * @not-serializable
  */
-class GtkSettings extends GObject
+class GtkSettings extends GObject implements GtkStyleProvider
 {
     public static function getDefault(): ?GtkSettings {}
 }

@@ -40,10 +40,6 @@ ZEND_METHOD(GDateTime, newLocal)
 	}
 
 	date_time = g_date_time_new_local((gint) year, (gint) month, (gint) day, (gint) hour, (gint) minute, (gdouble) seconds);
-	if (date_time == NULL) {
-		zend_value_error("GDateTime::newLocal(): the date and time are not valid");
-		RETURN_THROWS();
-	}
 
 	phpgtk_box_date_time(return_value, date_time);
 }

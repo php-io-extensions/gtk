@@ -11,7 +11,7 @@ final class GVariant
 
     public static function newBoolean(bool $value): GVariant {}
 
-    public static function newString(string $string): GVariant {}
+    public static function newString(string $string): ?GVariant {}
 
     public static function newInt32(int $value): GVariant {}
 
@@ -19,7 +19,7 @@ final class GVariant
 
     public function getBoolean(): bool {}
 
-    public function getString(): string {}
+    public function getString(): ?string {}
 
     public function getInt32(): int {}
 

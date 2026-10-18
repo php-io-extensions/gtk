@@ -3,7 +3,18 @@ PHP_ARG_ENABLE([gtk],
   [AS_HELP_STRING([--enable-gtk], [Enable GTK 4 bindings])],
   [no])
 
+PHP_ARG_ENABLE([gtk-probes],
+  [whether to build the gtk probe switch],
+  [AS_HELP_STRING([--enable-gtk-probes],
+    [Build the PHPGTK_PROBE_OFF switch that tests/Probes drives: env PHPGTK_PROBE_OFF=<site id> turns that kept refusal off. Never for a release build])],
+  [no],
+  [no])
+
 if test "$PHP_GTK" != "no"; then
+  if test "$PHP_GTK_PROBES" != "no"; then
+    AC_DEFINE([PHPGTK_PROBES], [1], [Kept refusal sites can be turned off through env PHPGTK_PROBE_OFF])
+  fi
+
   PKG_CHECK_MODULES([GTK], [gtk4 >= 4.12 glib-2.0 >= 2.74 gio-unix-2.0])
   PHP_EVAL_INCLINE([$GTK_CFLAGS])
   PHP_EVAL_LIBLINE([$GTK_LIBS], [GTK_SHARED_LIBADD])

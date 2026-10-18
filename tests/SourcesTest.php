@@ -65,11 +65,34 @@ it('runs an idle source on the next iteration', function (): void {
     expect($ran)->toBeTrue();
 });
 
-it('wakes on a readable descriptor', function (string $as): void {
+/**
+ * The descriptor number a socket stream holds: the /dev/fd entry that is the same socket. Linux links it
+ * to "socket:[<inode>]", which stat() cannot follow; on macOS it is the entry with the same inode and file
+ * type (macOS reports a socket's device as -1 through fstat and as /dev's through /dev/fd).
+ */
+function descriptorOf($socket): int
+{
+    $own = fstat($socket);
+    foreach (scandir('/dev/fd') as $entry) {
+        if (ctype_digit($entry) && is_link('/dev/fd/'.$entry) && readlink('/dev/fd/'.$entry) === 'socket:['.$own['ino'].']') {
+            return (int) $entry;
+        }
+        // scandir()'s own descriptor is listed too, and closed by now.
+        $candidate = ctype_digit($entry) && file_exists('/dev/fd/'.$entry) ? stat('/dev/fd/'.$entry) : false;
+        if ($candidate !== false && $candidate['ino'] === $own['ino'] && ($candidate['mode'] & 0170000) === ($own['mode'] & 0170000)) {
+            return (int) $entry;
+        }
+    }
+
+    throw new RuntimeException('no /dev/fd entry for the socket');
+}
+
+it('wakes on a readable descriptor', function (): void {
     [$read, $write] = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
+    $fd = descriptorOf($read);
     $seen = null;
 
-    g_unix_fd_add($as === 'Socket' ? socket_import_stream($read) : $read, GIOCondition::IN, function (int $fd, int $condition) use (&$seen): bool {
+    g_unix_fd_add($fd, GIOCondition::IN, function (int $fd, int $condition) use (&$seen): bool {
         $seen = [$fd, $condition];
 
         return G_SOURCE_REMOVE;
@@ -78,15 +101,21 @@ it('wakes on a readable descriptor', function (string $as): void {
     fwrite($write, 'x');
 
     expect(iterateUntil(function () use (&$seen): bool { return $seen !== null; }))->toBeTrue()
-        ->and($seen[0])->toBeGreaterThan(2)
+        ->and($seen[0])->toBe($fd)
         ->and($seen[1] & GIOCondition::IN->value)->toBe(GIOCondition::IN->value);
-})->with(['stream', 'Socket']);
+});
+
+it('takes the descriptor as a gint, as g_unix_fd_add does, not a stream', function (): void {
+    [$read] = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
+
+    expect(fn () => g_unix_fd_add($read, GIOCondition::IN, fn () => false))->toThrow(TypeError::class);
+});
 
 it('accepts an OR of conditions as an int', function (): void {
     [$read, $write] = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
     $seen = false;
 
-    g_unix_fd_add($read, GIOCondition::IN->value | GIOCondition::HUP->value, function () use (&$seen): bool {
+    g_unix_fd_add(descriptorOf($read), GIOCondition::IN->value | GIOCondition::HUP->value, function () use (&$seen): bool {
         $seen = true;
 
         return G_SOURCE_REMOVE;
@@ -113,6 +142,23 @@ it('rejects bad arguments', function (): void {
     expect(fn () => g_timeout_add(-1, fn () => false))->toThrow(ValueError::class)
         ->and(fn () => g_idle_add('no_such_function'))->toThrow(TypeError::class)
         ->and(fn () => g_unix_fd_add('3', GIOCondition::IN, fn () => false))->toThrow(TypeError::class)
-        ->and(fn () => g_unix_fd_add(-1, GIOCondition::IN, fn () => false))->toThrow(ValueError::class)
-        ->and(g_source_remove(0))->toBeFalse();
+        ->and(fn () => g_unix_fd_add(4_294_967_296, GIOCondition::IN, fn () => false))->toThrow(ValueError::class);
+});
+
+it('refuses a source id with no guint form, which the conversion would truncate', function (): void {
+    expect(fn () => g_source_remove(-1))->toThrow(ValueError::class, 'g_source_remove(): Argument #1 ($tag) must be between 0 and 4294967295')
+        ->and(fn () => g_source_remove(4_294_967_296))->toThrow(ValueError::class, 'must be between 0 and 4294967295');
+});
+
+it('hands GLib a negative fd and source ids it does not hold, and answers what GLib answers', function (): void {
+    $run = gtkChild(<<<'PHP'
+        // GLib takes a negative fd as a source that never dispatches.
+        $negative = g_unix_fd_add(-1, GIOCondition::IN, fn () => false);
+
+        return [$negative > 0, g_source_remove($negative), g_source_remove(0), g_source_remove(999_999)];
+    PHP, init: false);
+
+    expect($run['result'])->toBe([true, true, false, false])
+        ->and($run['stderr'])->toContain("g_source_remove: assertion 'tag > 0' failed")
+        ->and($run['stderr'])->toContain('Source ID 999999 was not found when attempting to remove it');
 });

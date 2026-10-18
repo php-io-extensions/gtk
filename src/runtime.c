@@ -2,6 +2,12 @@
 #include "php_network.h"
 
 #if __has_include("ext/sockets/php_sockets.h")
+/* A PHP that builds ext/sockets shared (Debian and Ubuntu packages) leaves HAVE_SOCKETS out of
+ * php_config.h, and php_sockets.h declares php_socket only under it. Socket objects are found
+ * by class name at run time, so the struct is all this file needs from the header. */
+# ifndef HAVE_SOCKETS
+#  define HAVE_SOCKETS 1
+# endif
 # include "ext/sockets/php_sockets.h"
 # define PHPGTK_HAVE_SOCKETS 1
 #endif
@@ -62,6 +68,15 @@ static void phpgtk_free_object(zend_object *object)
 				gdk_dmabuf_formats_unref((GdkDmabufFormats *) intern->ptr);
 #endif
 				break;
+			case PHPGTK_BYTES:
+				g_bytes_unref((GBytes *) intern->ptr);
+				break;
+			case PHPGTK_CAIRO_REGION:
+				cairo_region_destroy((cairo_region_t *) intern->ptr);
+				break;
+			case PHPGTK_PARAM_SPEC:
+				g_param_spec_unref((GParamSpec *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -85,6 +100,51 @@ void phpgtk_object_setup(zend_class_entry *ce)
 
 	ce->create_object = phpgtk_create_object;
 	ce->default_object_handlers = &phpgtk_handlers;
+
+	/* Inheriting an interface method marks the class implicitly abstract until the engine verifies it, which
+	 * it does for user classes only. The interfaces' methods carry bodies (phpgtk_interface_bodies), so a
+	 * class with no abstract method left is concrete, as zend_verify_abstract_class() decides for user classes. */
+	zend_function *fn;
+	ZEND_HASH_FOREACH_PTR(&ce->function_table, fn) {
+		if (fn->common.fn_flags & ZEND_ACC_ABSTRACT) {
+			return;
+		}
+	} ZEND_HASH_FOREACH_END();
+	ce->ce_flags &= ~ZEND_ACC_IMPLICIT_ABSTRACT_CLASS;
+}
+
+void phpgtk_interface_bodies(zend_class_entry *iface, const phpgtk_interface_method *bodies)
+{
+	for (const phpgtk_interface_method *body = bodies; body->name != NULL; body++) {
+		zend_function *fn = zend_hash_str_find_ptr_lc(&iface->function_table, body->name, strlen(body->name));
+
+		ZEND_ASSERT(fn != NULL && fn->type == ZEND_INTERNAL_FUNCTION);
+		fn->internal_function.handler = body->handler;
+		fn->common.fn_flags &= ~ZEND_ACC_ABSTRACT;
+	}
+}
+
+int phpgtk_interface_native_only(zend_class_entry *iface, zend_class_entry *ce)
+{
+	/* The extension's own class, being registered. */
+	if (ce->type == ZEND_INTERNAL_CLASS && ce->create_object == phpgtk_create_object) {
+		return SUCCESS;
+	}
+
+	/* A PHP subclass holds its nearest bound class's native object: it implements the interface only
+	 * when that class does. */
+	zend_class_entry *bound = ce->parent;
+	while (bound != NULL && bound->type != ZEND_INTERNAL_CLASS) {
+		bound = bound->parent;
+	}
+	if (bound != NULL && bound->create_object == phpgtk_create_object && instanceof_function(bound, iface)) {
+		return SUCCESS;
+	}
+
+	/* The engine's own wording for an interface a class may not implement (Throwable, Traversable). */
+	zend_error_noreturn(E_ERROR, "%s %s cannot implement interface %s: it stands for a native GType, which only the extension's GObject classes hold",
+		zend_get_object_type_uc(ce), ZSTR_VAL(ce->name), ZSTR_VAL(iface->name));
+	return FAILURE;
 }
 
 void phpgtk_map_gtype(const char *type_name, zend_class_entry *ce)
@@ -185,7 +245,6 @@ void phpgtk_box_variant(zval *rv, GVariant *variant)
 }
 
 #define PHPGTK_GENERATION_KEY "phpgtk-text-generation"
-#define PHPGTK_TAG_TABLE_KEY "phpgtk-tag-table"
 
 static void phpgtk_generation_bump(guint *generation)
 {
@@ -225,44 +284,12 @@ GtkTextIter *phpgtk_fresh_iter(zend_object *iter_obj)
 	phpgtk_text_iter *box = PHPGTK_ITER_BOX(iter_obj);
 	guint *generation = g_object_get_data(G_OBJECT(box->buffer), PHPGTK_GENERATION_KEY);
 
-	if (generation == NULL || *generation != box->generation) {
-		zend_throw_exception(phpgtk_ce_GtkException, "GtkTextIter is stale: its buffer's text changed since it was taken", 0);
+	if (!PHPGTK_PROBE_OFF("text-iter-stale") && (generation == NULL || *generation != box->generation)) {
+		zend_throw_exception(phpgtk_ce_GtkException, "GtkTextIter is stale: its buffer's text changed since it was taken", 0); /* binding:text-iter-stale */
 		return NULL;
 	}
 
 	return &box->iter;
-}
-
-static void phpgtk_weak_ref_free(gpointer data)
-{
-	g_weak_ref_clear(data);
-	g_free(data);
-}
-
-bool phpgtk_tag_in_table(GtkTextTag *tag, GtkTextTagTable *table)
-{
-	GWeakRef *ref = g_object_get_data(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY);
-	gpointer held = ref != NULL ? g_weak_ref_get(ref) : NULL;
-	bool found = held != NULL && (table == NULL || held == (gpointer) table);
-
-	if (held != NULL) {
-		g_object_unref(held);
-	}
-
-	return found;
-}
-
-/* GTK keeps a tag's table private; this weak record lets applyTag() and add() tell, and a freed table reads as none. */
-void phpgtk_tag_set_table(GtkTextTag *tag, GtkTextTagTable *table)
-{
-	GWeakRef *ref = g_object_get_data(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY);
-
-	if (ref == NULL) {
-		ref = g_new0(GWeakRef, 1);
-		g_weak_ref_init(ref, NULL);
-		g_object_set_data_full(G_OBJECT(tag), PHPGTK_TAG_TABLE_KEY, ref, phpgtk_weak_ref_free);
-	}
-	g_weak_ref_set(ref, table);
 }
 
 /* A copy PHP owns, holding a reference on the iter's buffer: GTK's iters are stack values valid until the buffer's text changes. */
@@ -361,6 +388,53 @@ void phpgtk_box_variant_full(zval *rv, GVariant *variant)
 	}
 }
 
+/* Takes ownership of the reference handed in (g_bytes_new() returns a new one). */
+void phpgtk_box_bytes_full(zval *rv, GBytes *bytes)
+{
+	if (bytes == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, bytes)) {
+		g_bytes_unref(bytes);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GBytes, bytes, PHPGTK_BYTES);
+}
+
+/* Takes ownership of the reference handed in (cairo_region_create() returns a new one). */
+void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region)
+{
+	if (region == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, region)) {
+		cairo_region_destroy(region);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_CairoRegion, region, PHPGTK_CAIRO_REGION);
+}
+
+/* Takes PHP's own reference, sinking a floating one; the caller keeps whatever it held (a signal's GParamSpec is transfer none). */
+void phpgtk_box_param_spec(zval *rv, GParamSpec *pspec)
+{
+	if (pspec == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, pspec)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GParamSpec, g_param_spec_ref_sink(pspec), PHPGTK_PARAM_SPEC);
+}
+
 void phpgtk_return_string(zval *rv, const char *str)
 {
 	if (str == NULL) {
@@ -399,25 +473,6 @@ bool phpgtk_long_in_range(zend_long value, zend_long min, zend_long max, uint32_
 	return true;
 }
 
-bool phpgtk_require_parent(GtkWidget *child, GtkWidget *expected_parent, uint32_t arg_num)
-{
-	GtkWidget *parent = gtk_widget_get_parent(child);
-
-	if (parent == expected_parent) {
-		return true;
-	}
-
-	if (expected_parent == NULL) {
-		zend_argument_value_error(arg_num, "already has a parent (%s)", G_OBJECT_TYPE_NAME(parent));
-	} else if (parent == NULL) {
-		zend_argument_value_error(arg_num, "is not a child of this %s", G_OBJECT_TYPE_NAME(expected_parent));
-	} else {
-		zend_argument_value_error(arg_num, "is a child of another %s", G_OBJECT_TYPE_NAME(parent));
-	}
-
-	return false;
-}
-
 zend_long phpgtk_enum_value(zend_object *obj_or_null, zend_long fallback)
 {
 	return obj_or_null != NULL ? Z_LVAL_P(zend_enum_fetch_case_value(obj_or_null)) : fallback;
@@ -441,7 +496,8 @@ bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd)
 {
 	switch (Z_TYPE_P(zfd)) {
 		case IS_LONG:
-			if (Z_LVAL_P(zfd) < 0 || Z_LVAL_P(zfd) > INT_MAX) {
+			/* An fd is an int: GLib judges a negative one. */
+			if (Z_LVAL_P(zfd) < INT_MIN || Z_LVAL_P(zfd) > INT_MAX) {
 				zend_argument_value_error(arg_num, "must be a valid file descriptor");
 				return false;
 			}
@@ -494,7 +550,7 @@ bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd)
 	return false;
 }
 
-/* A signal parameter as PHP sees it: objects and GdkEvents boxed, enums and flags as ints, pointers and boxed types as addresses. */
+/* A signal parameter as PHP sees it: objects, GdkEvents, GParamSpecs, GtkTextIters and GBytes boxed, enums and flags as ints, pointers and other boxed types as addresses. */
 void phpgtk_gvalue_to_zval(zval *rv, const GValue *value)
 {
 	if (G_VALUE_HOLDS(value, GDK_TYPE_EVENT)) {
@@ -517,7 +573,16 @@ void phpgtk_gvalue_to_zval(zval *rv, const GValue *value)
 		case G_TYPE_ENUM:    ZVAL_LONG(rv, g_value_get_enum(value)); return;
 		case G_TYPE_FLAGS:   ZVAL_LONG(rv, (zend_long) g_value_get_flags(value)); return;
 		case G_TYPE_POINTER: ZVAL_LONG(rv, (zend_long) (uintptr_t) g_value_get_pointer(value)); return;
-		case G_TYPE_BOXED:   ZVAL_LONG(rv, (zend_long) (uintptr_t) g_value_get_boxed(value)); return;
+
+		case G_TYPE_BOXED:
+			if (G_VALUE_TYPE(value) == GTK_TYPE_TEXT_ITER && g_value_get_boxed(value) != NULL) {
+				phpgtk_box_text_iter(rv, g_value_get_boxed(value));
+			} else if (G_VALUE_TYPE(value) == G_TYPE_BYTES && g_value_get_boxed(value) != NULL) {
+				phpgtk_box_bytes_full(rv, g_bytes_ref(g_value_get_boxed(value)));
+			} else {
+				ZVAL_LONG(rv, (zend_long) (uintptr_t) g_value_get_boxed(value));
+			}
+			return;
 
 		case G_TYPE_STRING: {
 			const char *str = g_value_get_string(value);
@@ -537,47 +602,153 @@ void phpgtk_gvalue_to_zval(zval *rv, const GValue *value)
 		case G_TYPE_VARIANT:
 			phpgtk_box_variant(rv, g_value_get_variant(value));
 			return;
+
+		case G_TYPE_PARAM:
+			phpgtk_box_param_spec(rv, g_value_get_param(value));
+			return;
 	}
 
 	ZVAL_NULL(rv);
 }
 
-/* A handler's PHP return value into the signal's already-typed return GValue. */
-void phpgtk_zval_to_gvalue(GValue *value, zval *zv)
+/* zv is an object of class ce (or null when nullable). */
+static bool phpgtk_zval_is(zval *zv, zend_class_entry *ce)
 {
-	switch (G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(value))) {
-		case G_TYPE_BOOLEAN: g_value_set_boolean(value, zend_is_true(zv)); return;
-		case G_TYPE_CHAR:    g_value_set_schar(value, (gint8) zval_get_long(zv)); return;
-		case G_TYPE_UCHAR:   g_value_set_uchar(value, (guchar) zval_get_long(zv)); return;
-		case G_TYPE_INT:     g_value_set_int(value, (gint) zval_get_long(zv)); return;
-		case G_TYPE_UINT:    g_value_set_uint(value, (guint) zval_get_long(zv)); return;
-		case G_TYPE_LONG:    g_value_set_long(value, (glong) zval_get_long(zv)); return;
-		case G_TYPE_ULONG:   g_value_set_ulong(value, (gulong) zval_get_long(zv)); return;
-		case G_TYPE_INT64:   g_value_set_int64(value, (gint64) zval_get_long(zv)); return;
-		case G_TYPE_UINT64:  g_value_set_uint64(value, (guint64) zval_get_long(zv)); return;
-		case G_TYPE_FLOAT:   g_value_set_float(value, (gfloat) zval_get_double(zv)); return;
-		case G_TYPE_DOUBLE:  g_value_set_double(value, zval_get_double(zv)); return;
-		case G_TYPE_ENUM:    g_value_set_enum(value, (gint) zval_get_long(zv)); return;
-		case G_TYPE_FLAGS:   g_value_set_flags(value, (guint) zval_get_long(zv)); return;
+	return Z_TYPE_P(zv) == IS_OBJECT && instanceof_function(Z_OBJCE_P(zv), ce);
+}
+
+/*
+ * A PHP value into an already-typed GValue: handler returns, and emit / set_property parameters
+ * once phpgtk_signal_param has checked them. Written only when the value is of the GType's own
+ * kind (bool through zend_is_true, ints and floats by C conversion, an int-backed enum as its
+ * value); otherwise the GValue keeps its default and false is returned.
+ */
+bool phpgtk_zval_to_gvalue(GValue *value, zval *zv)
+{
+	GType type = G_VALUE_TYPE(value);
+	zend_long number;
+
+	ZVAL_DEREF(zv);
+
+	/* GdkEvent is its own fundamental type, an instance type GValue takes by g_value_set_instance(). */
+	if (G_VALUE_HOLDS(value, GDK_TYPE_EVENT)) {
+		if (Z_TYPE_P(zv) == IS_NULL) {
+			g_value_set_instance(value, NULL);
+			return true;
+		}
+		if (!phpgtk_zval_is(zv, phpgtk_ce_GdkEvent) || !g_type_is_a(G_TYPE_FROM_INSTANCE(PHPGTK_PTR(Z_OBJ_P(zv))), type)) {
+			return false;
+		}
+		g_value_set_instance(value, PHPGTK_PTR(Z_OBJ_P(zv)));
+		return true;
+	}
+
+	switch (G_TYPE_FUNDAMENTAL(type)) {
+		case G_TYPE_BOOLEAN:
+			g_value_set_boolean(value, zend_is_true(zv));
+			return true;
+
+		case G_TYPE_CHAR: case G_TYPE_UCHAR: case G_TYPE_INT: case G_TYPE_UINT: case G_TYPE_LONG:
+		case G_TYPE_ULONG: case G_TYPE_INT64: case G_TYPE_UINT64: case G_TYPE_ENUM: case G_TYPE_FLAGS:
+			if (Z_TYPE_P(zv) == IS_LONG) {
+				number = Z_LVAL_P(zv);
+			} else if (Z_TYPE_P(zv) == IS_OBJECT && (Z_OBJCE_P(zv)->ce_flags & ZEND_ACC_ENUM) && Z_OBJCE_P(zv)->enum_backing_type == IS_LONG) {
+				number = Z_LVAL_P(zend_enum_fetch_case_value(Z_OBJ_P(zv)));
+			} else {
+				return false;
+			}
+			switch (G_TYPE_FUNDAMENTAL(type)) {
+				case G_TYPE_CHAR:   g_value_set_schar(value, (gint8) number); break;
+				case G_TYPE_UCHAR:  g_value_set_uchar(value, (guchar) number); break;
+				case G_TYPE_INT:    g_value_set_int(value, (gint) number); break;
+				case G_TYPE_UINT:   g_value_set_uint(value, (guint) number); break;
+				case G_TYPE_LONG:   g_value_set_long(value, (glong) number); break;
+				case G_TYPE_ULONG:  g_value_set_ulong(value, (gulong) number); break;
+				case G_TYPE_INT64:  g_value_set_int64(value, (gint64) number); break;
+				case G_TYPE_UINT64: g_value_set_uint64(value, (guint64) number); break;
+				case G_TYPE_ENUM:   g_value_set_enum(value, (gint) number); break;
+				default:            g_value_set_flags(value, (guint) number); break;
+			}
+			return true;
+
+		case G_TYPE_FLOAT: case G_TYPE_DOUBLE:
+			if (Z_TYPE_P(zv) != IS_LONG && Z_TYPE_P(zv) != IS_DOUBLE) {
+				return false;
+			}
+			if (G_TYPE_FUNDAMENTAL(type) == G_TYPE_FLOAT) {
+				g_value_set_float(value, (gfloat) zval_get_double(zv));
+			} else {
+				g_value_set_double(value, zval_get_double(zv));
+			}
+			return true;
 
 		case G_TYPE_STRING:
 			if (Z_TYPE_P(zv) == IS_NULL) {
 				g_value_set_string(value, NULL);
-			} else {
-				zend_string *str = zval_get_string(zv);
-				g_value_set_string(value, ZSTR_VAL(str));
-				zend_string_release(str);
+				return true;
 			}
-			return;
+			if (Z_TYPE_P(zv) != IS_STRING) {
+				return false;
+			}
+			g_value_set_string(value, Z_STRVAL_P(zv));
+			return true;
 
-		case G_TYPE_OBJECT:
-			if (Z_TYPE_P(zv) == IS_OBJECT && instanceof_function(Z_OBJCE_P(zv), phpgtk_ce_GObject)) {
-				g_value_set_object(value, PHPGTK_PTR(Z_OBJ_P(zv)));
-			} else {
+		case G_TYPE_OBJECT: case G_TYPE_INTERFACE:
+			if (Z_TYPE_P(zv) == IS_NULL) {
 				g_value_set_object(value, NULL);
+				return true;
 			}
-			return;
+			if (!phpgtk_zval_is(zv, phpgtk_ce_GObject) || !g_type_is_a(G_OBJECT_TYPE(PHPGTK_PTR(Z_OBJ_P(zv))), type)) {
+				return false;
+			}
+			g_value_set_object(value, PHPGTK_PTR(Z_OBJ_P(zv)));
+			return true;
+
+		case G_TYPE_VARIANT:
+			if (Z_TYPE_P(zv) == IS_NULL) {
+				g_value_set_variant(value, NULL);
+				return true;
+			}
+			if (!phpgtk_zval_is(zv, phpgtk_ce_GVariant)) {
+				return false;
+			}
+			g_value_set_variant(value, PHPGTK_PTR(Z_OBJ_P(zv)));
+			return true;
+
+		case G_TYPE_PARAM:
+			if (Z_TYPE_P(zv) == IS_NULL) {
+				g_value_set_param(value, NULL);
+				return true;
+			}
+			if (!phpgtk_zval_is(zv, phpgtk_ce_GParamSpec) || !g_type_is_a(G_PARAM_SPEC_TYPE(PHPGTK_PTR(Z_OBJ_P(zv))), type)) {
+				return false;
+			}
+			g_value_set_param(value, PHPGTK_PTR(Z_OBJ_P(zv)));
+			return true;
+
+		case G_TYPE_POINTER:
+			if (Z_TYPE_P(zv) != IS_LONG) {
+				return false;
+			}
+			g_value_set_pointer(value, (gpointer) (uintptr_t) Z_LVAL_P(zv));
+			return true;
+
+		case G_TYPE_BOXED:
+			if (Z_TYPE_P(zv) == IS_NULL) {
+				g_value_set_boxed(value, NULL);
+			} else if (Z_TYPE_P(zv) == IS_LONG) {
+				g_value_set_boxed(value, (gconstpointer) (uintptr_t) Z_LVAL_P(zv)); /* an address: the pointer hand-off */
+			} else if (type == GTK_TYPE_TEXT_ITER && phpgtk_zval_is(zv, phpgtk_ce_GtkTextIter)) {
+				g_value_set_boxed(value, &PHPGTK_ITER_BOX(Z_OBJ_P(zv))->iter);
+			} else if (type == G_TYPE_BYTES && phpgtk_zval_is(zv, phpgtk_ce_GBytes)) {
+				g_value_set_boxed(value, PHPGTK_PTR(Z_OBJ_P(zv)));
+			} else {
+				return false;
+			}
+			return true;
 	}
+
+	return false;
 }
 
 /* A GError as a GError exception object, not thrown: message, code and domain filled. */
@@ -612,12 +783,23 @@ bool phpgtk_on_main_thread(void)
 #endif
 }
 
+#ifdef PHPGTK_PROBES
+/* True when env PHPGTK_PROBE_OFF names this site id. */
+bool phpgtk_probe_off(const char *id)
+{
+	const char *off = getenv("PHPGTK_PROBE_OFF");
+
+	return off != NULL && strcmp(off, id) == 0;
+}
+#endif
+
 phpgtk_callout *phpgtk_callout_new(zval *callable)
 {
 	phpgtk_callout *callout = pecalloc(1, sizeof(phpgtk_callout), 1);
 
 	ZVAL_COPY(&callout->callable, callable);
 	callout->refcount = 1;
+	callout->thread = pthread_self();
 
 	callout->next = PHPGTK_G(callouts);
 	if (callout->next != NULL) {
@@ -648,6 +830,15 @@ void phpgtk_callout_retain(phpgtk_callout *callout)
 	callout->refcount++;
 }
 
+bool phpgtk_callout_foreign(const phpgtk_callout *callout)
+{
+	if (!PHPGTK_PROBE_OFF("callout-owner-thread") && !pthread_equal(callout->thread, pthread_self())) {
+		return true; /* binding:callout-owner-thread */
+	}
+
+	return false;
+}
+
 void phpgtk_callout_release(phpgtk_callout *callout)
 {
 	if (--callout->refcount > 0) {
@@ -655,6 +846,16 @@ void phpgtk_callout_release(phpgtk_callout *callout)
 	}
 
 	if (!Z_ISUNDEF(callout->callable)) {
+		/*
+		 * The last native reference went away on another thread: the callable belongs to the
+		 * owner thread's request, so the record stays linked, with nothing left to detach, for
+		 * that thread's request end to free.
+		 */
+		if (phpgtk_callout_foreign(callout)) {
+			callout->source_id = 0;
+			callout->instance = NULL;
+			return;
+		}
 		phpgtk_callout_unlink(callout);
 		zval_ptr_dtor(&callout->callable);
 		ZVAL_UNDEF(&callout->callable);

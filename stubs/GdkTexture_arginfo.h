@@ -1,16 +1,81 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: bd6f2090000a4c755a84c6cc0a7525e486cfcd78 */
+ * Stub hash: 6d9fd89d6dac75de7b3a2dfb7d5e1a72458eb16c */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkTexture_getWidth, 0, 0, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkPaintable_getCurrentImage, 0, 0, GdkPaintable, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GdkTexture_getHeight arginfo_class_GdkTexture_getWidth
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkPaintable_getFlags, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTexture_new, 0, 5, GdkMemoryTexture, 0)
+#define arginfo_class_GdkPaintable_getIntrinsicWidth arginfo_class_GdkPaintable_getFlags
+
+#define arginfo_class_GdkPaintable_getIntrinsicHeight arginfo_class_GdkPaintable_getFlags
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkPaintable_getIntrinsicAspectRatio, 0, 0, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkPaintable_computeConcreteSize, 0, 6, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, specifiedWidth, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, specifiedHeight, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, defaultWidth, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, defaultHeight, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(1, concreteWidth, IS_DOUBLE, 1)
+	ZEND_ARG_TYPE_INFO(1, concreteHeight, IS_DOUBLE, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkPaintable_invalidateContents, 0, 0, IS_VOID, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GdkPaintable_invalidateSize arginfo_class_GdkPaintable_invalidateContents
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GdkRectangle___construct, 0, 0, 4)
+	ZEND_ARG_TYPE_INFO(0, x, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, y, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_CairoRegion___construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_CairoRegion_create, 0, 0, CairoRegion, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_CairoRegion_createRectangle, 0, 1, CairoRegion, 0)
+	ZEND_ARG_OBJ_INFO(0, rectangle, GdkRectangle, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_CairoRegion_numRectangles arginfo_class_GdkPaintable_getFlags
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_CairoRegion_getRectangle, 0, 1, GdkRectangle, 0)
+	ZEND_ARG_TYPE_INFO(0, nth, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_CairoRegion_unionRectangle, 0, 1, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, rectangle, GdkRectangle, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GBytes___construct arginfo_class_CairoRegion___construct
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GBytes_new, 0, 2, GBytes, 1)
+	ZEND_ARG_TYPE_MASK(0, data, MAY_BE_STRING|MAY_BE_LONG, NULL)
+	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GBytes_getSize arginfo_class_GdkPaintable_getFlags
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GBytes_getData, 0, 0, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GdkTexture_getWidth arginfo_class_GdkPaintable_getFlags
+
+#define arginfo_class_GdkTexture_getHeight arginfo_class_GdkPaintable_getFlags
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTexture_new, 0, 5, GdkMemoryTexture, 1)
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, format, GdkMemoryFormat, 0)
-	ZEND_ARG_TYPE_MASK(0, bytes, MAY_BE_STRING|MAY_BE_LONG, NULL)
+	ZEND_ARG_OBJ_INFO(0, bytes, GBytes, 0)
 	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -18,33 +83,32 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_new, 0, 0, GdkMemoryTextureBuilder, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setBytes, 0, 1, IS_STATIC, 0)
-	ZEND_ARG_TYPE_MASK(0, bytes, MAY_BE_STRING|MAY_BE_LONG, NULL)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 1, "null")
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setBytes, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, bytes, GBytes, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setWidth, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setWidth, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setHeight, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setHeight, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setFormat, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setFormat, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, format, GdkMemoryFormat, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setStride, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setStride, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateTexture, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateTexture, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, texture, GdkTexture, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateRegion, 0, 1, IS_STATIC, 0)
-	ZEND_ARG_TYPE_INFO(0, rects, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_setUpdateRegion, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, region, CairoRegion, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkMemoryTextureBuilder_build, 0, 0, GdkTexture, 1)
@@ -72,62 +136,73 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_new, 0, 0, GdkDmabufTextureBuilder, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setDisplay, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setDisplay, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, display, GdkDisplay, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setWidth, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setWidth, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setHeight, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setHeight, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setFourcc, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setFourcc, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, fourcc, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setModifier, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setModifier, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, modifier, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setPremultiplied, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setPremultiplied, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, premultiplied, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setNPlanes, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setNPlanes, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, n_planes, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setFd, 0, 2, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setFd, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, plane, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, fd, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setStride, 0, 2, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setStride, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, plane, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, stride, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setOffset, 0, 2, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setOffset, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, plane, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, offset, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setUpdateTexture, 0, 1, IS_STATIC, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setUpdateTexture, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, texture, GdkTexture, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setUpdateRegion, 0, 1, IS_STATIC, 0)
-	ZEND_ARG_TYPE_INFO(0, rects, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_setUpdateRegion, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, region, CairoRegion, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_build, 0, 0, GdkTexture, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, destroy, IS_CALLABLE, 1, "null")
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkDmabufTextureBuilder_build, 0, 1, GdkTexture, 1)
+	ZEND_ARG_TYPE_INFO(0, destroy, IS_CALLABLE, 1)
 ZEND_END_ARG_INFO()
 #endif
 
+ZEND_METHOD(GdkRectangle, __construct);
+ZEND_METHOD(CairoRegion, __construct);
+ZEND_METHOD(CairoRegion, create);
+ZEND_METHOD(CairoRegion, createRectangle);
+ZEND_METHOD(CairoRegion, numRectangles);
+ZEND_METHOD(CairoRegion, getRectangle);
+ZEND_METHOD(CairoRegion, unionRectangle);
+ZEND_METHOD(GBytes, __construct);
+ZEND_METHOD(GBytes, new);
+ZEND_METHOD(GBytes, getSize);
+ZEND_METHOD(GBytes, getData);
 ZEND_METHOD(GdkTexture, getWidth);
 ZEND_METHOD(GdkTexture, getHeight);
 ZEND_METHOD(GdkMemoryTexture, new);
@@ -164,6 +239,41 @@ ZEND_METHOD(GdkDmabufTextureBuilder, setUpdateTexture);
 ZEND_METHOD(GdkDmabufTextureBuilder, setUpdateRegion);
 ZEND_METHOD(GdkDmabufTextureBuilder, build);
 #endif
+
+static const zend_function_entry class_GdkPaintable_methods[] = {
+	ZEND_RAW_FENTRY("getCurrentImage", NULL, arginfo_class_GdkPaintable_getCurrentImage, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getFlags", NULL, arginfo_class_GdkPaintable_getFlags, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getIntrinsicWidth", NULL, arginfo_class_GdkPaintable_getIntrinsicWidth, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getIntrinsicHeight", NULL, arginfo_class_GdkPaintable_getIntrinsicHeight, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getIntrinsicAspectRatio", NULL, arginfo_class_GdkPaintable_getIntrinsicAspectRatio, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("computeConcreteSize", NULL, arginfo_class_GdkPaintable_computeConcreteSize, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("invalidateContents", NULL, arginfo_class_GdkPaintable_invalidateContents, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("invalidateSize", NULL, arginfo_class_GdkPaintable_invalidateSize, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GdkRectangle_methods[] = {
+	ZEND_ME(GdkRectangle, __construct, arginfo_class_GdkRectangle___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_CairoRegion_methods[] = {
+	ZEND_ME(CairoRegion, __construct, arginfo_class_CairoRegion___construct, ZEND_ACC_PRIVATE)
+	ZEND_ME(CairoRegion, create, arginfo_class_CairoRegion_create, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(CairoRegion, createRectangle, arginfo_class_CairoRegion_createRectangle, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(CairoRegion, numRectangles, arginfo_class_CairoRegion_numRectangles, ZEND_ACC_PUBLIC)
+	ZEND_ME(CairoRegion, getRectangle, arginfo_class_CairoRegion_getRectangle, ZEND_ACC_PUBLIC)
+	ZEND_ME(CairoRegion, unionRectangle, arginfo_class_CairoRegion_unionRectangle, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GBytes_methods[] = {
+	ZEND_ME(GBytes, __construct, arginfo_class_GBytes___construct, ZEND_ACC_PRIVATE)
+	ZEND_ME(GBytes, new, arginfo_class_GBytes_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GBytes, getSize, arginfo_class_GBytes_getSize, ZEND_ACC_PUBLIC)
+	ZEND_ME(GBytes, getData, arginfo_class_GBytes_getData, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
 
 static const zend_function_entry class_GdkTexture_methods[] = {
 	ZEND_ME(GdkTexture, getWidth, arginfo_class_GdkTexture_getWidth, ZEND_ACC_PUBLIC)
@@ -284,12 +394,77 @@ static zend_class_entry *register_class_GdkMemoryFormat(void)
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GdkTexture(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GdkPaintable(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GdkPaintable", class_GdkPaintable_methods);
+	class_entry = zend_register_internal_interface(&ce);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GdkRectangle(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GdkRectangle", class_GdkRectangle_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL);
+
+	zval property_x_default_value;
+	ZVAL_UNDEF(&property_x_default_value);
+	zend_string *property_x_name = zend_string_init("x", sizeof("x") - 1, 1);
+	zend_declare_typed_property(class_entry, property_x_name, &property_x_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_x_name);
+
+	zval property_y_default_value;
+	ZVAL_UNDEF(&property_y_default_value);
+	zend_string *property_y_name = zend_string_init("y", sizeof("y") - 1, 1);
+	zend_declare_typed_property(class_entry, property_y_name, &property_y_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_y_name);
+
+	zval property_width_default_value;
+	ZVAL_UNDEF(&property_width_default_value);
+	zend_string *property_width_name = zend_string_init("width", sizeof("width") - 1, 1);
+	zend_declare_typed_property(class_entry, property_width_name, &property_width_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_width_name);
+
+	zval property_height_default_value;
+	ZVAL_UNDEF(&property_height_default_value);
+	zend_string *property_height_name = zend_string_init("height", sizeof("height") - 1, 1);
+	zend_declare_typed_property(class_entry, property_height_name, &property_height_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_LONG));
+	zend_string_release(property_height_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_CairoRegion(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "CairoRegion", class_CairoRegion_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GBytes(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GBytes", class_GBytes_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GdkTexture(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GdkPaintable)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GdkTexture", class_GdkTexture_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GdkPaintable);
 
 	return class_entry;
 }

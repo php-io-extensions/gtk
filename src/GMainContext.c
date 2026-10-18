@@ -35,6 +35,8 @@ ZEND_METHOD(GMainContext, iteration)
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_BOOL(may_block)
 	ZEND_PARSE_PARAMETERS_END();
+	/* On macOS an iteration off the process main thread crashes it (SIGSEGV), even with no source ready. */
+	PHPGTK_REQUIRE_MAIN_THREAD();
 
 	RETURN_BOOL(g_main_context_iteration(THIS_CONTEXT, may_block));
 }

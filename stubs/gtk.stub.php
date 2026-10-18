@@ -65,12 +65,9 @@ const GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = UNKNOWN;
  */
 const GTK_INVALID_LIST_POSITION = UNKNOWN;
 
-function gtk_style_context_add_provider_for_display(GdkDisplay $display, GtkCssProvider $provider, int $priority): void {}
+function gtk_style_context_add_provider_for_display(GdkDisplay $display, GtkStyleProvider $provider, int $priority): void {}
 
-function gtk_style_context_remove_provider_for_display(GdkDisplay $display, GtkCssProvider $provider): void {}
-
-/** true when a media backend module is installed (the GtkMediaFile GTK builds is not GtkNoMediaFile); needs GTK initialised */
-function gtk_media_backend_available(): bool {}
+function gtk_style_context_remove_provider_for_display(GdkDisplay $display, GtkStyleProvider $provider): void {}
 
 /**
  * @param callable $function called as $function(): bool; true keeps the source, false removes it
@@ -83,10 +80,9 @@ function g_timeout_add(int $interval, callable $function): int {}
 function g_idle_add(callable $function): int {}
 
 /**
- * @param int|resource|Socket $fd
  * @param callable $function called as $function(int $fd, int $condition): bool; true keeps the source
  */
-function g_unix_fd_add(mixed $fd, GIOCondition|int $condition, callable $function): int {}
+function g_unix_fd_add(int $fd, GIOCondition|int $condition, callable $function): int {}
 
 function g_source_remove(int $tag): bool {}
 
@@ -111,14 +107,15 @@ function g_signal_handler_is_connected(GObject $instance, int $handler_id): bool
 
 /**
  * g_object_get_property(): the property's value as PHP sees a signal argument (objects boxed,
- * enums and flags as ints). A ValueError when $instance has no property $property.
+ * enums and flags as ints). Null, with GLib's warning, when $instance has no property $property.
  */
 function g_object_get_property(GObject $instance, string $property): mixed {}
 
 /**
  * g_object_set_property(): a writable property set from PHP, converted as g_signal_emit_by_name()
- * converts parameters (enum cases to their values). ValueError for an unknown, read-only or
- * construct-only property, or a type it cannot convert; TypeError for a value of the wrong type.
+ * converts parameters (enum cases to their values): ValueError for a type it cannot convert,
+ * TypeError for a value of the wrong type. GLib answers an unknown, read-only or construct-only
+ * property, and a value invalid or out of range for it, with a warning.
  */
 function g_object_set_property(GObject $instance, string $property, mixed $value): void {}
 

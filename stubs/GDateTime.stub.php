@@ -11,8 +11,8 @@ final class GDateTime
 {
     private function __construct() {}
 
-    /** g_date_time_new_local(); a date the calendar cannot represent throws ValueError */
-    public static function newLocal(int $year, int $month, int $day, int $hour, int $minute, float $seconds): GDateTime {}
+    /** g_date_time_new_local(); null for a date the calendar cannot represent */
+    public static function newLocal(int $year, int $month, int $day, int $hour, int $minute, float $seconds): ?GDateTime {}
 
     public function getYear(): int {}
 

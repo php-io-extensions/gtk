@@ -15,7 +15,7 @@ declare(strict_types=1);
  * 3. budget       a 50ms timeout ends a blocking iteration at the budget
  * 4. wakeup       g_main_context_wakeup makes the next blocking iteration return at once
  * 5. idle         an idle source runs on the next iteration
- * 6. fd wake      a pipe written by a child process ends a blocking iteration through g_unix_fd_add
+ * 6. fd wake      a socket written by a child process ends a blocking iteration through g_unix_fd_add
  * 7. nested wake  the same, through a kqueue (macOS) or epoll (Linux) fd
  * 8. run/quit     GApplication::run until a timeout calls quit
  * 9. disconnect   run() ends with shutdown (unregistered); release the hold
@@ -88,16 +88,34 @@ function iterate_until(GMainContext $ctx, callable $done, float $limit): float
     return $ms;
 }
 
-/** A child that sleeps, writes one byte to its stdout pipe, and reports when it wrote. */
+/** A child that sleeps, writes one byte to its stdout socket, and reports when it wrote. */
 function delayed_writer(float $delay): array
 {
     $proc = proc_open(
         [PHP_BINARY, '-n', '-r', sprintf('usleep(%d); fwrite(STDOUT, "x"); fflush(STDOUT); fwrite(STDERR, (string) microtime(true));', (int) ($delay * 1e6))],
-        [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        [1 => ['socket'], 2 => ['pipe', 'w']],
         $pipes,
     );
 
     return [$proc, $pipes[1], $pipes[2]];
+}
+
+/**
+ * The descriptor number a socket stream holds: the /dev/fd entry that is the same socket (same inode and
+ * file type; macOS reports a socket's device as -1 through fstat and as /dev's through /dev/fd).
+ */
+function descriptor_of($socket): int
+{
+    $own = fstat($socket);
+    foreach (scandir('/dev/fd') as $entry) {
+        // scandir()'s own descriptor is listed too, and closed by now.
+        $candidate = ctype_digit($entry) && file_exists('/dev/fd/'.$entry) ? stat('/dev/fd/'.$entry) : false;
+        if ($candidate !== false && $candidate['ino'] === $own['ino'] && ($candidate['mode'] & 0170000) === ($own['mode'] & 0170000)) {
+            return (int) $entry;
+        }
+    }
+
+    throw new RuntimeException('no /dev/fd entry for the socket');
 }
 
 $mac = PHP_OS_FAMILY === 'Darwin';
@@ -113,7 +131,7 @@ g_signal_connect($app, 'activate', function (GtkApplication $a) use (&$signals):
     $signals[] = 'activate';
 });
 
-check($app->register() && $app->getIsRegistered() && ! $app->getIsRemote(), 'register(): registered as the primary instance');
+check($app->register(null) && $app->getIsRegistered() && ! $app->getIsRemote(), 'register(): registered as the primary instance');
 check(gtk_is_initialized(), sprintf('startup initialised GTK %d.%d.%d', gtk_get_major_version(), gtk_get_minor_version(), gtk_get_micro_version()));
 $app->hold();
 $app->activate();
@@ -175,7 +193,7 @@ check($ran === 1, 'idle source ran once on the next iteration');
 // 6. fd wake
 [$proc, $out, $err] = delayed_writer(0.2);
 $woke = null;
-$tag = g_unix_fd_add($out, GIOCondition::IN, function (int $fd, int $condition) use (&$woke): bool {
+$tag = g_unix_fd_add(descriptor_of($out), GIOCondition::IN, function (int $fd, int $condition) use (&$woke): bool {
     $woke = microtime(true);
 
     return G_SOURCE_REMOVE;
@@ -187,7 +205,7 @@ $wrote = (float) stream_get_contents($err);
 fread($out, 1);
 proc_close($proc);
 $latency = ($woke - $wrote) * 1e3;
-check($woke !== null, sprintf('pipe fd ended the wait after %.1fms, %.2fms after the child wrote', $ms, $latency));
+check($woke !== null, sprintf('socket fd ended the wait after %.1fms, %.2fms after the child wrote', $ms, $latency));
 check($latency < 5, 'fd wake latency under 5ms');
 
 // 7. nested wake: the waiter's own descriptor in GLib's poll set.
@@ -227,7 +245,7 @@ if ($kind !== null) {
     $n = $glance();
     $latency = ($woke - $wrote) * 1e3;
     check($woke !== null && $latency < 5, sprintf('%s fd ended the wait after %.1fms, %.2fms after the child wrote', $kind, $ms, $latency));
-    check($n === 1, "the glance after the wake reads the pipe event off the {$kind}");
+    check($n === 1, "the glance after the wake reads the socket event off the {$kind}");
 } else {
     echo "skip nested wake: neither ext-kqueue nor ext-epoll loaded\n";
 }

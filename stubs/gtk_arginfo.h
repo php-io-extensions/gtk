@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 9f8bd926180dc6c647ad62c05f37049356d21a1f */
+ * Stub hash: 4aeb1c2aace639c0d025b933c6e2fb4b1e419f7c */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_init, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -25,16 +25,14 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_style_context_add_provider_for_display, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, display, GdkDisplay, 0)
-	ZEND_ARG_OBJ_INFO(0, provider, GtkCssProvider, 0)
+	ZEND_ARG_OBJ_INFO(0, provider, GtkStyleProvider, 0)
 	ZEND_ARG_TYPE_INFO(0, priority, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_style_context_remove_provider_for_display, 0, 2, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, display, GdkDisplay, 0)
-	ZEND_ARG_OBJ_INFO(0, provider, GtkCssProvider, 0)
+	ZEND_ARG_OBJ_INFO(0, provider, GtkStyleProvider, 0)
 ZEND_END_ARG_INFO()
-
-#define arginfo_gtk_media_backend_available arginfo_gtk_init_check
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_timeout_add, 0, 2, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, interval, IS_LONG, 0)
@@ -46,7 +44,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_idle_add, 0, 1, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_unix_fd_add, 0, 3, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, fd, IS_MIXED, 0)
+	ZEND_ARG_TYPE_INFO(0, fd, IS_LONG, 0)
 	ZEND_ARG_OBJ_TYPE_MASK(0, condition, GIOCondition, MAY_BE_LONG, NULL)
 	ZEND_ARG_TYPE_INFO(0, function, IS_CALLABLE, 0)
 ZEND_END_ARG_INFO()
@@ -104,7 +102,6 @@ ZEND_FUNCTION(g_set_prgname);
 ZEND_FUNCTION(g_get_prgname);
 ZEND_FUNCTION(gtk_style_context_add_provider_for_display);
 ZEND_FUNCTION(gtk_style_context_remove_provider_for_display);
-ZEND_FUNCTION(gtk_media_backend_available);
 ZEND_FUNCTION(g_timeout_add);
 ZEND_FUNCTION(g_idle_add);
 ZEND_FUNCTION(g_unix_fd_add);
@@ -129,7 +126,6 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(g_get_prgname, arginfo_g_get_prgname)
 	ZEND_FE(gtk_style_context_add_provider_for_display, arginfo_gtk_style_context_add_provider_for_display)
 	ZEND_FE(gtk_style_context_remove_provider_for_display, arginfo_gtk_style_context_remove_provider_for_display)
-	ZEND_FE(gtk_media_backend_available, arginfo_gtk_media_backend_available)
 	ZEND_FE(g_timeout_add, arginfo_g_timeout_add)
 	ZEND_FE(g_idle_add, arginfo_g_idle_add)
 	ZEND_FE(g_unix_fd_add, arginfo_g_unix_fd_add)

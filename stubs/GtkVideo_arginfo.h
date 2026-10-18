@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: e8b7f8c5ac5c73f2603f55df993ec5afcb4aa1ec */
+ * Stub hash: 182ceb38be1a90eb6cb1a4f8f695a4bfd56bd3bc */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkMediaStream_play, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -42,6 +42,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkMediaStream_setLoop, 0,
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkMediaStream_hasVideo arginfo_class_GtkMediaStream_getPlaying
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkMediaFile_new, 0, 0, GtkMediaFile, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkMediaFile_newForFilename, 0, 1, GtkMediaFile, 0)
 	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 0)
@@ -86,6 +89,7 @@ ZEND_METHOD(GtkMediaStream, setMuted);
 ZEND_METHOD(GtkMediaStream, getLoop);
 ZEND_METHOD(GtkMediaStream, setLoop);
 ZEND_METHOD(GtkMediaStream, hasVideo);
+ZEND_METHOD(GtkMediaFile, new);
 ZEND_METHOD(GtkMediaFile, newForFilename);
 ZEND_METHOD(GtkMediaFile, setFilename);
 ZEND_METHOD(GtkMediaFile, clear);
@@ -116,6 +120,7 @@ static const zend_function_entry class_GtkMediaStream_methods[] = {
 };
 
 static const zend_function_entry class_GtkMediaFile_methods[] = {
+	ZEND_ME(GtkMediaFile, new, arginfo_class_GtkMediaFile_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkMediaFile, newForFilename, arginfo_class_GtkMediaFile_newForFilename, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkMediaFile, setFilename, arginfo_class_GtkMediaFile_setFilename, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkMediaFile, clear, arginfo_class_GtkMediaFile_clear, ZEND_ACC_PUBLIC)
@@ -132,12 +137,13 @@ static const zend_function_entry class_GtkVideo_methods[] = {
 	ZEND_FE_END
 };
 
-static zend_class_entry *register_class_GtkMediaStream(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GtkMediaStream(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GdkPaintable)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkMediaStream", class_GtkMediaStream_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GdkPaintable);
 
 	return class_entry;
 }

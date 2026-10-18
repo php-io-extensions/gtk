@@ -28,12 +28,14 @@ it('has no context before it is realized, and one after', function (): void {
 
     expect($context)->toBeInstanceOf(GdkGLContext::class)
         ->and($area->getError())->toBeNull()
+        ->and((string) (new ReflectionMethod(GtkGLArea::class, 'getError'))->getReturnType())->toBe('?GError')
+        ->and($context->realize())->toBeTrue()          // gdk_gl_context_realize() on a realized context answers TRUE
         ->and($area->getAutoRender())->toBeFalse();
     [$major, $minor] = $context->getVersion();
     expect($major)->toBeGreaterThanOrEqual(3)
         ->and($minor)->toBeInt()
-        ->and($context->getApi())->toBeIn([GdkGLAPI::GL, GdkGLAPI::GLES])
-        ->and($context->getUseEs())->toBe($context->getApi() === GdkGLAPI::GLES);
+        ->and($context->getApi())->toBeIn([GdkGLAPI::GL->value, GdkGLAPI::GLES->value])
+        ->and($context->getUseEs())->toBe($context->getApi() === GdkGLAPI::GLES->value);
     $window->destroy();
 });
 
@@ -47,6 +49,10 @@ it('takes its buffer, version and API settings', function (): void {
     expect($area->getHasDepthBuffer())->toBeTrue()
         ->and($area->getHasStencilBuffer())->toBeTrue()
         ->and($area->getAllowedApis())->toBe(3);
+
+    // GTK stores any GdkGLAPI flags value.
+    $area->setAllowedApis(8);
+    expect($area->getAllowedApis())->toBe(8);
 });
 
 it('makes its context current and clears it', function (): void {

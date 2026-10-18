@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 8bebf06017763be5b0bf084db53f45acda39240b */
+ * Stub hash: 695f94d9787547c34ebddeda891cd3c30c7fb196 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkGLArea_new, 0, 0, GtkGLArea, 0)
 ZEND_END_ARG_INFO()
@@ -45,7 +45,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkGLArea_setRequiredVersi
 	ZEND_ARG_TYPE_INFO(0, minor, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkGLArea_getError, 0, 0, IS_STRING, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkGLArea_getError, 0, 0, GError, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_METHOD(GtkGLArea, new);

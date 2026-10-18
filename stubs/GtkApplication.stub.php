@@ -7,7 +7,7 @@
  */
 class GtkApplication extends GApplication
 {
-    public static function new(?string $applicationId, GApplicationFlags|int $flags): GtkApplication {}
+    public static function new(?string $applicationId, GApplicationFlags|int $flags): ?GtkApplication {}
 
     public function addWindow(GtkWindow $window): void {}
 

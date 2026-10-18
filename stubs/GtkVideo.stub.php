@@ -7,7 +7,7 @@
  *
  * @not-serializable
  */
-class GtkMediaStream extends GObject
+class GtkMediaStream extends GObject implements GdkPaintable
 {
     public function play(): void {}
 
@@ -51,6 +51,9 @@ class GtkMediaStream extends GObject
  */
 class GtkMediaFile extends GtkMediaStream
 {
+    /** gtk_media_file_new(): the media backend's GtkMediaFile, a GtkNoMediaFile without a backend (typeName() tells); needs GTK initialised (the backend lookup asserts otherwise) */
+    public static function new(): GtkMediaFile {}
+
     /** gtk_media_file_new_for_filename(); needs GTK initialised (the backend lookup asserts otherwise) */
     public static function newForFilename(string $filename): GtkMediaFile {}
 

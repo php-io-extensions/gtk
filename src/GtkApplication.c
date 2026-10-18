@@ -20,18 +20,10 @@ ZEND_METHOD(GtkApplication, new)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	if (application_id != NULL && !g_application_id_is_valid(ZSTR_VAL(application_id))) {
-		zend_argument_value_error(1, "must be a valid application id (see GApplication::idIsValid())");
-		RETURN_THROWS();
-	}
-
-	GtkApplication *app = gtk_application_new(
+	phpgtk_box_gobject_full(return_value, gtk_application_new(
 		application_id != NULL ? ZSTR_VAL(application_id) : NULL,
 		(GApplicationFlags) phpgtk_enum_value(flags_case, flags_long)
-	);
-
-	phpgtk_box_gobject(return_value, app);
-	g_object_unref(app);
+	));
 }
 
 #define THIS_GTK_APP GTK_APPLICATION(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
@@ -105,8 +97,9 @@ ZEND_METHOD(GtkApplication, setAccelsForAction)
 		Z_PARAM_ARRAY_HT(accels_ht)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_is_detailed_action(ZSTR_VAL(action))) {
-		zend_argument_value_error(1, "must be a valid detailed action name");
+	/* GTK logs an action name it cannot parse, then asserts on it in gtk_normalise_detailed_action_name(), which aborts. */
+	if (!PHPGTK_PROBE_OFF("accels-action-name") && (!phpgtk_is_detailed_action(ZSTR_VAL(action)))) {
+		zend_argument_value_error(1, "must be a valid detailed action name"); /* binding:accels-action-name */
 		RETURN_THROWS();
 	}
 
@@ -120,14 +113,6 @@ ZEND_METHOD(GtkApplication, setAccelsForAction)
 	ZEND_HASH_FOREACH_VAL(accels_ht, accel) {
 		held[i] = zval_try_get_string(accel);
 		if (held[i] == NULL) {
-			failed = true;
-			break;
-		}
-		guint key = 0;
-		GdkModifierType mods = 0;
-		if (!gtk_accelerator_parse(ZSTR_VAL(held[i]), &key, &mods)) {
-			zend_argument_value_error(2, "holds \"%s\", which is not an accelerator", ZSTR_VAL(held[i]));
-			i++;
 			failed = true;
 			break;
 		}

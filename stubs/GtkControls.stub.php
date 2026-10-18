@@ -65,7 +65,7 @@ class GtkLabel extends GtkWidget
 
     public function setJustify(GtkJustification $jtype): void {}
 
-    /** gtk_label_set_markup(): Pango markup; also sets use-markup. Malformed markup throws GError and leaves the label alone. */
+    /** gtk_label_set_markup(): Pango markup; also sets use-markup. GTK answers malformed markup with a warning and a blank label. */
     public function setMarkup(string $str): void {}
 
     public function getUseMarkup(): bool {}
@@ -99,7 +99,7 @@ class GtkLinkButton extends GtkButton
     /** gtk_link_button_new(): the URI is the label too. */
     public static function new(string $uri): GtkLinkButton {}
 
-    /** gtk_link_button_new_with_label() */
+    /** gtk_link_button_new_with_label(). The null default is PHP's: GtkButton::newWithLabel() takes one argument, so a second must be optional here. */
     public static function newWithLabel(string $uri, ?string $label = null): GtkLinkButton {}
 
     public function getUri(): string {}
@@ -163,8 +163,8 @@ class GtkEntryBuffer extends GObject
 {
     public function getText(): string {}
 
-    /** gtk_entry_buffer_set_text(); -1 = the whole string */
-    public function setText(string $chars, int $nChars = -1): void {}
+    /** gtk_entry_buffer_set_text(); $nChars -1 = the whole string */
+    public function setText(string $chars, int $nChars): void {}
 }
 
 /**
@@ -190,36 +190,39 @@ class GtkEntry extends GtkWidget
  */
 class GtkTextBuffer extends GObject
 {
-    /** gtk_text_buffer_set_text(); -1 = the whole string */
-    public function setText(string $text, int $len = -1): void {}
+    /** gtk_text_buffer_set_text(); $len -1 = the whole string */
+    public function setText(string $text, int $len): void {}
 
     /** Group what follows into one user action until the matching endUserAction(); calls nest. */
     public function beginUserAction(): void {}
 
     public function endUserAction(): void {}
 
-    /** gtk_text_buffer_get_text() between gtk_text_buffer_get_iter_at_offset() iters; -1 = the end */
-    public function getText(int $startOffset, int $endOffset, bool $includeHidden = false): string {}
+    /** gtk_text_buffer_get_text(): null, with GTK's critical, for an iter taken before the buffer's text last changed or from another buffer. */
+    public function getText(GtkTextIter $start, GtkTextIter $end, bool $includeHiddenChars): ?string {}
 
     public function getTagTable(): GtkTextTagTable {}
 
-    /** Null past the last line. */
-    public function getIterAtLine(int $line): ?GtkTextIter {}
+    /** gtk_text_buffer_get_iter_at_line(): the iter written to $iter; false past the last line, $iter then at the buffer's end. */
+    public function getIterAtLine(?GtkTextIter &$iter, int $lineNumber): bool {}
 
-    /** Null past the last line or the line's end. */
-    public function getIterAtLineOffset(int $line, int $offset): ?GtkTextIter {}
+    /** gtk_text_buffer_get_iter_at_line_offset(): the iter written to $iter; false past the last line or the line's end, $iter then at the end it reached. */
+    public function getIterAtLineOffset(?GtkTextIter &$iter, int $lineNumber, int $charOffset): bool {}
+
+    /** gtk_text_buffer_get_iter_at_offset(): -1 or past the end is the end iter */
+    public function getIterAtOffset(int $charOffset): GtkTextIter {}
 
     public function getStartIter(): GtkTextIter {}
 
     public function getEndIter(): GtkTextIter {}
 
-    /** The tag must be in this buffer's table and the iters this buffer's (ValueError otherwise). */
+    /** GTK answers a tag outside this buffer's table, or another buffer's iter, with a critical. */
     public function applyTag(GtkTextTag $tag, GtkTextIter $start, GtkTextIter $end): void {}
 
     public function removeTag(GtkTextTag $tag, GtkTextIter $start, GtkTextIter $end): void {}
 
-    /** @return array{GtkTextIter, GtkTextIter}|null start and end, or null with nothing selected */
-    public function getSelectionBounds(): ?array {}
+    /** gtk_text_buffer_get_selection_bounds(): the selection written to $start and $end; false with nothing selected, both then at the insert mark. */
+    public function getSelectionBounds(?GtkTextIter &$start, ?GtkTextIter &$end): bool {}
 
     /** Moves the insert mark to $ins and the selection bound to $bound in one step. */
     public function selectRange(GtkTextIter $ins, GtkTextIter $bound): void {}
@@ -255,10 +258,10 @@ class GtkTextView extends GtkWidget
     public function setCursorVisible(bool $setting): void {}
 
     /**
-     * @return array{int, int} the line's top y and height, in buffer coordinates; GTK's estimate
-     *                         ([0, 0] before the view is laid out)
+     * gtk_text_view_get_line_yrange(): the line's top y and height, in buffer coordinates, written to $y
+     * and $height; GTK's estimate (0 and 0 before the view is laid out)
      */
-    public function getLineYrange(GtkTextIter $iter): array {}
+    public function getLineYrange(GtkTextIter $iter, ?int &$y, ?int &$height): void {}
 }
 
 /**
@@ -267,7 +270,7 @@ class GtkTextView extends GtkWidget
 class GtkScale extends GtkWidget
 {
     /** gtk_scale_new_with_range() */
-    public static function newWithRange(GtkOrientation $orientation, float $min, float $max, float $step): GtkScale {}
+    public static function newWithRange(GtkOrientation $orientation, float $min, float $max, float $step): ?GtkScale {}
 
     /** gtk_range_get_value() */
     public function getValue(): float {}
@@ -291,7 +294,7 @@ class GtkScale extends GtkWidget
  *
  * @not-serializable
  */
-class GtkStringList extends GObject
+class GtkStringList extends GObject implements GListModel
 {
     /** @param string[] $strings */
     public static function new(array $strings): GtkStringList {}
@@ -309,9 +312,6 @@ class GtkStringList extends GObject
     public function splice(int $position, int $nRemovals, array $additions): void {}
 
     public function getString(int $position): ?string {}
-
-    /** g_list_model_get_n_items() */
-    public function getNItems(): int {}
 }
 
 /**
@@ -341,8 +341,7 @@ class GtkDropDown extends GtkWidget
 
     public function getSelectedItem(): ?GObject {}
 
-    /** @param GObject|null $model a GListModel */
-    public function setModel(?GObject $model): void {}
+    public function setModel(?GListModel $model): void {}
 }
 
 /**
@@ -402,11 +401,11 @@ class GtkPicture extends GtkWidget
 
     public function setContentFit(GtkContentFit $contentFit): void {}
 
-    /** the GdkPaintable, null when nothing loaded */
-    public function getPaintable(): ?GObject {}
+    /** null when nothing loaded */
+    public function getPaintable(): ?GdkPaintable {}
 
-    /** $paintable: a GdkPaintable, such as a GdkTexture; null shows nothing */
-    public function setPaintable(?GObject $paintable): void {}
+    /** $paintable: a GdkTexture or GtkMediaStream, for example; null shows nothing */
+    public function setPaintable(?GdkPaintable $paintable): void {}
 
     public function getCanShrink(): bool {}
 
@@ -438,4 +437,87 @@ class GtkScrolledWindow extends GtkWidget
     public function getHadjustment(): GtkAdjustment {}
 
     public function getVadjustment(): GtkAdjustment {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkPaned extends GtkWidget
+{
+    public static function new(GtkOrientation $orientation): GtkPaned {}
+
+    public function getStartChild(): ?GtkWidget {}
+
+    public function setStartChild(?GtkWidget $child): void {}
+
+    public function getEndChild(): ?GtkWidget {}
+
+    public function setEndChild(?GtkWidget $child): void {}
+
+    /** The divider's offset from the start, in pixels of this paned's own allocation. */
+    public function getPosition(): int {}
+
+    /** Negative unsets it: GTK places the divider itself. */
+    public function setPosition(int $position): void {}
+
+    public function getResizeStartChild(): bool {}
+
+    public function setResizeStartChild(bool $resize): void {}
+
+    public function getResizeEndChild(): bool {}
+
+    public function setResizeEndChild(bool $resize): void {}
+
+    public function getShrinkStartChild(): bool {}
+
+    public function setShrinkStartChild(bool $shrink): void {}
+
+    public function getShrinkEndChild(): bool {}
+
+    public function setShrinkEndChild(bool $shrink): void {}
+
+    public function getWideHandle(): bool {}
+
+    public function setWideHandle(bool $wide): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkNotebook extends GtkWidget
+{
+    public static function new(): GtkNotebook {}
+
+    /** gtk_notebook_append_page: the new page's index, or -1 (GTK's critical) when $child or $tabLabel already has a parent. */
+    public function appendPage(GtkWidget $child, ?GtkWidget $tabLabel): int {}
+
+    /** -1 removes the last page; an index past the end does nothing. */
+    public function removePage(int $pageNum): void {}
+
+    /** -1 when $child is not a page here */
+    public function pageNum(GtkWidget $child): int {}
+
+    public function getNPages(): int {}
+
+    /** -1 with no pages */
+    public function getCurrentPage(): int {}
+
+    /** -1 selects the last page; an index past the end does nothing. */
+    public function setCurrentPage(int $pageNum): void {}
+
+    /** -1 is the last page; null past the end. */
+    public function getNthPage(int $pageNum): ?GtkWidget {}
+
+    public function setTabLabelText(GtkWidget $child, string $tabText): void {}
+
+    /** null when the tab label is not a GtkLabel, or $child is not a page here */
+    public function getTabLabelText(GtkWidget $child): ?string {}
+
+    public function getShowTabs(): bool {}
+
+    public function setShowTabs(bool $showTabs): void {}
+
+    public function getScrollable(): bool {}
+
+    public function setScrollable(bool $scrollable): void {}
 }

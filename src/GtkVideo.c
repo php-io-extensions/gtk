@@ -3,7 +3,7 @@
 
 void phpgtk_register_GtkVideo(void)
 {
-	phpgtk_ce_GtkMediaStream = register_class_GtkMediaStream(phpgtk_ce_GObject);
+	phpgtk_ce_GtkMediaStream = register_class_GtkMediaStream(phpgtk_ce_GObject, phpgtk_ce_GdkPaintable);
 	phpgtk_object_setup(phpgtk_ce_GtkMediaStream);
 	phpgtk_map_gtype("GtkMediaStream", phpgtk_ce_GtkMediaStream);
 
@@ -29,30 +29,6 @@ ZEND_METHOD(klass, name) \
 		Z_PARAM_BOOL(value) \
 	ZEND_PARSE_PARAMETERS_END(); \
 	call(THIS(cast), value); \
-}
-
-/* ---- media backend probe (declared in gtk.stub.php) --------------------- */
-
-/*
- * gtk_media_file_new() instantiates the backend's GtkMediaFile subclass, loading
- * the media module on first use; without a module GTK falls back to GtkNoMediaFile.
- * gtk_init() registers the extension point the lookup needs; before it the lookup
- * fails an assertion and g_object_new() traps.
- */
-ZEND_FUNCTION(gtk_media_backend_available)
-{
-	GtkMediaStream *probe;
-	bool available;
-
-	ZEND_PARSE_PARAMETERS_NONE();
-	PHPGTK_REQUIRE_MAIN_THREAD();
-	PHPGTK_REQUIRE_INITIALIZED();
-
-	probe = gtk_media_file_new();
-	available = strcmp(G_OBJECT_TYPE_NAME(probe), "GtkNoMediaFile") != 0;
-	g_object_unref(probe);
-
-	RETURN_BOOL(available);
 }
 
 /* ---- GtkMediaStream ---------------------------------------------------- */
@@ -97,10 +73,6 @@ ZEND_METHOD(GtkMediaStream, seek)
 		Z_PARAM_LONG(timestamp)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_long_in_range(timestamp, 0, ZEND_LONG_MAX, 1)) {
-		RETURN_THROWS();
-	}
-
 	gtk_media_stream_seek(THIS(GTK_MEDIA_STREAM), (gint64) timestamp);
 }
 
@@ -127,6 +99,21 @@ PHPGTK_MEDIA_SET_BOOL(GtkMediaStream, setLoop, GTK_MEDIA_STREAM, gtk_media_strea
 PHPGTK_MEDIA_GET_BOOL(GtkMediaStream, hasVideo, GTK_MEDIA_STREAM, gtk_media_stream_has_video)
 
 /* ---- GtkMediaFile ------------------------------------------------------ */
+
+/*
+ * gtk_media_file_new() instantiates the backend's GtkMediaFile subclass, loading
+ * the media module on first use; without a module GTK falls back to GtkNoMediaFile.
+ * gtk_init() registers the extension point the lookup needs; before it the lookup
+ * fails an assertion and g_object_new() traps.
+ */
+ZEND_METHOD(GtkMediaFile, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-media-file */
+
+	phpgtk_box_gobject_full(return_value, gtk_media_file_new());
+}
 
 ZEND_METHOD(GtkMediaFile, newForFilename)
 {

@@ -4,7 +4,7 @@
 void phpgtk_register_GApplication(void)
 {
 	phpgtk_ce_GApplicationFlags = register_class_GApplicationFlags();
-	phpgtk_ce_GApplication = register_class_GApplication(phpgtk_ce_GObject);
+	phpgtk_ce_GApplication = register_class_GApplication(phpgtk_ce_GObject, phpgtk_ce_GActionGroup, phpgtk_ce_GActionMap);
 	phpgtk_object_setup(phpgtk_ce_GApplication);
 	phpgtk_map_gtype("GApplication", phpgtk_ce_GApplication);
 }
@@ -53,21 +53,19 @@ ZEND_METHOD(GApplication, getIsRemote)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	if (!g_application_get_is_registered(THIS_APP)) {
-		zend_throw_exception(phpgtk_ce_GtkException, "GApplication::getIsRemote() needs a registered application", 0);
-		RETURN_THROWS();
-	}
-
 	RETURN_BOOL(g_application_get_is_remote(THIS_APP));
 }
 
 ZEND_METHOD(GApplication, register)
 {
+	zend_object *cancellable = NULL;
 	GError *error = NULL;
 
-	ZEND_PARSE_PARAMETERS_NONE();
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(cancellable, phpgtk_ce_GCancellable)
+	ZEND_PARSE_PARAMETERS_END();
 
-	if (!g_application_register(THIS_APP, NULL, &error)) {
+	if (!g_application_register(THIS_APP, (GCancellable *) PHPGTK_OPTIONAL_PTR(cancellable), &error)) {
 		if (error != NULL) {
 			phpgtk_throw_gerror(error);
 			g_error_free(error);
@@ -109,30 +107,27 @@ ZEND_METHOD(GApplication, quit)
 
 ZEND_METHOD(GApplication, run)
 {
-	HashTable *argv_ht = NULL;
+	HashTable *argv_ht;
 
-	ZEND_PARSE_PARAMETERS_START(0, 1)
-		Z_PARAM_OPTIONAL
+	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ARRAY_HT(argv_ht)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	int argc = argv_ht != NULL ? (int) zend_hash_num_elements(argv_ht) : 0;
+	int argc = (int) zend_hash_num_elements(argv_ht);
 	char **argv = ecalloc((size_t) argc + 1, sizeof(char *));
 	zend_string **held = ecalloc((size_t) argc + 1, sizeof(zend_string *));
 	zval *arg;
 	int i = 0;
 
-	if (argv_ht != NULL) {
-		ZEND_HASH_FOREACH_VAL(argv_ht, arg) {
-			held[i] = zval_try_get_string(arg);
-			if (held[i] == NULL) {
-				goto cleanup;
-			}
-			argv[i] = ZSTR_VAL(held[i]);
-			i++;
-		} ZEND_HASH_FOREACH_END();
-	}
+	ZEND_HASH_FOREACH_VAL(argv_ht, arg) {
+		held[i] = zval_try_get_string(arg);
+		if (held[i] == NULL) {
+			goto cleanup;
+		}
+		argv[i] = ZSTR_VAL(held[i]);
+		i++;
+	} ZEND_HASH_FOREACH_END();
 
 	RETVAL_LONG(g_application_run(THIS_APP, argc, argc > 0 ? argv : NULL));
 
@@ -142,34 +137,4 @@ cleanup:
 	}
 	efree(held);
 	efree(argv);
-}
-
-ZEND_METHOD(GApplication, addAction)
-{
-	phpgtk_action_map_add_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-ZEND_METHOD(GApplication, removeAction)
-{
-	phpgtk_action_map_remove_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-ZEND_METHOD(GApplication, lookupAction)
-{
-	phpgtk_action_map_lookup_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-ZEND_METHOD(GApplication, hasAction)
-{
-	phpgtk_action_group_has_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-ZEND_METHOD(GApplication, listActions)
-{
-	phpgtk_action_group_list_actions(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-ZEND_METHOD(GApplication, activateAction)
-{
-	phpgtk_action_group_activate_action(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }

@@ -3,7 +3,10 @@
 
 void phpgtk_register_GtkCss(void)
 {
-	phpgtk_ce_GtkCssProvider = register_class_GtkCssProvider(phpgtk_ce_GObject);
+	phpgtk_ce_GtkStyleProvider = register_class_GtkStyleProvider();
+	phpgtk_ce_GtkStyleProvider->interface_gets_implemented = phpgtk_interface_native_only;
+
+	phpgtk_ce_GtkCssProvider = register_class_GtkCssProvider(phpgtk_ce_GObject, phpgtk_ce_GtkStyleProvider);
 	phpgtk_object_setup(phpgtk_ce_GtkCssProvider);
 	phpgtk_map_gtype("GtkCssProvider", phpgtk_ce_GtkCssProvider);
 
@@ -60,8 +63,8 @@ ZEND_METHOD(GdkDisplay, getDmabufFormats)
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
 	/* The class is compiled against 4.14 headers; the GTK actually running may be older. */
-	if (gtk_check_version(4, 14, 0) != NULL) {
-		zend_value_error("GdkDisplay::getDmabufFormats() needs GTK 4.14 or newer, this is %u.%u", gtk_get_major_version(), gtk_get_minor_version());
+	if (!PHPGTK_PROBE_OFF("gtk-version-4-14") && (gtk_check_version(4, 14, 0) != NULL)) {
+		zend_value_error("GdkDisplay::getDmabufFormats() needs GTK 4.14 or newer, this is %u.%u", gtk_get_major_version(), gtk_get_minor_version()); /* binding:gtk-version-4-14 */
 		RETURN_THROWS();
 	}
 
@@ -79,7 +82,7 @@ ZEND_FUNCTION(gtk_style_context_add_provider_for_display)
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJ_OF_CLASS(display, phpgtk_ce_GdkDisplay)
-		Z_PARAM_OBJ_OF_CLASS(provider, phpgtk_ce_GtkCssProvider)
+		Z_PARAM_OBJ_OF_CLASS(provider, phpgtk_ce_GObject)
 		Z_PARAM_LONG(priority)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
@@ -94,7 +97,7 @@ ZEND_FUNCTION(gtk_style_context_remove_provider_for_display)
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_OBJ_OF_CLASS(display, phpgtk_ce_GdkDisplay)
-		Z_PARAM_OBJ_OF_CLASS(provider, phpgtk_ce_GtkCssProvider)
+		Z_PARAM_OBJ_OF_CLASS(provider, phpgtk_ce_GObject)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 

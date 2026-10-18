@@ -41,6 +41,6 @@ class GtkGLArea extends GtkWidget
     /** gtk_gl_area_set_required_version() */
     public function setRequiredVersion(int $major, int $minor): void {}
 
-    /** gtk_gl_area_get_error(); the GError's message, or null */
-    public function getError(): ?string {}
+    /** gtk_gl_area_get_error(): the GError as an exception object, not thrown; null when there is none */
+    public function getError(): ?GError {}
 }

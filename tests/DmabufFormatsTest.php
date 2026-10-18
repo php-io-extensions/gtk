@@ -42,7 +42,21 @@ it('lists the dmabuf formats the display imports, and answers whether it imports
 
     expect($count)->toBeGreaterThan(0)
         ->and($formats->contains($fourcc, $modifier))->toBeTrue()
-        ->and(fn () => $formats->getFormat($count))->toThrow(ValueError::class, 'must be between 0 and '.($count - 1));
+        ->and(fn () => $formats->getFormat(-1))->toThrow(ValueError::class, 'must be between 0 and '.PHP_INT_MAX);
+});
+
+it('reads a format past the display\'s last as GDK answers it: a critical, and zeroes', function (): void {
+    if (PHP_OS_FAMILY !== 'Linux' || ! method_exists(GdkDisplay::class, 'getDmabufFormats')) {
+        $this->markTestSkipped('a display imports dmabuf formats on Linux, with GTK 4.14 headers');
+    }
+    $run = gtkChild(<<<'PHP'
+        $formats = GdkDisplay::getDefault()->getDmabufFormats();
+
+        return $formats->getFormat($formats->getNFormats());
+    PHP);
+
+    expect($run['result'])->toBe([0, 0])
+        ->and($run['stderr'])->toContain('gdk_dmabuf_formats_get_format: assertion');
 });
 
 it('makes no GdkDmabufFormats from PHP', function (): void {

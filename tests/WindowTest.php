@@ -38,8 +38,14 @@ it('creates windows with the title, size and child they were given', function ()
     $window->destroy();
 });
 
-it('refuses an application window without an application', function (): void {
-    expect(fn () => GtkApplicationWindow::new())->toThrow(ValueError::class);
+it('answers an application window without an application as GTK does: a critical and null', function (): void {
+    $run = gtkChild(<<<'PHP'
+        return GtkApplicationWindow::new();
+    PHP);
+
+    expect($run['survived'])->toBeTrue()
+        ->and($run['result'])->toBeNull()
+        ->and($run['stderr'])->toContain("gtk_application_window_new: assertion 'GTK_IS_APPLICATION (application)' failed");
 });
 
 it('closes through close-request and leaves the application', function (): void {
@@ -124,23 +130,141 @@ it('builds an about dialog transient for a window', function (): void {
     $window->destroy();
 });
 
+// In its own process: whether the window becomes active depends on what earlier windows and
+// launches in this process did to the application's activation (a URI launch on macOS leaves it inactive).
 it('grabs focus into an entry, whose GtkText the window then names as its focus', function (): void {
-    $window = GtkApplicationWindow::new(testApplication());
-    $entry = GtkEntry::new();
-    $window->setChild($entry);
+    $run = gtkChild(<<<'PHP'
+        $app = GtkApplication::new('com.projectsaturnstudios.GtkTests', GApplicationFlags::NON_UNIQUE);
+        g_signal_connect($app, 'activate', fn (): null => null);
+        $app->register(null);
+        $window = GtkApplicationWindow::new($app);
+        $entry = GtkEntry::new();
+        $window->setChild($entry);
+        $window->present();
+
+        $grabbed = $entry->grabFocus();
+        $focus = $window->getFocus();
+        // has-focus is the window's focus widget in an active window.
+        $ctx = GMainContext::default();
+        $start = microtime(true);
+        while (! $window->isActive() && microtime(true) - $start < 2) {
+            $ctx->iteration(false);
+            usleep(1000);
+        }
+        $seen = [$grabbed, $focus->typeName(), $window->isActive(), $focus->hasFocus(), $entry->hasFocus()];
+        $window->destroy();
+
+        return $seen;
+    PHP);
+
+    expect($run['survived'])->toBeTrue()
+        ->and($run['result'])->toBe([true, 'GtkText', true, true, false]);
+});
+
+/** A presented window, iterated until GTK gave it its surface. */
+function presentedWindow(): GtkWindow
+{
+    $window = GtkWindow::new();
     $window->present();
+    iterateUntil(fn (): bool => $window->getRealized());
 
-    $grabbed = $entry->grabFocus();
-    $focus = $window->getFocus();
-    // has-focus is the window's focus widget in an active window.
-    $active = iterateUntil(fn (): bool => $window->isActive());
+    return $window;
+}
 
-    expect($grabbed)->toBeTrue()
-        ->and($focus)->toBeInstanceOf(GtkWidget::class)
-        ->and($focus->typeName())->toBe('GtkText')
-        ->and($active)->toBeTrue()
-        ->and($focus->hasFocus())->toBeTrue()
-        ->and($entry->hasFocus())->toBeFalse();
+it('declares GtkNative and GtkRoot on windows and GtkNative on popovers', function (): void {
+    expect(is_subclass_of(GtkWindow::class, GtkNative::class))->toBeTrue()
+        ->and(is_subclass_of(GtkWindow::class, GtkRoot::class))->toBeTrue()
+        ->and(is_subclass_of(GtkAboutDialog::class, GtkRoot::class))->toBeTrue()
+        ->and(is_subclass_of(GtkPopover::class, GtkNative::class))->toBeTrue()
+        ->and(is_subclass_of(GtkPopover::class, GtkRoot::class))->toBeFalse();
+});
+
+it('reads a native\'s surface with gtk_native_get_surface', function (): void {
+    $window = presentedWindow();
+    $unrealized = GtkWindow::new();
+    $getSurface = new ReflectionMethod(GtkNative::class, 'getSurface');
+
+    expect($getSurface->invoke($window))->toBeInstanceOf(GdkSurface::class)
+        ->and($getSurface->invoke($window))->toBe($window->getSurface())
+        ->and($getSurface->invoke($unrealized))->toBeNull();
+
+    $window->destroy();
+    $unrealized->destroy();
+});
+
+it('finds the native of a surface with gtk_native_get_for_surface', function (): void {
+    $window = presentedWindow();
+
+    expect(GtkNative::getForSurface($window->getSurface()))->toBe($window)
+        ->and(GtkWindow::getForSurface($window->getSurface()))->toBe($window);
+
+    $window->destroy();
+});
+
+it('reads a native\'s surface transform with gtk_native_get_surface_transform', function (): void {
+    $window = presentedWindow();
+    $returned = $window->getSurfaceTransform($x, $y);
+
+    expect($returned)->toBeNull()
+        ->and($x)->toBeFloat()
+        ->and($y)->toBeFloat();
+
+    $window->destroy();
+});
+
+it('unrealizes a native with gtk_native_unrealize and realizes it again with gtk_native_realize', function (): void {
+    // gtk_native_realize() asserts the native is not already realized: GTK's critical comes through.
+    $code = <<<'PHP'
+        $app = GtkApplication::new('com.projectsaturnstudios.GtkNativeProbe', GApplicationFlags::NON_UNIQUE);
+        $app->register(null);
+        $window = GtkWindow::new();
+        $window->present();
+        while (! $window->getRealized()) { GMainContext::default()->iteration(true); }
+        $window->unrealize();
+        $window->realize();
+        echo "PAIRED\n";
+        $window->realize();
+        echo "TWICE\n";
+        PHP;
+    $out = shell_exec(escapeshellarg(PHP_BINARY).' -r '.escapeshellarg($code).' 2>&1');
+    [$paired, $twice] = explode('PAIRED', $out, 2);
+
+    expect($paired)->not->toContain('CRITICAL')
+        ->and($twice)->toContain('gtk_native_realize')
+        ->and($twice)->toContain('TWICE');
+});
+
+it('reads a root\'s display with gtk_root_get_display', function (): void {
+    $window = GtkWindow::new();
+
+    expect((new ReflectionMethod(GtkRoot::class, 'getDisplay'))->invoke($window))->toBe(GdkDisplay::getDefault());
+
+    $window->destroy();
+});
+
+it('sets a root\'s focus with gtk_root_set_focus', function (): void {
+    $window = GtkWindow::new();
+    $button = GtkButton::newWithLabel('Go');
+    $window->setChild($button);
+
+    $window->setFocus($button);
+    $set = $window->getFocus();
+    $window->setFocus(null);
+
+    expect($set)->toBe($button)
+        ->and($window->getFocus())->toBeNull();
+
+    $window->destroy();
+});
+
+it('reads a root\'s focus with gtk_root_get_focus', function (): void {
+    $window = GtkWindow::new();
+    $button = GtkButton::newWithLabel('Go');
+    $window->setChild($button);
+    $window->setFocus($button);
+    $getFocus = new ReflectionMethod(GtkRoot::class, 'getFocus');
+
+    expect($getFocus->invoke($window))->toBe($button);
 
     $window->destroy();
 });

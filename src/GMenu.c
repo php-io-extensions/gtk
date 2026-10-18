@@ -21,11 +21,11 @@ void phpgtk_register_GMenu(void)
 #define THIS_ITEM G_MENU_ITEM(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
 #define OPTIONAL_STR(zs) ((zs) != NULL ? ZSTR_VAL(zs) : NULL)
 
-/* A detailed action name GLib would reject with a critical warning is refused here instead. */
+/* A detailed action name g_menu_item_set_detailed_action() cannot parse: GIO answers it with g_error(), which traps the process. */
 static bool phpgtk_valid_detailed_action(zend_string *detailed, uint32_t arg_num)
 {
-	if (detailed != NULL && !phpgtk_is_detailed_action(ZSTR_VAL(detailed))) {
-		zend_argument_value_error(arg_num, "must be a valid detailed action name");
+	if (!PHPGTK_PROBE_OFF("gmenu-detailed-action") && (detailed != NULL && !phpgtk_is_detailed_action(ZSTR_VAL(detailed)))) {
+		zend_argument_value_error(arg_num, "must be a valid detailed action name"); /* binding:gmenu-detailed-action */
 		return false;
 	}
 
@@ -140,6 +140,9 @@ ZEND_METHOD(GMenu, insert)
 		Z_PARAM_STR_OR_NULL(action)
 	ZEND_PARSE_PARAMETERS_END();
 
+	if (!phpgtk_long_in_range(position, G_MININT, G_MAXINT, 1)) {
+		RETURN_THROWS();
+	}
 	if (!phpgtk_valid_detailed_action(action, 3)) {
 		RETURN_THROWS();
 	}
@@ -155,8 +158,7 @@ ZEND_METHOD(GMenu, remove)
 		Z_PARAM_LONG(position)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (position < 0 || position >= g_menu_model_get_n_items(G_MENU_MODEL(THIS_MENU))) {
-		zend_argument_value_error(1, "must be the position of an item in the menu");
+	if (!phpgtk_long_in_range(position, G_MININT, G_MAXINT, 1)) {
 		RETURN_THROWS();
 	}
 
@@ -257,11 +259,6 @@ ZEND_METHOD(GMenuItem, getAttributeValue)
 		Z_PARAM_STR(attribute)
 		Z_PARAM_STR_OR_NULL(expected)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (expected != NULL && !g_variant_type_string_is_valid(ZSTR_VAL(expected))) {
-		zend_argument_value_error(2, "must be a valid GVariant type string");
-		RETURN_THROWS();
-	}
 
 	phpgtk_box_variant_full(return_value, g_menu_item_get_attribute_value(THIS_ITEM, ZSTR_VAL(attribute),
 		expected != NULL ? G_VARIANT_TYPE(ZSTR_VAL(expected)) : NULL));

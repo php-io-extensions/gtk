@@ -42,13 +42,14 @@ ZEND_METHOD(GdkGLContext, realize)
 	ZEND_PARSE_PARAMETERS_NONE();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	if (!gdk_gl_context_realize(THIS_CONTEXT, &error)) {
-		if (error != NULL) {
-			phpgtk_throw_gerror(error);
-			g_error_free(error);
-		}
+	gboolean realized = gdk_gl_context_realize(THIS_CONTEXT, &error);
+	if (error != NULL) {
+		phpgtk_throw_gerror(error);
+		g_error_free(error);
 		RETURN_THROWS();
 	}
+
+	RETURN_BOOL(realized);
 }
 
 ZEND_METHOD(GdkGLContext, getUseEs)
@@ -74,5 +75,6 @@ ZEND_METHOD(GdkGLContext, getApi)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
 
-	phpgtk_return_enum(return_value, phpgtk_ce_GdkGLAPI, (zend_long) gdk_gl_context_get_api(THIS_CONTEXT));
+	/* GdkGLAPI is a flags type: 0 before realize, GDK_GL_API_GL | GDK_GL_API_GLES possible. */
+	RETURN_LONG((zend_long) gdk_gl_context_get_api(THIS_CONTEXT));
 }

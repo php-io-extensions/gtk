@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 0dedccef723a93c7fd4d24f01870ab219835b2f7 */
+ * Stub hash: 54e4976e5efccd8adfd1974244016cbc84885d67 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GtkTextIter___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()

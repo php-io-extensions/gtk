@@ -3,11 +3,11 @@
 
 void phpgtk_register_GtkWindow(void)
 {
-	phpgtk_ce_GtkWindow = register_class_GtkWindow(phpgtk_ce_GtkWidget);
+	phpgtk_ce_GtkWindow = register_class_GtkWindow(phpgtk_ce_GtkWidget, phpgtk_ce_GtkNative, phpgtk_ce_GtkRoot);
 	phpgtk_object_setup(phpgtk_ce_GtkWindow);
 	phpgtk_map_gtype("GtkWindow", phpgtk_ce_GtkWindow);
 
-	phpgtk_ce_GtkApplicationWindow = register_class_GtkApplicationWindow(phpgtk_ce_GtkWindow);
+	phpgtk_ce_GtkApplicationWindow = register_class_GtkApplicationWindow(phpgtk_ce_GtkWindow, phpgtk_ce_GActionGroup, phpgtk_ce_GActionMap);
 	phpgtk_object_setup(phpgtk_ce_GtkApplicationWindow);
 	phpgtk_map_gtype("GtkApplicationWindow", phpgtk_ce_GtkApplicationWindow);
 
@@ -89,18 +89,22 @@ ZEND_METHOD(GtkWindow, getDefaultSize)
 	add_next_index_long(return_value, height);
 }
 
-ZEND_METHOD(GtkWindow, getSurfaceTransform)
+/* GtkNative's, registered with the interface in GtkWidget.c: GtkWindow and GtkPopover inherit it. */
+ZEND_METHOD(GtkNative, getSurfaceTransform)
 {
-	double x;
-	double y;
+	zval *x_ref, *y_ref;
+	double x = 0.0;
+	double y = 0.0;
 
-	ZEND_PARSE_PARAMETERS_NONE();
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_ZVAL(x_ref)
+		Z_PARAM_ZVAL(y_ref)
+	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	gtk_native_get_surface_transform(GTK_NATIVE(THIS_WINDOW), &x, &y);
-	array_init_size(return_value, 2);
-	add_next_index_double(return_value, x);
-	add_next_index_double(return_value, y);
+	gtk_native_get_surface_transform(GTK_NATIVE(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS))), &x, &y);
+	ZEND_TRY_ASSIGN_REF_DOUBLE(x_ref, x);
+	ZEND_TRY_ASSIGN_REF_DOUBLE(y_ref, y);
 }
 
 ZEND_METHOD(GtkWindow, setDefaultSize)
@@ -207,12 +211,7 @@ ZEND_METHOD(GtkApplicationWindow, new)
 	PHPGTK_REQUIRE_MAIN_THREAD();
 	PHPGTK_REQUIRE_INITIALIZED();
 
-	if (application == NULL) {
-		zend_argument_value_error(1, "must be a GtkApplication: gtk_application_window_new() requires one");
-		RETURN_THROWS();
-	}
-
-	phpgtk_box_gobject(return_value, gtk_application_window_new(GTK_APPLICATION(PHPGTK_PTR(application))));
+	phpgtk_box_gobject(return_value, gtk_application_window_new(application != NULL ? GTK_APPLICATION(PHPGTK_PTR(application)) : NULL));
 }
 
 PHPGTK_BOOL_GETTER(GtkApplicationWindow, getShowMenubar, gtk_application_window_get_show_menubar, GTK_APPLICATION_WINDOW)

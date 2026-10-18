@@ -29,7 +29,7 @@ function stubDeclarations(): array
 
                 continue;
             }
-            if (preg_match('/^(?:final\s+)?(?:class|enum)\s+(\w+)/', $line, $m)) {
+            if (preg_match('/^(?:final\s+)?(?:class|enum|interface)\s+(\w+)/', $line, $m)) {
                 $class = $m[1];
                 $declared['classes'][$class] ??= [];
             } elseif (preg_match('/^function\s+(\w+)/', $line, $m)) {
@@ -51,7 +51,7 @@ it('exposes every function, class, enum and method the stubs declare', function 
     }
 
     foreach ($declared['classes'] as $class => $methods) {
-        expect(class_exists($class) || enum_exists($class))->toBeTrue("{$class} is missing");
+        expect(class_exists($class) || enum_exists($class) || interface_exists($class))->toBeTrue("{$class} is missing");
 
         foreach ($methods as $method) {
             expect(method_exists($class, $method))->toBeTrue("{$class}::{$method}() is missing");
@@ -97,13 +97,16 @@ it('keeps the native class hierarchy', function (): void {
         ->and(get_parent_class(GtkPicture::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GtkSeparator::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GtkScrolledWindow::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkPaned::class))->toBe(GtkWidget::class)
+        ->and(get_parent_class(GtkNotebook::class))->toBe(GtkWidget::class)
         ->and(get_parent_class(GDateTime::class))->toBeFalse()
         ->and(get_parent_class(GtkTextIter::class))->toBeFalse()
         ->and(get_parent_class(GtkTextMark::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkTextTag::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkTextTagTable::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkAdjustment::class))->toBe(GObject::class)
-        ->and(get_parent_class(GtkSignalListItemFactory::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkListItemFactory::class))->toBe(GObject::class)
+        ->and(get_parent_class(GtkSignalListItemFactory::class))->toBe(GtkListItemFactory::class)
         ->and(get_parent_class(GtkListItem::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkColumnViewColumn::class))->toBe(GObject::class)
         ->and(get_parent_class(GtkColumnView::class))->toBe(GtkWidget::class)
@@ -118,9 +121,41 @@ it('keeps the native class hierarchy', function (): void {
         ->and(get_parent_class(GSimpleActionGroup::class))->toBe(GObject::class);
 });
 
+it('keeps the native interfaces each class implements', function (): void {
+    $implements = [
+        GSimpleAction::class => [GAction::class],
+        GSimpleActionGroup::class => [GActionGroup::class, GActionMap::class],
+        GApplication::class => [GActionGroup::class, GActionMap::class],
+        GtkApplication::class => [GActionGroup::class, GActionMap::class],
+        GtkApplicationWindow::class => [GtkNative::class, GtkRoot::class, GActionGroup::class, GActionMap::class],
+        GtkWindow::class => [GtkNative::class, GtkRoot::class],
+        GtkAboutDialog::class => [GtkNative::class, GtkRoot::class],
+        GtkPopover::class => [GtkNative::class],
+        GtkPopoverMenu::class => [GtkNative::class],
+        GdkTexture::class => [GdkPaintable::class],
+        GdkMemoryTexture::class => [GdkPaintable::class],
+        GtkMediaStream::class => [GdkPaintable::class],
+        GtkMediaFile::class => [GdkPaintable::class],
+        GtkCssProvider::class => [GtkStyleProvider::class],
+        GtkSettings::class => [GtkStyleProvider::class],
+        GtkStringList::class => [GListModel::class],
+        GtkSingleSelection::class => [GListModel::class, GtkSelectionModel::class],
+    ];
+
+    foreach ($implements as $class => $interfaces) {
+        foreach ($interfaces as $interface) {
+            expect(is_subclass_of($class, $interface))->toBeTrue("{$class} implements {$interface}");
+        }
+        expect((new ReflectionClass($class))->isAbstract())->toBeFalse("{$class} is concrete");
+    }
+
+    expect(is_subclass_of(GtkSelectionModel::class, GListModel::class))->toBeTrue()
+        ->and(is_subclass_of(GtkWidget::class, GtkNative::class))->toBeFalse();
+});
+
 it('cannot construct native wrappers from PHP', function (string $class): void {
     expect(fn () => new $class())->toThrow(Error::class);
-})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class, GDateTime::class, GtkTextIter::class]);
+})->with([GObject::class, GApplication::class, GtkApplication::class, GMainContext::class, GtkWidget::class, GtkWindow::class, GMenu::class, GVariant::class, GDateTime::class, GtkTextIter::class, GBytes::class, CairoRegion::class, GParamSpec::class]);
 
 it('refuses to clone or serialize a native wrapper', function (): void {
     $ctx = GMainContext::default();

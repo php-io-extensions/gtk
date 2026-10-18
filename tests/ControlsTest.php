@@ -87,17 +87,29 @@ it('writes an entry through its buffer and hides the text', function (): void {
         ->and($entry->getVisibility())->toBeFalse();
 });
 
+it('sets an entry buffer\'s first nChars characters, and refuses more than the string holds, which GTK reads past', function (): void {
+    $buffer = GtkEntry::new()->getBuffer();
+    $buffer->setText('héllo', 2);
+    $first = $buffer->getText();
+    $buffer->setText('héllo', 5);
+
+    expect($first)->toBe('hé')
+        ->and($buffer->getText())->toBe('héllo')
+        ->and(fn () => $buffer->setText('ab', 3))->toThrow(ValueError::class, 'GtkEntryBuffer::setText(): Argument #2 ($nChars) must not exceed the 2 characters of $chars')
+        ->and($buffer->getText())->toBe('héllo');
+});
+
 it('writes a text view through its buffer and reads it back', function (): void {
     $view = GtkTextView::new();
     $changes = 0;
     g_signal_connect($view->getBuffer(), 'changed', function () use (&$changes): void { $changes++; });
-    $view->getBuffer()->setText("one\ntwo");
+    $view->getBuffer()->setText("one\ntwo", -1);
     $view->setEditable(false);
     $view->setWrapMode(GtkWrapMode::WORD_CHAR);
 
     expect($changes)->toBe(1)
-        ->and($view->getBuffer()->getText(0, -1))->toBe("one\ntwo")
-        ->and($view->getBuffer()->getText(4, 7))->toBe('two')
+        ->and($view->getBuffer()->getText($view->getBuffer()->getStartIter(), $view->getBuffer()->getEndIter(), false))->toBe("one\ntwo")
+        ->and($view->getBuffer()->getText($view->getBuffer()->getIterAtOffset(4), $view->getBuffer()->getIterAtOffset(7), false))->toBe('two')
         ->and($view->getEditable())->toBeFalse();
 });
 
@@ -143,8 +155,7 @@ it('selects from a drop-down over a string list', function (): void {
         ->and($drop->getSelectedItem()->getString())->toBe('y');
 
     $list->remove(0);
-    expect($list->getNItems())->toBe(1)
-        ->and(fn () => $list->remove(5))->toThrow(ValueError::class);
+    expect($list->getNItems())->toBe(1);
 
     $changes = [];
     g_signal_connect($list, 'items-changed', function (GObject $l, int $position, int $removed, int $added) use (&$changes): void { $changes[] = [$position, $removed, $added]; });
@@ -152,9 +163,53 @@ it('selects from a drop-down over a string list', function (): void {
     $list->splice(3, 0, ['s']);
     expect($changes)->toBe([[0, 1, 3], [3, 0, 1]])
         ->and(array_map(fn (int $i): ?string => $list->getString($i), [0, 1, 2, 3]))->toBe(['p', 'q', 'r', 's'])
-        ->and(fn () => $list->splice(2, 3, []))->toThrow(ValueError::class)
-        ->and(fn () => $list->splice(5, 0, []))->toThrow(ValueError::class)
         ->and(fn () => $list->splice(0, 0, [1]))->toThrow(TypeError::class);
+});
+
+it('removes past a string list\'s end as GTK does: a critical, the list unchanged', function (): void {
+    $run = gtkChild(<<<'PHP'
+        $list = GtkStringList::new(['a']);
+        $list->remove(5);
+
+        return $list->getNItems();
+    PHP);
+
+    expect($run['result'])->toBe(1)
+        ->and($run['stderr'])->toContain("gtk_string_list_splice: assertion 'position + n_removals <= objects_get_size (&self->items)' failed");
+});
+
+it('counts a string list\'s items through GListModel', function (): void {
+    $list = GtkStringList::new(['a', 'b', 'c']);
+
+    expect($list)->toBeInstanceOf(GListModel::class)
+        ->and($list->getNItems())->toBe(3);
+});
+
+it('reads a list model\'s item with g_list_model_get_item, null past the end', function (): void {
+    $list = GtkStringList::new(['a', 'b']);
+    $item = $list->getItem(1);
+
+    expect($item)->toBeInstanceOf(GtkStringObject::class)
+        ->and($item->getString())->toBe('b')
+        ->and($list->getItem(1))->toBe($item)
+        ->and($list->getItem(2))->toBeNull();
+});
+
+it('reads a list model\'s item with g_list_model_get_object, null past the end', function (): void {
+    $list = GtkStringList::new(['a', 'b']);
+
+    expect($list->getObject(0)->getString())->toBe('a')
+        ->and($list->getObject(2))->toBeNull();
+});
+
+it('emits items-changed with g_list_model_items_changed', function (): void {
+    $list = GtkStringList::new(['a', 'b']);
+    $changes = [];
+    g_signal_connect($list, 'items-changed', function (GObject $l, int $position, int $removed, int $added) use (&$changes): void { $changes[] = [$position, $removed, $added]; });
+
+    $list->itemsChanged(1, 0, 0);
+
+    expect($changes)->toBe([[1, 0, 0]]);
 });
 
 it('selects a day on a calendar and reads it back as a GDateTime', function (): void {
@@ -174,7 +229,7 @@ it('selects a day on a calendar and reads it back as a GDateTime', function (): 
         ->and($calendar->getDate()->getDayOfMonth())->toBe(15)
         // local midnight to local midnight, a day apart, outside DST changes: independent of PHP's own timezone setting
         ->and(GDateTime::newLocal(2020, 3, 16, 0, 0, 0.0)->toUnix() - $date->toUnix())->toBe(86400)
-        ->and(fn () => GDateTime::newLocal(2026, 13, 1, 0, 0, 0.0))->toThrow(ValueError::class);
+        ->and(GDateTime::newLocal(2026, 13, 1, 0, 0, 0.0))->toBeNull();
 });
 
 it('drives a progress bar and a spinner', function (): void {
@@ -193,7 +248,7 @@ it('loads a picture from a file and reports nothing for a missing one', function
     $picture = GtkPicture::newForFilename(__DIR__.'/fixtures/pixel.png');
     $picture->setContentFit(GtkContentFit::COVER);
 
-    expect($picture->getPaintable())->toBeInstanceOf(GObject::class)
+    expect($picture->getPaintable())->toBeInstanceOf(GdkPaintable::class)
         ->and($picture->getContentFit())->toBe(GtkContentFit::COVER);
 
     $picture->setFilename('/nope.png');
@@ -262,10 +317,14 @@ it('shows Pango markup with a link, which its activate-link signal names', funct
         ->and($seen)->toBe(['https://example.com/docs']);
 });
 
-it('refuses malformed Pango markup, keeping the label as it was', function (): void {
-    $label = GtkLabel::new('kept');
+it('hands malformed Pango markup to GTK, which warns and keeps the label\'s text', function (): void {
+    $run = gtkChild(<<<'PHP'
+        $label = GtkLabel::new('kept');
+        $label->setMarkup('Read <a href="https://example.com/">the docs');
 
-    expect(fn () => $label->setMarkup('Read <a href="https://example.com/">the docs'))->toThrow(GError::class)
-        ->and($label->getText())->toBe('kept')
-        ->and($label->getUseMarkup())->toBeFalse();
+        return [$label->getText(), $label->getUseMarkup()];
+    PHP);
+
+    expect($run['result'])->toBe(['kept', true])
+        ->and($run['stderr'])->toContain("Failed to set text 'Read <a href=\"https://example.com/\">the docs' from markup due to error parsing markup");
 });

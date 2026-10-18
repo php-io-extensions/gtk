@@ -18,6 +18,7 @@
 
 #include <gtk/gtk.h>
 #include <glib-unix.h>
+#include <pthread.h>
 
 /* A PHP callable held for GLib to call back into: a source's function or a signal handler. */
 typedef struct phpgtk_callout {
@@ -28,6 +29,7 @@ typedef struct phpgtk_callout {
 	gulong handler_id;
 	struct phpgtk_callout *prev;
 	struct phpgtk_callout *next;
+	pthread_t thread;              /* the PHP thread that made it: the only thread that may enter its callable */
 } phpgtk_callout;
 
 ZEND_BEGIN_MODULE_GLOBALS(gtk)
@@ -46,6 +48,9 @@ typedef enum {
 	PHPGTK_DMABUF_FORMATS = 4,     /* gdk_dmabuf_formats_ref / gdk_dmabuf_formats_unref (GTK 4.14+) */
 	PHPGTK_EVENT = 5,              /* gdk_event_ref / gdk_event_unref */
 	PHPGTK_TEXT_ITER = 6,          /* phpgtk_text_iter: struct copy of the iter + g_object_ref of its buffer on box, g_object_unref and g_free on free */
+	PHPGTK_BYTES = 7,              /* g_bytes_ref / g_bytes_unref */
+	PHPGTK_CAIRO_REGION = 8,       /* cairo_region_reference / cairo_region_destroy */
+	PHPGTK_PARAM_SPEC = 9,         /* g_param_spec_ref_sink / g_param_spec_unref */
 } phpgtk_kind;
 
 /* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
@@ -62,10 +67,6 @@ typedef struct {
 /* The GtkTextIter inside a GtkTextIter object's box, or NULL with a GtkException once its buffer's text changed. */
 GtkTextIter *phpgtk_fresh_iter(zend_object *iter_obj);
 
-/* Whether $tag is recorded as in $table (NULL: in any table); a table that was freed counts as none. */
-bool phpgtk_tag_in_table(GtkTextTag *tag, GtkTextTagTable *table);
-void phpgtk_tag_set_table(GtkTextTag *tag, GtkTextTagTable *table);
-
 typedef struct {
 	void *ptr;                     /* referenced native object, NULL before boxing */
 	phpgtk_kind kind;
@@ -79,6 +80,9 @@ static zend_always_inline phpgtk_object *phpgtk_object_from(zend_object *obj)
 
 #define PHPGTK_PTR(zobj) (phpgtk_object_from(zobj)->ptr)
 #define PHPGTK_OPTIONAL_PTR(zobj) ((zobj) != NULL ? PHPGTK_PTR(zobj) : NULL)
+/* A parameter typed with a GObject interface (GListModel, GtkSelectionModel, GActionGroup, GdkPaintable,
+ * GtkStyleProvider) is parsed as a GObject: only a GObject wrapper carries the pointer, and only a GObject
+ * wrapper implements the interface (phpgtk_interface_native_only). */
 
 extern zend_class_entry *phpgtk_ce_GtkException;
 extern zend_class_entry *phpgtk_ce_GError;
@@ -156,6 +160,8 @@ extern zend_class_entry *phpgtk_ce_GtkSpinner;
 extern zend_class_entry *phpgtk_ce_GtkPicture;
 extern zend_class_entry *phpgtk_ce_GtkSeparator;
 extern zend_class_entry *phpgtk_ce_GtkScrolledWindow;
+extern zend_class_entry *phpgtk_ce_GtkPaned;
+extern zend_class_entry *phpgtk_ce_GtkNotebook;
 extern zend_class_entry *phpgtk_ce_GtkSignalListItemFactory;
 extern zend_class_entry *phpgtk_ce_GtkListItem;
 extern zend_class_entry *phpgtk_ce_GtkColumnViewColumn;
@@ -177,6 +183,25 @@ extern zend_class_entry *phpgtk_ce_GSimpleAction;
 extern zend_class_entry *phpgtk_ce_GSimpleActionGroup;
 extern zend_class_entry *phpgtk_ce_GVariant;
 extern zend_class_entry *phpgtk_ce_GDateTime;
+extern zend_class_entry *phpgtk_ce_GParamSpec;
+extern zend_class_entry *phpgtk_ce_GBytes;
+extern zend_class_entry *phpgtk_ce_CairoRegion;
+extern zend_class_entry *phpgtk_ce_GdkRectangle;
+extern zend_class_entry *phpgtk_ce_GraphenePoint;
+extern zend_class_entry *phpgtk_ce_GrapheneSize;
+extern zend_class_entry *phpgtk_ce_GrapheneRect;
+extern zend_class_entry *phpgtk_ce_GtkListItemFactory;
+
+/* Interfaces. */
+extern zend_class_entry *phpgtk_ce_GAction;
+extern zend_class_entry *phpgtk_ce_GActionMap;
+extern zend_class_entry *phpgtk_ce_GActionGroup;
+extern zend_class_entry *phpgtk_ce_GListModel;
+extern zend_class_entry *phpgtk_ce_GtkSelectionModel;
+extern zend_class_entry *phpgtk_ce_GdkPaintable;
+extern zend_class_entry *phpgtk_ce_GtkNative;
+extern zend_class_entry *phpgtk_ce_GtkRoot;
+extern zend_class_entry *phpgtk_ce_GtkStyleProvider;
 
 void phpgtk_register_GObject(void);
 void phpgtk_register_GApplication(void);
@@ -214,13 +239,38 @@ void phpgtk_box_dmabuf_formats(zval *rv, GdkDmabufFormats *formats);
 void phpgtk_box_gobject_full(zval *rv, gpointer object);
 void phpgtk_box_event(zval *rv, GdkEvent *event);
 void phpgtk_box_variant_full(zval *rv, GVariant *variant);
+void phpgtk_box_bytes_full(zval *rv, GBytes *bytes);
+void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region);
+
+/* Struct value classes: the struct a GdkRectangle object holds, and a new GdkRectangle / GraphenePoint /
+ * GrapheneRect object holding a struct's fields. */
+cairo_rectangle_int_t phpgtk_rectangle_from(zend_object *rectangle);
+void phpgtk_rectangle_to(zval *rv, const cairo_rectangle_int_t *rectangle);
+graphene_point_t phpgtk_graphene_point_from(zend_object *point);
+void phpgtk_graphene_point_to(zval *rv, const graphene_point_t *point);
+void phpgtk_graphene_rect_to(zval *rv, const graphene_rect_t *rect);
+void phpgtk_box_param_spec(zval *rv, GParamSpec *pspec);
+
+/* An interface's methods with their C bodies: a class implementing the interface inherits them as it
+ * inherits a parent's. An internal interface registers its methods abstract, without a handler; each
+ * gets its body here, before any class implements the interface. */
+typedef struct {
+	const char *name;
+	zif_handler handler;
+} phpgtk_interface_method;
+
+void phpgtk_interface_bodies(zend_class_entry *iface, const phpgtk_interface_method *bodies);
+
+/* An interface's interface_gets_implemented handler: the interface stands for a native GType, so only a class
+ * whose objects are the extension's GObject wrappers implements it. A PHP class has no native form. */
+int phpgtk_interface_native_only(zend_class_entry *iface, zend_class_entry *ce);
 
 /* Values. */
 zend_long phpgtk_enum_value(zend_object *obj_or_null, zend_long fallback);
 void phpgtk_return_enum(zval *rv, zend_class_entry *ce, zend_long value);
 bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd);
 void phpgtk_gvalue_to_zval(zval *rv, const GValue *value);
-void phpgtk_zval_to_gvalue(GValue *value, zval *zv);
+bool phpgtk_zval_to_gvalue(GValue *value, zval *zv);
 
 /* Errors and threads. */
 void phpgtk_throw_gerror(GError *error);
@@ -229,13 +279,18 @@ void phpgtk_return_string(zval *rv, const char *str);
 bool phpgtk_is_detailed_action(const char *detailed);
 bool phpgtk_on_main_thread(void);
 
-/* GActionMap and GActionGroup method bodies, shared by the classes implementing them. */
-void phpgtk_action_map_add_action(INTERNAL_FUNCTION_PARAMETERS);
-void phpgtk_action_map_remove_action(INTERNAL_FUNCTION_PARAMETERS);
-void phpgtk_action_map_lookup_action(INTERNAL_FUNCTION_PARAMETERS);
-void phpgtk_action_group_has_action(INTERNAL_FUNCTION_PARAMETERS);
-void phpgtk_action_group_list_actions(INTERNAL_FUNCTION_PARAMETERS);
-void phpgtk_action_group_activate_action(INTERNAL_FUNCTION_PARAMETERS);
+/*
+ * The probe switch. A kept refusal site reads `if (!PHPGTK_PROBE_OFF("<id>") && (<check>))`.
+ * A build configured with --enable-gtk-probes lets env PHPGTK_PROBE_OFF=<id> turn that one
+ * site off, so tests/Probes can show the crash the site prevents; any other build compiles
+ * the switch out.
+ */
+#ifdef PHPGTK_PROBES
+bool phpgtk_probe_off(const char *id);
+# define PHPGTK_PROBE_OFF(id) phpgtk_probe_off(id)
+#else
+# define PHPGTK_PROBE_OFF(id) 0
+#endif
 
 /* Callouts. */
 phpgtk_callout *phpgtk_callout_new(zval *callable);
@@ -244,25 +299,33 @@ void phpgtk_callout_release(phpgtk_callout *callout);
 bool phpgtk_callout_invoke(phpgtk_callout *callout, uint32_t argc, zval *argv, zval *retval);
 void phpgtk_callouts_detach_all(void);
 
+/* True on a thread other than the PHP thread that made the callout. Every native entry point asks this before
+ * boxing anything and drops the call when it is: PHP's state is per thread, and another thread would run the
+ * callable against the wrong engine, or none. */
+bool phpgtk_callout_foreign(const phpgtk_callout *callout);
+
 /* A zend_long argument that must fit a native range; refused with ValueError otherwise. */
 bool phpgtk_long_in_range(zend_long value, zend_long min, zend_long max, uint32_t arg_num);
 
-/* A child argument whose parent GTK asserts on: NULL for inserts, this container for removes and moves. */
-bool phpgtk_require_parent(GtkWidget *child, GtkWidget *expected_parent, uint32_t arg_num);
 
-/* GTK asserts it runs on the thread that initialised it; this refuses other threads. */
+/* On macOS the GDK backend calls AppKit, which dies off the process main thread (an uncaught
+ * NSInternalInconsistencyException). On Linux GTK runs off it, so the call goes through. */
+#ifdef __APPLE__
 #define PHPGTK_REQUIRE_MAIN_THREAD() do { \
-	if (!phpgtk_on_main_thread()) { \
-		zend_throw_exception_ex(phpgtk_ce_GtkException, 0, \
+	if (!PHPGTK_PROBE_OFF("main-thread-macos") && (!phpgtk_on_main_thread())) { \
+		zend_throw_exception_ex(phpgtk_ce_GtkException, 0, /* binding:main-thread-macos */ \
 			"%s() must be called on the main thread", ZSTR_VAL(EX(func)->common.function_name)); \
 		RETURN_THROWS(); \
 	} \
 } while (0)
+#else
+#define PHPGTK_REQUIRE_MAIN_THREAD() do { } while (0)
+#endif
 
 /* Widgets need GTK initialised (gtk_init, or a GtkApplication's startup); GTK crashes otherwise. */
 #define PHPGTK_REQUIRE_INITIALIZED() do { \
-	if (!gtk_is_initialized()) { \
-		zend_throw_exception_ex(phpgtk_ce_GtkException, 0, \
+	if (!PHPGTK_PROBE_OFF("gtk-initialized") && (!gtk_is_initialized())) { \
+		zend_throw_exception_ex(phpgtk_ce_GtkException, 0, /* binding:gtk-initialized */ \
 			"%s() needs GTK initialised: call gtk_init() or register a GtkApplication first", \
 			ZSTR_VAL(EX(func)->common.function_name)); \
 		RETURN_THROWS(); \

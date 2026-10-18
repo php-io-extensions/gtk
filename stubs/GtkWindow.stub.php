@@ -5,9 +5,10 @@
 /**
  * @not-serializable
  */
-class GtkWindow extends GtkWidget
+class GtkWindow extends GtkWidget implements GtkNative, GtkRoot
 {
-    public static function new(): GtkWindow {}
+    /** gtk_window_new(). Nullable because PHP holds a subclass's static new() to this return type, and GtkApplicationWindow::new() answers null. */
+    public static function new(): ?GtkWindow {}
 
     public function getTitle(): ?string {}
 
@@ -17,13 +18,6 @@ class GtkWindow extends GtkWidget
     public function getDefaultSize(): array {}
 
     public function setDefaultSize(int $width, int $height): void {}
-
-    /**
-     * gtk_native_get_surface_transform(): the window widget's origin in its surface, where event positions are.
-     *
-     * @return array{0: float, 1: float} [x, y]
-     */
-    public function getSurfaceTransform(): array {}
 
     public function getChild(): ?GtkWidget {}
 
@@ -60,14 +54,14 @@ class GtkWindow extends GtkWidget
 /**
  * @not-serializable
  */
-class GtkApplicationWindow extends GtkWindow
+class GtkApplicationWindow extends GtkWindow implements GActionGroup, GActionMap
 {
     /**
      * PHP holds a static method to its parent's signature (GtkWindow::new()), so the
      * application is declared optional; gtk_application_window_new() requires it, and
-     * null is refused.
+     * answers null with a critical.
      */
-    public static function new(?GtkApplication $application = null): GtkApplicationWindow {}
+    public static function new(?GtkApplication $application = null): ?GtkApplicationWindow {}
 
     public function getShowMenubar(): bool {}
 

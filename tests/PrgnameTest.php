@@ -13,6 +13,12 @@ it('sets the program name GTK uses for WM_CLASS and reads it back', function ():
     expect($out)->toBe("'com.venusian.probe'");
 });
 
-it('refuses an empty program name', function (): void {
-    g_set_prgname('');
-})->throws(ValueError::class, 'g_set_prgname(): Argument #1 ($prgname) must not be empty');
+it('stores an empty program name, as GLib does', function (): void {
+    $run = gtkChild(<<<'PHP'
+        g_set_prgname('');
+
+        return g_get_prgname();
+    PHP, init: false);
+
+    expect($run['result'])->toBe('');
+});

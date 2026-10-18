@@ -2,10 +2,91 @@
 
 /** @generate-class-entries */
 
+/** GAction: an action, implemented by GSimpleAction. */
+interface GAction
+{
+    public static function nameIsValid(string $actionName): bool;
+
+    public static function printDetailedName(string $actionName, ?GVariant $targetValue): string;
+
+    public function getName(): string;
+
+    /** the parameter's GVariant type string, or null for an action without a parameter */
+    public function getParameterType(): ?string;
+
+    /** the state's GVariant type string, or null for a stateless action */
+    public function getStateType(): ?string;
+
+    public function getStateHint(): ?GVariant;
+
+    public function getEnabled(): bool;
+
+    public function getState(): ?GVariant;
+
+    public function changeState(GVariant $value): void;
+
+    public function activate(?GVariant $parameter): void;
+}
+
+/** GActionMap: the actions a GSimpleActionGroup, a GApplication or a GtkApplicationWindow holds. */
+interface GActionMap
+{
+    public function lookupAction(string $actionName): ?GAction;
+
+    public function addAction(GAction $action): void;
+
+    public function removeAction(string $actionName): void;
+}
+
+/** GActionGroup: actions activated and queried by name. */
+interface GActionGroup
+{
+    public function hasAction(string $actionName): bool;
+
+    /** @return array list of action names */
+    public function listActions(): array;
+
+    public function getActionEnabled(string $actionName): bool;
+
+    /** the parameter's GVariant type string, or null for an action without a parameter */
+    public function getActionParameterType(string $actionName): ?string;
+
+    /** the state's GVariant type string, or null for a stateless action */
+    public function getActionStateType(string $actionName): ?string;
+
+    public function getActionStateHint(string $actionName): ?GVariant;
+
+    public function getActionState(string $actionName): ?GVariant;
+
+    public function changeActionState(string $actionName, GVariant $value): void;
+
+    public function activateAction(string $actionName, ?GVariant $parameter): void;
+
+    public function actionAdded(string $actionName): void;
+
+    public function actionRemoved(string $actionName): void;
+
+    public function actionEnabledChanged(string $actionName, bool $enabled): void;
+
+    public function actionStateChanged(string $actionName, GVariant $state): void;
+}
+
+/** GListModel: a list of GObjects, implemented by GtkStringList and GtkSingleSelection. */
+interface GListModel
+{
+    public function getNItems(): int;
+
+    public function getItem(int $position): ?GObject;
+
+    public function getObject(int $position): ?GObject;
+
+    public function itemsChanged(int $position, int $removed, int $added): void;
+}
+
 /**
  * @not-serializable
  */
-class GSimpleAction extends GObject
+class GSimpleAction extends GObject implements GAction
 {
     /** @param string|null $parameterType a GVariant type string, e.g. "s"; null for no parameter */
     public static function new(string $name, ?string $parameterType): GSimpleAction {}
@@ -15,45 +96,12 @@ class GSimpleAction extends GObject
     public function setEnabled(bool $enabled): void {}
 
     public function setState(GVariant $value): void {}
-
-    /** g_action_get_name() */
-    public function getName(): string {}
-
-    /** g_action_get_enabled() */
-    public function getEnabled(): bool {}
-
-    /** g_action_get_state() */
-    public function getState(): ?GVariant {}
-
-    /** g_action_activate() */
-    public function activate(?GVariant $parameter): void {}
-
-    /** g_action_change_state() */
-    public function changeState(GVariant $value): void {}
 }
 
 /**
  * @not-serializable
  */
-class GSimpleActionGroup extends GObject
+class GSimpleActionGroup extends GObject implements GActionGroup, GActionMap
 {
     public static function new(): GSimpleActionGroup {}
-
-    /** g_action_map_add_action() */
-    public function addAction(GSimpleAction $action): void {}
-
-    /** g_action_map_remove_action() */
-    public function removeAction(string $actionName): void {}
-
-    /** g_action_map_lookup_action() */
-    public function lookupAction(string $actionName): ?GSimpleAction {}
-
-    /** g_action_group_has_action() */
-    public function hasAction(string $actionName): bool {}
-
-    /** g_action_group_list_actions() @return array list of action names */
-    public function listActions(): array {}
-
-    /** g_action_group_activate_action() */
-    public function activateAction(string $actionName, ?GVariant $parameter): void {}
 }

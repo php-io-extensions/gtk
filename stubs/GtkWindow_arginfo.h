@@ -1,7 +1,7 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 085bcce3c45154df5372040ef7013284c59aeacc */
+ * Stub hash: a360d7333b280a3da53ca7890eefe32daa5c2110 */
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_getTitle, 0, 0, IS_STRING, 1)
@@ -18,8 +18,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setDefaultSize, 
 	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
 ZEND_END_ARG_INFO()
-
-#define arginfo_class_GtkWindow_getSurfaceTransform arginfo_class_GtkWindow_getDefaultSize
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_getChild, 0, 0, GtkWidget, 1)
 ZEND_END_ARG_INFO()
@@ -40,8 +38,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWindow_getFocus arginfo_class_GtkWindow_getChild
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_getTransientFor, 0, 0, GtkWindow, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkWindow_getTransientFor arginfo_class_GtkWindow_new
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setTransientFor, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, parent, GtkWindow, 1)
@@ -66,7 +63,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setHideOnClose, 
 	ZEND_ARG_TYPE_INFO(0, setting, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkApplicationWindow_new, 0, 0, GtkApplicationWindow, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkApplicationWindow_new, 0, 0, GtkApplicationWindow, 1)
 	ZEND_ARG_OBJ_INFO_WITH_DEFAULT_VALUE(0, application, GtkApplication, 1, "null")
 ZEND_END_ARG_INFO()
 
@@ -117,7 +114,6 @@ ZEND_METHOD(GtkWindow, getTitle);
 ZEND_METHOD(GtkWindow, setTitle);
 ZEND_METHOD(GtkWindow, getDefaultSize);
 ZEND_METHOD(GtkWindow, setDefaultSize);
-ZEND_METHOD(GtkWindow, getSurfaceTransform);
 ZEND_METHOD(GtkWindow, getChild);
 ZEND_METHOD(GtkWindow, setChild);
 ZEND_METHOD(GtkWindow, present);
@@ -155,7 +151,6 @@ static const zend_function_entry class_GtkWindow_methods[] = {
 	ZEND_ME(GtkWindow, setTitle, arginfo_class_GtkWindow_setTitle, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getDefaultSize, arginfo_class_GtkWindow_getDefaultSize, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setDefaultSize, arginfo_class_GtkWindow_setDefaultSize, ZEND_ACC_PUBLIC)
-	ZEND_ME(GtkWindow, getSurfaceTransform, arginfo_class_GtkWindow_getSurfaceTransform, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getChild, arginfo_class_GtkWindow_getChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setChild, arginfo_class_GtkWindow_setChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, present, arginfo_class_GtkWindow_present, ZEND_ACC_PUBLIC)
@@ -197,22 +192,24 @@ static const zend_function_entry class_GtkAboutDialog_methods[] = {
 	ZEND_FE_END
 };
 
-static zend_class_entry *register_class_GtkWindow(zend_class_entry *class_entry_GtkWidget)
+static zend_class_entry *register_class_GtkWindow(zend_class_entry *class_entry_GtkWidget, zend_class_entry *class_entry_GtkNative, zend_class_entry *class_entry_GtkRoot)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkWindow", class_GtkWindow_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 2, class_entry_GtkNative, class_entry_GtkRoot);
 
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkApplicationWindow(zend_class_entry *class_entry_GtkWindow)
+static zend_class_entry *register_class_GtkApplicationWindow(zend_class_entry *class_entry_GtkWindow, zend_class_entry *class_entry_GActionGroup, zend_class_entry *class_entry_GActionMap)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkApplicationWindow", class_GtkApplicationWindow_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWindow, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 2, class_entry_GActionGroup, class_entry_GActionMap);
 
 	return class_entry;
 }

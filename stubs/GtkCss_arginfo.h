@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 6adbe18da43425e75ad5962c3cf95157a7a30165 */
+ * Stub hash: 4081c5822a37ee5acf0662033e404d9c81e85f24 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCssProvider_new, 0, 0, GtkCssProvider, 0)
 ZEND_END_ARG_INFO()
@@ -42,12 +42,23 @@ static const zend_function_entry class_GdkDisplay_methods[] = {
 	ZEND_FE_END
 };
 
-static zend_class_entry *register_class_GtkCssProvider(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GtkStyleProvider(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkStyleProvider", NULL);
+	class_entry = zend_register_internal_interface(&ce);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkCssProvider(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GtkStyleProvider)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkCssProvider", class_GtkCssProvider_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GtkStyleProvider);
 
 	return class_entry;
 }

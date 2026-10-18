@@ -9,8 +9,9 @@ void phpgtk_register_GtkControls(void)
 	phpgtk_ce_GtkContentFit = register_class_GtkContentFit();
 	phpgtk_ce_GtkPolicyType = register_class_GtkPolicyType();
 
-#define PHPGTK_WIDGET_CLASS(name, parent) \
-	phpgtk_ce_##name = register_class_##name(parent); \
+/* The parent class, then the interfaces the class implements. */
+#define PHPGTK_WIDGET_CLASS(name, ...) \
+	phpgtk_ce_##name = register_class_##name(__VA_ARGS__); \
 	phpgtk_object_setup(phpgtk_ce_##name); \
 	phpgtk_map_gtype(#name, phpgtk_ce_##name)
 
@@ -25,7 +26,7 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkTextBuffer, phpgtk_ce_GObject);
 	PHPGTK_WIDGET_CLASS(GtkTextView, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkScale, phpgtk_ce_GtkWidget);
-	PHPGTK_WIDGET_CLASS(GtkStringList, phpgtk_ce_GObject);
+	PHPGTK_WIDGET_CLASS(GtkStringList, phpgtk_ce_GObject, phpgtk_ce_GListModel);
 	PHPGTK_WIDGET_CLASS(GtkStringObject, phpgtk_ce_GObject);
 	PHPGTK_WIDGET_CLASS(GtkDropDown, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkCalendar, phpgtk_ce_GtkWidget);
@@ -34,6 +35,8 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkPicture, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkSeparator, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkScrolledWindow, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkPaned, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkNotebook, phpgtk_ce_GtkWidget);
 
 #undef PHPGTK_WIDGET_CLASS
 }
@@ -144,75 +147,14 @@ PHPGTK_SET_ENUM(GtkLabel, setEllipsize, GTK_LABEL, gtk_label_set_ellipsize, phpg
 PHPGTK_GET_DOUBLE(GtkLabel, getXalign, GTK_LABEL, gtk_label_get_xalign)
 PHPGTK_SET_DOUBLE(GtkLabel, setXalign, GTK_LABEL, gtk_label_set_xalign)
 PHPGTK_SET_ENUM(GtkLabel, setJustify, GTK_LABEL, gtk_label_set_justify, phpgtk_ce_GtkJustification, GtkJustification)
-/*
- * GtkLabel markup is Pango markup plus <a href> links. GTK takes the links out with a GMarkup
- * parse, hands the rest to Pango, and for either failing only logs a warning and blanks the
- * label. The same two passes here turn either failure into the GError instead.
- */
-static void phpgtk_markup_start(GMarkupParseContext *context, const gchar *name, const gchar **names, const gchar **values, gpointer data, GError **error)
-{
-	GString *pango = (GString *) data;
-
-	if (strcmp(name, "a") == 0) {
-		return;
-	}
-	g_string_append_printf(pango, "<%s", name);
-	for (int i = 0; names[i] != NULL; i++) {
-		gchar *escaped = g_markup_escape_text(values[i], -1);
-		g_string_append_printf(pango, " %s=\"%s\"", names[i], escaped);
-		g_free(escaped);
-	}
-	g_string_append_c(pango, '>');
-}
-
-static void phpgtk_markup_end(GMarkupParseContext *context, const gchar *name, gpointer data, GError **error)
-{
-	if (strcmp(name, "a") != 0) {
-		g_string_append_printf((GString *) data, "</%s>", name);
-	}
-}
-
-static void phpgtk_markup_text(GMarkupParseContext *context, const gchar *text, gsize length, gpointer data, GError **error)
-{
-	gchar *escaped = g_markup_escape_text(text, (gssize) length);
-
-	g_string_append((GString *) data, escaped);
-	g_free(escaped);
-}
-
-static gboolean phpgtk_label_markup_valid(const char *markup, gsize length, GError **error)
-{
-	static const GMarkupParser parser = { phpgtk_markup_start, phpgtk_markup_end, phpgtk_markup_text, NULL, NULL };
-	GString *pango = g_string_new(NULL);
-	GMarkupParseContext *context = g_markup_parse_context_new(&parser, 0, pango, NULL);
-	gboolean valid = g_markup_parse_context_parse(context, "<markup>", -1, error)
-		&& g_markup_parse_context_parse(context, markup, (gssize) length, error)
-		&& g_markup_parse_context_parse(context, "</markup>", -1, error)
-		&& g_markup_parse_context_end_parse(context, error)
-		&& pango_parse_markup(pango->str, -1, 0, NULL, NULL, NULL, error);
-
-	g_markup_parse_context_free(context);
-	g_string_free(pango, TRUE);
-
-	return valid;
-}
 
 ZEND_METHOD(GtkLabel, setMarkup)
 {
 	zend_string *str;
-	GError *error = NULL;
 
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_STR(str)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (!phpgtk_label_markup_valid(ZSTR_VAL(str), ZSTR_LEN(str), &error)) {
-		if (error != NULL) {
-			phpgtk_throw_gerror(error);
-			g_error_free(error);
-		}
-		RETURN_THROWS();
-	}
 
 	gtk_label_set_markup(THIS(GTK_LABEL), ZSTR_VAL(str));
 }
@@ -289,20 +231,20 @@ PHPGTK_GET_STRING(GtkEntryBuffer, getText, GTK_ENTRY_BUFFER, gtk_entry_buffer_ge
 ZEND_METHOD(GtkEntryBuffer, setText)
 {
 	zend_string *chars;
-	zend_long n_chars = -1;
+	zend_long n_chars;
 
-	ZEND_PARSE_PARAMETERS_START(1, 2)
+	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_STR(chars)
-		Z_PARAM_OPTIONAL
 		Z_PARAM_LONG(n_chars)
 	ZEND_PARSE_PARAMETERS_END();
 
-	/* GTK walks n_chars UTF-8 characters and copies that many bytes: a count past the end reads past the string. */
-	if (!g_utf8_validate(ZSTR_VAL(chars), (gssize) ZSTR_LEN(chars), NULL)) {
-		zend_argument_value_error(1, "must be valid UTF-8");
+	if (!phpgtk_long_in_range(n_chars, G_MININT, G_MAXINT, 2)) {
 		RETURN_THROWS();
 	}
-	if (n_chars != -1 && !phpgtk_long_in_range(n_chars, 0, (zend_long) g_utf8_strlen(ZSTR_VAL(chars), (gssize) ZSTR_LEN(chars)), 2)) {
+	/* GTK walks n_chars characters from the string's start without a bound: past its characters it reads past the string. */
+	glong length = g_utf8_strlen(ZSTR_VAL(chars), (gssize) ZSTR_LEN(chars));
+	if (!PHPGTK_PROBE_OFF("entry-set-text-nchars") && (n_chars > length)) {
+		zend_argument_value_error(2, "must not exceed the %ld characters of $chars", length); /* binding:entry-set-text-nchars */
 		RETURN_THROWS();
 	}
 
@@ -330,20 +272,14 @@ PHPGTK_SET_BOOL(GtkEntry, setVisibility, GTK_ENTRY, gtk_entry_set_visibility)
 ZEND_METHOD(GtkTextBuffer, setText)
 {
 	zend_string *text;
-	zend_long len = -1;
+	zend_long len;
 
-	ZEND_PARSE_PARAMETERS_START(1, 2)
+	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_STR(text)
-		Z_PARAM_OPTIONAL
 		Z_PARAM_LONG(len)
 	ZEND_PARSE_PARAMETERS_END();
 
-	/* len is in bytes; GTK asserts the text is valid UTF-8 over that length. */
-	if (len != -1 && !phpgtk_long_in_range(len, 0, (zend_long) ZSTR_LEN(text), 2)) {
-		RETURN_THROWS();
-	}
-	if (!g_utf8_validate(ZSTR_VAL(text), len == -1 ? (gssize) ZSTR_LEN(text) : (gssize) len, NULL)) {
-		zend_argument_value_error(1, "must be valid UTF-8");
+	if (!phpgtk_long_in_range(len, G_MININT, G_MAXINT, 2)) {
 		RETURN_THROWS();
 	}
 
@@ -352,28 +288,19 @@ ZEND_METHOD(GtkTextBuffer, setText)
 
 ZEND_METHOD(GtkTextBuffer, getText)
 {
-	zend_long start_offset;
-	zend_long end_offset;
-	bool include_hidden = false;
-	GtkTextIter start;
-	GtkTextIter end;
+	zend_object *start_obj;
+	zend_object *end_obj;
+	bool include_hidden;
 	gchar *text;
 
-	ZEND_PARSE_PARAMETERS_START(2, 3)
-		Z_PARAM_LONG(start_offset)
-		Z_PARAM_LONG(end_offset)
-		Z_PARAM_OPTIONAL
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS(start_obj, phpgtk_ce_GtkTextIter)
+		Z_PARAM_OBJ_OF_CLASS(end_obj, phpgtk_ce_GtkTextIter)
 		Z_PARAM_BOOL(include_hidden)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!phpgtk_long_in_range(start_offset, -1, G_MAXINT, 1) || !phpgtk_long_in_range(end_offset, -1, G_MAXINT, 2)) {
-		RETURN_THROWS();
-	}
-
-	gtk_text_buffer_get_iter_at_offset(THIS(GTK_TEXT_BUFFER), &start, (int) start_offset);
-	gtk_text_buffer_get_iter_at_offset(THIS(GTK_TEXT_BUFFER), &end, end_offset < 0 ? G_MAXINT : (int) end_offset);
-
-	text = gtk_text_buffer_get_text(THIS(GTK_TEXT_BUFFER), &start, &end, include_hidden);
+	/* GTK checks a stale or foreign iter itself here: a warning or critical, and NULL. */
+	text = gtk_text_buffer_get_text(THIS(GTK_TEXT_BUFFER), &PHPGTK_ITER_BOX(start_obj)->iter, &PHPGTK_ITER_BOX(end_obj)->iter, include_hidden);
 	phpgtk_return_string(return_value, text);
 	g_free(text);
 }
@@ -394,14 +321,10 @@ ZEND_METHOD(GtkTextBuffer, endUserAction)
 
 #define THIS_BUFFER GTK_TEXT_BUFFER(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
 
-/* An iter argument of this buffer: ValueError for another buffer's, GtkException once this buffer's text changed
- * (GTK only logs a critical, or crashes). */
+/* An iter argument: GtkException once its buffer's text changed (GTK only logs a critical, or crashes).
+ * Another buffer's iter goes to GTK, which answers it with a critical. */
 static GtkTextIter *phpgtk_buffer_iter(GtkTextBuffer *buffer, zend_object *iter_obj, uint32_t arg_num)
 {
-	if (PHPGTK_ITER_BOX(iter_obj)->buffer != buffer) {
-		zend_argument_value_error(arg_num, "must be an iter of this buffer");
-		return NULL;
-	}
 	return phpgtk_fresh_iter(iter_obj);
 }
 
@@ -412,40 +335,67 @@ ZEND_METHOD(GtkTextBuffer, getTagTable)
 	phpgtk_box_gobject(return_value, gtk_text_buffer_get_tag_table(THIS_BUFFER));
 }
 
+/* GTK writes the iter either way: past the last line it is the buffer's end, past the line's end the line's end. */
 ZEND_METHOD(GtkTextBuffer, getIterAtLine)
 {
-	zend_long line;
+	zval *iter_ref;
+	zend_long line_number;
 	GtkTextIter iter;
+	zval boxed;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_LONG(line)
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_ZVAL(iter_ref)
+		Z_PARAM_LONG(line_number)
 	ZEND_PARSE_PARAMETERS_END();
-	if (!phpgtk_long_in_range(line, 0, G_MAXINT, 1)) {
+	if (!phpgtk_long_in_range(line_number, G_MININT, G_MAXINT, 2)) {
 		RETURN_THROWS();
 	}
 
-	if (!gtk_text_buffer_get_iter_at_line(THIS_BUFFER, &iter, (int) line)) {
-		RETURN_NULL();
-	}
-	phpgtk_box_text_iter(return_value, &iter);
+	gboolean found = gtk_text_buffer_get_iter_at_line(THIS_BUFFER, &iter, (int) line_number);
+
+	phpgtk_box_text_iter(&boxed, &iter);
+	ZEND_TRY_ASSIGN_REF_TMP(iter_ref, &boxed);
+	RETURN_BOOL(found);
 }
 
 ZEND_METHOD(GtkTextBuffer, getIterAtLineOffset)
 {
-	zend_long line, offset;
+	zval *iter_ref;
+	zend_long line_number, char_offset;
 	GtkTextIter iter;
+	zval boxed;
 
-	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_LONG(line)
-		Z_PARAM_LONG(offset)
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_ZVAL(iter_ref)
+		Z_PARAM_LONG(line_number)
+		Z_PARAM_LONG(char_offset)
 	ZEND_PARSE_PARAMETERS_END();
-	if (!phpgtk_long_in_range(line, 0, G_MAXINT, 1) || !phpgtk_long_in_range(offset, 0, G_MAXINT, 2)) {
+	if (!phpgtk_long_in_range(line_number, G_MININT, G_MAXINT, 2) || !phpgtk_long_in_range(char_offset, G_MININT, G_MAXINT, 3)) {
+		RETURN_THROWS();
+	}
+	/* A negative char_offset is a Gtk-ERROR ("Char offset -1 is off the end of the line"), which traps the process. */
+	if (!PHPGTK_PROBE_OFF("text-iter-line-offset-negative") && char_offset < 0) {
+		zend_argument_value_error(3, "must be greater than or equal to 0"); /* binding:text-iter-line-offset-negative */
 		RETURN_THROWS();
 	}
 
-	if (!gtk_text_buffer_get_iter_at_line_offset(THIS_BUFFER, &iter, (int) line, (int) offset)) {
-		RETURN_NULL();
-	}
+	gboolean found = gtk_text_buffer_get_iter_at_line_offset(THIS_BUFFER, &iter, (int) line_number, (int) char_offset);
+
+	phpgtk_box_text_iter(&boxed, &iter);
+	ZEND_TRY_ASSIGN_REF_TMP(iter_ref, &boxed);
+	RETURN_BOOL(found);
+}
+
+ZEND_METHOD(GtkTextBuffer, getIterAtOffset)
+{
+	zend_long char_offset;
+	GtkTextIter iter;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(char_offset)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_text_buffer_get_iter_at_offset(THIS_BUFFER, &iter, (int) char_offset);
 	phpgtk_box_text_iter(return_value, &iter);
 }
 
@@ -483,10 +433,6 @@ static void phpgtk_buffer_tag(INTERNAL_FUNCTION_PARAMETERS, bool apply)
 
 	GtkTextBuffer *buffer = THIS_BUFFER;
 	GtkTextTag *tag = GTK_TEXT_TAG(PHPGTK_PTR(tag_obj));
-	if (!phpgtk_tag_in_table(tag, gtk_text_buffer_get_tag_table(buffer))) {
-		zend_argument_value_error(1, "must be a tag in this buffer's tag table");
-		RETURN_THROWS();
-	}
 	GtkTextIter *start = phpgtk_buffer_iter(buffer, start_obj, 2);
 	GtkTextIter *end = start != NULL ? phpgtk_buffer_iter(buffer, end_obj, 3) : NULL;
 	if (end == NULL) {
@@ -505,19 +451,23 @@ ZEND_METHOD(GtkTextBuffer, removeTag) { phpgtk_buffer_tag(INTERNAL_FUNCTION_PARA
 
 ZEND_METHOD(GtkTextBuffer, getSelectionBounds)
 {
+	zval *start_ref, *end_ref;
 	GtkTextIter start, end;
 	zval boxed;
 
-	ZEND_PARSE_PARAMETERS_NONE();
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_ZVAL(start_ref)
+		Z_PARAM_ZVAL(end_ref)
+	ZEND_PARSE_PARAMETERS_END();
 
-	if (!gtk_text_buffer_get_selection_bounds(THIS_BUFFER, &start, &end)) {
-		RETURN_NULL();
-	}
-	array_init_size(return_value, 2);
+	/* GTK sets both iters either way: with nothing selected, both are the insert mark's. */
+	gboolean selected = gtk_text_buffer_get_selection_bounds(THIS_BUFFER, &start, &end);
+
 	phpgtk_box_text_iter(&boxed, &start);
-	add_next_index_zval(return_value, &boxed);
+	ZEND_TRY_ASSIGN_REF_TMP(start_ref, &boxed);
 	phpgtk_box_text_iter(&boxed, &end);
-	add_next_index_zval(return_value, &boxed);
+	ZEND_TRY_ASSIGN_REF_TMP(end_ref, &boxed);
+	RETURN_BOOL(selected);
 }
 
 ZEND_METHOD(GtkTextBuffer, selectRange)
@@ -555,8 +505,10 @@ ZEND_METHOD(GtkTextBuffer, getIterAtMark)
 	ZEND_PARSE_PARAMETERS_END();
 
 	GtkTextMark *mark = GTK_TEXT_MARK(PHPGTK_PTR(mark_obj));
-	if (gtk_text_mark_get_buffer(mark) != THIS_BUFFER) {
-		zend_argument_value_error(1, "must be a mark of this buffer");
+	/* A deleted mark's iter GTK leaves unwritten (a critical), and boxing it reads that garbage. For another buffer's
+	 * live mark it writes this buffer's tree over that buffer's lines, which the iter outlives once that buffer goes. */
+	if (!PHPGTK_PROBE_OFF("text-iter-foreign-mark") && (gtk_text_mark_get_buffer(mark) != THIS_BUFFER)) {
+		zend_argument_value_error(1, "must be a mark of this buffer"); /* binding:text-iter-foreign-mark */
 		RETURN_THROWS();
 	}
 	gtk_text_buffer_get_iter_at_mark(THIS_BUFFER, &iter, mark);
@@ -593,10 +545,13 @@ PHPGTK_SET_BOOL(GtkTextView, setCursorVisible, GTK_TEXT_VIEW, gtk_text_view_set_
 ZEND_METHOD(GtkTextView, getLineYrange)
 {
 	zend_object *iter_obj;
+	zval *y_ref, *height_ref;
 	int y = 0, height = 0;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
+	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJ_OF_CLASS(iter_obj, phpgtk_ce_GtkTextIter)
+		Z_PARAM_ZVAL(y_ref)
+		Z_PARAM_ZVAL(height_ref)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
@@ -605,9 +560,8 @@ ZEND_METHOD(GtkTextView, getLineYrange)
 		RETURN_THROWS();
 	}
 	gtk_text_view_get_line_yrange(THIS(GTK_TEXT_VIEW), iter, &y, &height);
-	array_init_size(return_value, 2);
-	add_next_index_long(return_value, y);
-	add_next_index_long(return_value, height);
+	ZEND_TRY_ASSIGN_REF_LONG(y_ref, y);
+	ZEND_TRY_ASSIGN_REF_LONG(height_ref, height);
 }
 
 /* ---- GtkScale ---------------------------------------------------------- */
@@ -628,16 +582,7 @@ ZEND_METHOD(GtkScale, newWithRange)
 	PHPGTK_REQUIRE_MAIN_THREAD();
 	PHPGTK_REQUIRE_INITIALIZED();
 
-	/* GTK asserts min < max and step != 0, then returns NULL, which would come back as a null GtkScale. */
-	if (!(min < max)) {
-		zend_argument_value_error(2, "must be below the maximum");
-		RETURN_THROWS();
-	}
-	if (step == 0.0) {
-		zend_argument_value_error(4, "must not be zero");
-		RETURN_THROWS();
-	}
-
+	/* GTK asserts min < max and step != 0, then returns NULL: null here. */
 	phpgtk_box_gobject(return_value, gtk_scale_new_with_range((GtkOrientation) phpgtk_enum_value(orientation, 0), min, max, step));
 }
 
@@ -653,11 +598,6 @@ ZEND_METHOD(GtkScale, setRange)
 		Z_PARAM_DOUBLE(min)
 		Z_PARAM_DOUBLE(max)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (!(min < max)) {
-		zend_argument_value_error(1, "must be below the maximum");
-		RETURN_THROWS();
-	}
 
 	gtk_range_set_range(THIS(GTK_RANGE), min, max);
 }
@@ -732,8 +672,8 @@ ZEND_METHOD(GtkStringList, remove)
 		Z_PARAM_LONG(position)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (position < 0 || position >= (zend_long) g_list_model_get_n_items(G_LIST_MODEL(THIS(GTK_STRING_LIST)))) {
-		zend_argument_value_error(1, "must be a position in the list");
+	/* A position is a guint; GTK judges it against the list. */
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1)) {
 		RETURN_THROWS();
 	}
 
@@ -753,10 +693,8 @@ ZEND_METHOD(GtkStringList, splice)
 		Z_PARAM_ARRAY_HT(additions)
 	ZEND_PARSE_PARAMETERS_END();
 
-	zend_long n_items = (zend_long) g_list_model_get_n_items(G_LIST_MODEL(THIS(GTK_STRING_LIST)));
-
-	/* GTK asserts position + n_removals <= n_items. */
-	if (!phpgtk_long_in_range(position, 0, n_items, 1) || !phpgtk_long_in_range(n_removals, 0, n_items - position, 2)) {
+	/* Both are guints; GTK judges them against the list (a critical when position + n_removals passes its end). */
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1) || !phpgtk_long_in_range(n_removals, 0, (zend_long) G_MAXUINT, 2)) {
 		RETURN_THROWS();
 	}
 
@@ -777,18 +715,12 @@ ZEND_METHOD(GtkStringList, getString)
 		Z_PARAM_LONG(position)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (position < 0 || position >= (zend_long) g_list_model_get_n_items(G_LIST_MODEL(THIS(GTK_STRING_LIST)))) {
-		RETURN_NULL();
+	/* A position is a guint; GTK answers one past the list with NULL. */
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
 	}
 
 	phpgtk_return_string(return_value, gtk_string_list_get_string(THIS(GTK_STRING_LIST), (guint) position));
-}
-
-ZEND_METHOD(GtkStringList, getNItems)
-{
-	ZEND_PARSE_PARAMETERS_NONE();
-
-	RETURN_LONG((zend_long) g_list_model_get_n_items(G_LIST_MODEL(THIS(GTK_STRING_LIST))));
 }
 
 /* ---- GtkStringObject --------------------------------------------------- */
@@ -1026,3 +958,182 @@ ZEND_METHOD(GtkScrolledWindow, getVadjustment)
 
 	phpgtk_box_gobject(return_value, gtk_scrolled_window_get_vadjustment(THIS(GTK_SCROLLED_WINDOW)));
 }
+
+/* ---- GtkPaned ---------------------------------------------------------- */
+
+ZEND_METHOD(GtkPaned, new)
+{
+	zend_object *orientation;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(orientation, phpgtk_ce_GtkOrientation)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED();
+
+	phpgtk_box_gobject(return_value, gtk_paned_new((GtkOrientation) phpgtk_enum_value(orientation, 0)));
+}
+
+/* GTK asserts a new start/end child is unparented, unless it already fills that slot. */
+#define PHPGTK_PANED_CHILD(get_name, set_name, get_call, set_call) \
+ZEND_METHOD(GtkPaned, get_name) \
+{ \
+	ZEND_PARSE_PARAMETERS_NONE(); \
+	phpgtk_box_gobject(return_value, get_call(THIS(GTK_PANED))); \
+} \
+ZEND_METHOD(GtkPaned, set_name) \
+{ \
+	zend_object *child = NULL; \
+	ZEND_PARSE_PARAMETERS_START(1, 1) \
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget) \
+	ZEND_PARSE_PARAMETERS_END(); \
+	set_call(THIS(GTK_PANED), (GtkWidget *) PHPGTK_OPTIONAL_PTR(child)); \
+}
+
+PHPGTK_PANED_CHILD(getStartChild, setStartChild, gtk_paned_get_start_child, gtk_paned_set_start_child)
+PHPGTK_PANED_CHILD(getEndChild, setEndChild, gtk_paned_get_end_child, gtk_paned_set_end_child)
+
+ZEND_METHOD(GtkPaned, getPosition)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG(gtk_paned_get_position(THIS(GTK_PANED)));
+}
+
+ZEND_METHOD(GtkPaned, setPosition)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+	if (!phpgtk_long_in_range(position, INT_MIN, INT_MAX, 1)) {
+		RETURN_THROWS();
+	}
+
+	gtk_paned_set_position(THIS(GTK_PANED), (int) position);
+}
+
+PHPGTK_GET_BOOL(GtkPaned, getResizeStartChild, GTK_PANED, gtk_paned_get_resize_start_child)
+PHPGTK_SET_BOOL(GtkPaned, setResizeStartChild, GTK_PANED, gtk_paned_set_resize_start_child)
+PHPGTK_GET_BOOL(GtkPaned, getResizeEndChild, GTK_PANED, gtk_paned_get_resize_end_child)
+PHPGTK_SET_BOOL(GtkPaned, setResizeEndChild, GTK_PANED, gtk_paned_set_resize_end_child)
+PHPGTK_GET_BOOL(GtkPaned, getShrinkStartChild, GTK_PANED, gtk_paned_get_shrink_start_child)
+PHPGTK_SET_BOOL(GtkPaned, setShrinkStartChild, GTK_PANED, gtk_paned_set_shrink_start_child)
+PHPGTK_GET_BOOL(GtkPaned, getShrinkEndChild, GTK_PANED, gtk_paned_get_shrink_end_child)
+PHPGTK_SET_BOOL(GtkPaned, setShrinkEndChild, GTK_PANED, gtk_paned_set_shrink_end_child)
+PHPGTK_GET_BOOL(GtkPaned, getWideHandle, GTK_PANED, gtk_paned_get_wide_handle)
+PHPGTK_SET_BOOL(GtkPaned, setWideHandle, GTK_PANED, gtk_paned_set_wide_handle)
+
+/* ---- GtkNotebook ------------------------------------------------------- */
+
+PHPGTK_NEW_PLAIN(GtkNotebook, gtk_notebook_new)
+
+ZEND_METHOD(GtkNotebook, appendPage)
+{
+	zend_object *child;
+	zend_object *label = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(label, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_LONG(gtk_notebook_append_page(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child)), (GtkWidget *) PHPGTK_OPTIONAL_PTR(label)));
+}
+
+/* A page number argument: GTK takes an int. */
+#define PHPGTK_NOTEBOOK_PAGE_ARG(page) \
+	if (!phpgtk_long_in_range(page, INT_MIN, INT_MAX, 1)) { \
+		RETURN_THROWS(); \
+	}
+
+ZEND_METHOD(GtkNotebook, removePage)
+{
+	zend_long page;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(page)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_NOTEBOOK_PAGE_ARG(page)
+
+	gtk_notebook_remove_page(THIS(GTK_NOTEBOOK), (int) page);
+}
+
+ZEND_METHOD(GtkNotebook, pageNum)
+{
+	zend_object *child;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_LONG(gtk_notebook_page_num(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child))));
+}
+
+ZEND_METHOD(GtkNotebook, getNPages)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG(gtk_notebook_get_n_pages(THIS(GTK_NOTEBOOK)));
+}
+
+ZEND_METHOD(GtkNotebook, getCurrentPage)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG(gtk_notebook_get_current_page(THIS(GTK_NOTEBOOK)));
+}
+
+ZEND_METHOD(GtkNotebook, setCurrentPage)
+{
+	zend_long page;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(page)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_NOTEBOOK_PAGE_ARG(page)
+
+	gtk_notebook_set_current_page(THIS(GTK_NOTEBOOK), (int) page);
+}
+
+ZEND_METHOD(GtkNotebook, getNthPage)
+{
+	zend_long page;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(page)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_NOTEBOOK_PAGE_ARG(page)
+
+	phpgtk_box_gobject(return_value, gtk_notebook_get_nth_page(THIS(GTK_NOTEBOOK), (int) page));
+}
+
+ZEND_METHOD(GtkNotebook, setTabLabelText)
+{
+	zend_object *child;
+	zend_string *text;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+		Z_PARAM_STR(text)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_notebook_set_tab_label_text(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child)), ZSTR_VAL(text));
+}
+
+ZEND_METHOD(GtkNotebook, getTabLabelText)
+{
+	zend_object *child;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	phpgtk_return_string(return_value, gtk_notebook_get_tab_label_text(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child))));
+}
+
+PHPGTK_GET_BOOL(GtkNotebook, getShowTabs, GTK_NOTEBOOK, gtk_notebook_get_show_tabs)
+PHPGTK_SET_BOOL(GtkNotebook, setShowTabs, GTK_NOTEBOOK, gtk_notebook_set_show_tabs)
+PHPGTK_GET_BOOL(GtkNotebook, getScrollable, GTK_NOTEBOOK, gtk_notebook_get_scrollable)
+PHPGTK_SET_BOOL(GtkNotebook, setScrollable, GTK_NOTEBOOK, gtk_notebook_set_scrollable)

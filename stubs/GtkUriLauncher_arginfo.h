@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 41fc80f8f0bb807cf841d2bfa0dbae5827276749 */
+ * Stub hash: 6b6d9532eda2866983e712da4859e947cdf8f9f9 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GCancellable_new, 0, 0, GCancellable, 0)
 ZEND_END_ARG_INFO()
@@ -24,7 +24,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkUriLauncher_launch, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, parent, GtkWindow, 1)
 	ZEND_ARG_OBJ_INFO(0, cancellable, GCancellable, 1)
-	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
+	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkUriLauncher_launchFinish, 0, 1, _IS_BOOL, 0)

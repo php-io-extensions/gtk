@@ -133,6 +133,15 @@ it('has no current event outside a signal GTK delivered', function (): void {
         ->and(is_subclass_of(GdkScrollEvent::class, GdkEvent::class))->toBeTrue();
 });
 
+it('binds gdk_event_get_position with its x and y out-parameters by reference', function (): void {
+    $method = new ReflectionMethod(GdkEvent::class, 'getPosition');
+    $params = $method->getParameters();
+
+    expect((string) $method->getReturnType())->toBe('bool')
+        ->and(array_map(fn (ReflectionParameter $p): array => [$p->getName(), $p->isPassedByReference(), (string) $p->getType()], $params))
+        ->toBe([['x', true, '?float'], ['y', true, '?float']]);
+});
+
 it('names the relative directions GTK 4.20 reports for a scroll', function (): void {
     if (gtk_get_major_version() * 100 + gtk_get_minor_version() < 420) {
         test()->markTestSkipped('GdkScrollRelativeDirection is GTK 4.20+; this GTK is '.gtk_get_major_version().'.'.gtk_get_minor_version());
@@ -176,9 +185,17 @@ it('computes a point between widgets of one window, and none between strangers',
     $box = GtkBox::new(GtkOrientation::VERTICAL, 0);
     $window->setChild($box);
 
-    expect($window->computePoint($box, 3.0, 4.0))->toBe([3.0, 4.0])
-        ->and($window->computePoint(GtkBox::new(GtkOrientation::VERTICAL, 0), 3.0, 4.0))->toBeNull()
-        ->and($window->getSurfaceTransform())->toHaveCount(2);
+    $shared = $window->computePoint($box, new GraphenePoint(3.0, 4.0), $point);
+    $strangers = $window->computePoint(GtkBox::new(GtkOrientation::VERTICAL, 0), new GraphenePoint(3.0, 4.0), $none);
+    $window->getSurfaceTransform($x, $y);
+
+    expect($shared)->toBeTrue()
+        ->and($point)->toBeInstanceOf(GraphenePoint::class)
+        ->and([$point->x, $point->y])->toBe([3.0, 4.0])
+        ->and($strangers)->toBeFalse()
+        ->and($none)->toBeInstanceOf(GraphenePoint::class)
+        ->and($x)->toBeFloat()
+        ->and($y)->toBeFloat();
 });
 
 it('picks the innermost widget at a point, a disabled one only when asked', function (): void {
@@ -192,11 +209,11 @@ it('picks the innermost widget at a point, a disabled one only when asked', func
     for ($waited = 0; $button->getWidth() === 0 && $waited < 60; $waited++) {
         iterateFor(0.05);
     }
-    $inside = $button->computePoint($window, 5.0, 5.0);
-    $picked = $window->pick($inside[0], $inside[1], GTK_PICK_DEFAULT);
+    $button->computePoint($window, new GraphenePoint(5.0, 5.0), $inside);
+    $picked = $window->pick($inside->x, $inside->y, GTK_PICK_DEFAULT);
     $button->setSensitive(false);
-    $skipped = $window->pick($inside[0], $inside[1], GTK_PICK_DEFAULT);
-    $kept = $window->pick($inside[0], $inside[1], GTK_PICK_INSENSITIVE);
+    $skipped = $window->pick($inside->x, $inside->y, GTK_PICK_DEFAULT);
+    $kept = $window->pick($inside->x, $inside->y, GTK_PICK_INSENSITIVE);
     $window->destroy();
 
     expect([GTK_PICK_DEFAULT, GTK_PICK_INSENSITIVE, GTK_PICK_NON_TARGETABLE])->toBe([0, 1, 2])
@@ -224,6 +241,15 @@ it('reads GTK\'s settings through the default GtkSettings and g_object_get_prope
 
     expect($settings)->toBeInstanceOf(GtkSettings::class)
         ->and(g_object_get_property($settings, 'gtk-long-press-time'))->toBeInt()->toBeGreaterThan(0)
-        ->and(g_object_get_property($settings, 'gtk-dnd-drag-threshold'))->toBeInt()->toBeGreaterThan(0)
-        ->and(fn () => g_object_get_property($settings, 'no-such-property'))->toThrow(ValueError::class);
+        ->and(g_object_get_property($settings, 'gtk-dnd-drag-threshold'))->toBeInt()->toBeGreaterThan(0);
+});
+
+it('reads a property GLib does not know as null, after its critical', function (): void {
+    $run = gtkChild(<<<'PHP'
+        return g_object_get_property(GtkSettings::getDefault(), 'no-such-property');
+    PHP);
+
+    expect($run['survived'])->toBeTrue()
+        ->and($run['result'])->toBeNull()
+        ->and($run['stderr'])->toContain("g_object_get_is_valid_property: object class 'GtkSettings' has no property named 'no-such-property'");
 });

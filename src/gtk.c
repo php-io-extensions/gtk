@@ -91,6 +91,8 @@ zend_class_entry *phpgtk_ce_GtkSpinner;
 zend_class_entry *phpgtk_ce_GtkPicture;
 zend_class_entry *phpgtk_ce_GtkSeparator;
 zend_class_entry *phpgtk_ce_GtkScrolledWindow;
+zend_class_entry *phpgtk_ce_GtkPaned;
+zend_class_entry *phpgtk_ce_GtkNotebook;
 zend_class_entry *phpgtk_ce_GtkSignalListItemFactory;
 zend_class_entry *phpgtk_ce_GtkListItem;
 zend_class_entry *phpgtk_ce_GtkColumnViewColumn;
@@ -112,14 +114,35 @@ zend_class_entry *phpgtk_ce_GSimpleAction;
 zend_class_entry *phpgtk_ce_GSimpleActionGroup;
 zend_class_entry *phpgtk_ce_GVariant;
 zend_class_entry *phpgtk_ce_GDateTime;
+zend_class_entry *phpgtk_ce_GParamSpec;
+zend_class_entry *phpgtk_ce_GBytes;
+zend_class_entry *phpgtk_ce_CairoRegion;
+zend_class_entry *phpgtk_ce_GdkRectangle;
+zend_class_entry *phpgtk_ce_GraphenePoint;
+zend_class_entry *phpgtk_ce_GrapheneSize;
+zend_class_entry *phpgtk_ce_GrapheneRect;
+zend_class_entry *phpgtk_ce_GtkListItemFactory;
+zend_class_entry *phpgtk_ce_GAction;
+zend_class_entry *phpgtk_ce_GActionMap;
+zend_class_entry *phpgtk_ce_GActionGroup;
+zend_class_entry *phpgtk_ce_GListModel;
+zend_class_entry *phpgtk_ce_GtkSelectionModel;
+zend_class_entry *phpgtk_ce_GdkPaintable;
+zend_class_entry *phpgtk_ce_GtkNative;
+zend_class_entry *phpgtk_ce_GtkRoot;
+zend_class_entry *phpgtk_ce_GtkStyleProvider;
 
 /* ---- sources ---------------------------------------------------------- */
 
+/* A source dispatched on another thread is dropped and kept: removing it there would free the callable off its thread. */
 static gboolean phpgtk_source_func(gpointer data)
 {
 	zval retval;
 	gboolean keep = G_SOURCE_REMOVE;
 
+	if (phpgtk_callout_foreign((phpgtk_callout *) data)) {
+		return G_SOURCE_CONTINUE;
+	}
 	if (phpgtk_callout_invoke((phpgtk_callout *) data, 0, NULL, &retval)) {
 		keep = zend_is_true(&retval) ? G_SOURCE_CONTINUE : G_SOURCE_REMOVE;
 	}
@@ -134,6 +157,9 @@ static gboolean phpgtk_unix_fd_func(gint fd, GIOCondition condition, gpointer da
 	zval retval;
 	gboolean keep = G_SOURCE_REMOVE;
 
+	if (phpgtk_callout_foreign((phpgtk_callout *) data)) {
+		return G_SOURCE_CONTINUE;
+	}
 	ZVAL_LONG(&argv[0], fd);
 	ZVAL_LONG(&argv[1], (zend_long) condition);
 
@@ -204,17 +230,22 @@ ZEND_FUNCTION(g_idle_add)
 
 ZEND_FUNCTION(g_unix_fd_add)
 {
-	zval *zfd;
+	zend_long fd_long;
 	zend_object *condition_case = NULL;
 	zend_long condition_long = 0;
 	zval *function;
 	int fd;
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
-		Z_PARAM_ZVAL(zfd)
+		Z_PARAM_LONG(fd_long)
 		Z_PARAM_OBJ_OF_CLASS_OR_LONG(condition_case, phpgtk_ce_GIOCondition, condition_long)
 		Z_PARAM_ZVAL(function)
 	ZEND_PARSE_PARAMETERS_END();
+
+	/* The gint fd, through the existing fd conversion (its integer case). */
+	zval fd_value;
+	ZVAL_LONG(&fd_value, fd_long);
+	zval *zfd = &fd_value;
 
 	if (!phpgtk_fd_from_zval(zfd, 1, &fd) || !phpgtk_require_callable(function, 3)) {
 		RETURN_THROWS();
@@ -224,6 +255,11 @@ ZEND_FUNCTION(g_unix_fd_add)
 	callout->source_id = g_unix_fd_add_full(G_PRIORITY_DEFAULT, fd,
 		(GIOCondition) phpgtk_enum_value(condition_case, condition_long),
 		phpgtk_unix_fd_func, callout, phpgtk_source_destroy);
+	if (callout->source_id == 0) {
+		/* GLib made no source, so it never calls the destroy notify: the callout goes here. */
+		phpgtk_callout_release(callout);
+		RETURN_LONG(0);
+	}
 
 	RETURN_LONG((zend_long) callout->source_id);
 }
@@ -236,8 +272,9 @@ ZEND_FUNCTION(g_source_remove)
 		Z_PARAM_LONG(tag)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (tag <= 0 || tag > G_MAXUINT || g_main_context_find_source_by_id(NULL, (guint) tag) == NULL) {
-		RETURN_FALSE;
+	/* A source id is a guint; GLib judges an id it does not know (a critical and false). */
+	if (!phpgtk_long_in_range(tag, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
 	}
 
 	RETURN_BOOL(g_source_remove((guint) tag));
@@ -249,6 +286,12 @@ static void phpgtk_closure_marshal(GClosure *closure, GValue *return_value, guin
 	const GValue *param_values, gpointer invocation_hint, gpointer marshal_data)
 {
 	phpgtk_callout *callout = (phpgtk_callout *) closure->data;
+
+	/* Emitted on another thread: dropped before anything is boxed, the return GValue left at its default. */
+	if (phpgtk_callout_foreign(callout)) {
+		return;
+	}
+
 	zval *argv = n_param_values > 0 ? safe_emalloc(n_param_values, sizeof(zval), 0) : NULL;
 	zval retval;
 
@@ -280,8 +323,6 @@ ZEND_FUNCTION(g_signal_connect)
 	zend_object *instance;
 	zend_string *detailed_signal;
 	zval *handler;
-	guint signal_id;
-	GQuark detail;
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_OBJ_OF_CLASS(instance, phpgtk_ce_GObject)
@@ -291,10 +332,6 @@ ZEND_FUNCTION(g_signal_connect)
 
 	GObject *object = (GObject *) PHPGTK_PTR(instance);
 
-	if (!g_signal_parse_name(ZSTR_VAL(detailed_signal), G_OBJECT_TYPE(object), &signal_id, &detail, TRUE)) {
-		zend_argument_value_error(2, "is not a signal of %s", G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
-	}
 	if (!phpgtk_require_callable(handler, 3)) {
 		RETURN_THROWS();
 	}
@@ -306,7 +343,13 @@ ZEND_FUNCTION(g_signal_connect)
 	g_closure_add_finalize_notifier(closure, callout, phpgtk_closure_finalize);
 
 	callout->instance = object;
-	callout->handler_id = g_signal_connect_closure_by_id(object, signal_id, detail, closure, FALSE);
+	/* GLib parses the name: a signal the type does not have is a critical and 0. */
+	callout->handler_id = g_signal_connect_closure(object, ZSTR_VAL(detailed_signal), closure, FALSE);
+	if (callout->handler_id == 0) {
+		/* GLib never took the floating closure: sinking it finalizes it, which releases the callout. */
+		g_closure_sink(closure);
+		RETURN_LONG(0);
+	}
 
 	RETURN_LONG((zend_long) callout->handler_id);
 }
@@ -401,12 +444,16 @@ static bool phpgtk_signal_param(GValue *value, GType type, zval *param, uint32_t
 			return true;
 
 		default:
-			zend_argument_value_error(arg_num, "is a %s value for %s, which %s cannot pass", g_type_name(type), subject, caller);
-			return false;
+			/* Variants, param specs, pointers and boxed types: phpgtk_zval_to_gvalue says whether the value is of their kind. */
+			break;
 	}
 
 	g_value_init(value, type);
-	phpgtk_zval_to_gvalue(value, param);
+	if (!phpgtk_zval_to_gvalue(value, param)) {
+		g_value_unset(value);
+		zend_argument_type_error(arg_num, "must be a %s value for %s in %s, %s given", g_type_name(type), subject, caller, zend_zval_value_name(param));
+		return false;
+	}
 	return true;
 }
 
@@ -429,8 +476,9 @@ ZEND_FUNCTION(g_signal_emit_by_name)
 	GObject *object = (GObject *) PHPGTK_PTR(instance);
 
 	if (!g_signal_parse_name(ZSTR_VAL(detailed_signal), G_OBJECT_TYPE(object), &signal_id, &detail, TRUE)) {
-		zend_argument_value_error(2, "is not a signal of %s", G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
+		/* GLib parses the name before it reads any parameter: a signal the type does not have is its critical. */
+		g_signal_emit_by_name(object, ZSTR_VAL(detailed_signal));
+		RETURN_NULL();
 	}
 
 	g_signal_query(signal_id, &query);
@@ -491,11 +539,6 @@ ZEND_FUNCTION(g_signal_handler_disconnect)
 		Z_PARAM_LONG(handler_id)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (!g_signal_handler_is_connected(PHPGTK_PTR(instance), (gulong) handler_id)) {
-		zend_argument_value_error(2, "is not a handler connected to this instance");
-		RETURN_THROWS();
-	}
-
 	g_signal_handler_disconnect(PHPGTK_PTR(instance), (gulong) handler_id);
 }
 
@@ -523,16 +566,12 @@ ZEND_FUNCTION(g_object_get_property)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	GObject *object = G_OBJECT(PHPGTK_PTR(instance));
-	GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(object), ZSTR_VAL(property));
-	if (spec == NULL) {
-		zend_argument_value_error(2, "is not a property of %s", G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
-	}
-
+	/* An uninitialised GValue takes the property's type; for a property GLib does not know, it warns and leaves the value unset (null). */
 	GValue value = G_VALUE_INIT;
-	g_value_init(&value, G_PARAM_SPEC_VALUE_TYPE(spec));
-	g_object_get_property(object, ZSTR_VAL(property), &value);
+	g_object_get_property(G_OBJECT(PHPGTK_PTR(instance)), ZSTR_VAL(property), &value);
+	if (!G_IS_VALUE(&value)) {
+		RETURN_NULL();
+	}
 	phpgtk_gvalue_to_zval(return_value, &value);
 	g_value_unset(&value);
 }
@@ -552,31 +591,25 @@ ZEND_FUNCTION(g_object_set_property)
 
 	GObject *object = G_OBJECT(PHPGTK_PTR(instance));
 	GParamSpec *spec = g_object_class_find_property(G_OBJECT_GET_CLASS(object), ZSTR_VAL(property));
-	if (spec == NULL) {
-		zend_argument_value_error(2, "is not a property of %s", G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
-	}
-	if (!(spec->flags & G_PARAM_WRITABLE) || (spec->flags & G_PARAM_CONSTRUCT_ONLY)) {
-		zend_argument_value_error(2, "is not a writable property of %s", G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
-	}
-
-	GType value_type = G_PARAM_SPEC_VALUE_TYPE(spec);
-	char subject[160];
-	g_snprintf(subject, sizeof(subject), "property %s", ZSTR_VAL(property));
 	GValue gvalue = G_VALUE_INIT;
-	if (!phpgtk_signal_param(&gvalue, value_type, value, 3, subject, "g_object_set_property()")) {
-		RETURN_THROWS();
-	}
-	if ((G_TYPE_FUNDAMENTAL(value_type) == G_TYPE_DOUBLE && isnan(g_value_get_double(&gvalue)))
-			|| (G_TYPE_FUNDAMENTAL(value_type) == G_TYPE_FLOAT && isnan(g_value_get_float(&gvalue)))
-			|| g_param_value_validate(spec, &gvalue)) {
-		g_value_unset(&gvalue);
-		zend_argument_value_error(3, "is out of range for property %s of %s", ZSTR_VAL(property), G_OBJECT_TYPE_NAME(object));
-		RETURN_THROWS();
+
+	/*
+	 * The value is converted to the property's type. GLib judges the rest and warns: a property it
+	 * does not know (named with no value, which GLib does not read then), one that is not writable,
+	 * and a value invalid or out of range for it.
+	 */
+	if (spec != NULL) {
+		GType value_type = G_PARAM_SPEC_VALUE_TYPE(spec);
+		char subject[160];
+		g_snprintf(subject, sizeof(subject), "property %s", ZSTR_VAL(property));
+		if (!phpgtk_signal_param(&gvalue, value_type, value, 3, subject, "g_object_set_property()")) {
+			RETURN_THROWS();
+		}
 	}
 	g_object_set_property(object, ZSTR_VAL(property), &gvalue);
-	g_value_unset(&gvalue);
+	if (G_IS_VALUE(&gvalue)) {
+		g_value_unset(&gvalue);
+	}
 }
 
 /* ---- GTK -------------------------------------------------------------- */
@@ -633,11 +666,6 @@ ZEND_FUNCTION(g_set_prgname)
 		Z_PARAM_STR(prgname)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (ZSTR_LEN(prgname) == 0) {
-		zend_argument_value_error(1, "must not be empty");
-		RETURN_THROWS();
-	}
-
 	g_set_prgname(ZSTR_VAL(prgname));
 }
 
@@ -671,12 +699,18 @@ static PHP_GSHUTDOWN_FUNCTION(gtk)
 PHP_MINIT_FUNCTION(gtk)
 {
 	register_gtk_symbols(module_number);
+#ifdef PHPGTK_PROBES
+	/* Only a probe build has it: tests/Probes skips without it. */
+	REGISTER_BOOL_CONSTANT("PHPGTK_PROBES", true, CONST_PERSISTENT);
+#endif
 
 	phpgtk_ce_GIOCondition = register_class_GIOCondition();
 	phpgtk_ce_GtkException = register_class_GtkException(spl_ce_RuntimeException);
 	phpgtk_ce_GError = register_class_GError(spl_ce_RuntimeException);
 
 	phpgtk_register_GObject();
+	/* GActionMap, GActionGroup and GListModel come first: the GApplication and widget classes implement them. */
+	phpgtk_register_GAction();
 	phpgtk_register_GApplication();
 	phpgtk_register_GtkApplication();
 	phpgtk_register_GMainContext();
@@ -696,7 +730,6 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkWindow();
 	phpgtk_register_GtkUriLauncher();
 	phpgtk_register_GMenu();
-	phpgtk_register_GAction();
 
 	return SUCCESS;
 }

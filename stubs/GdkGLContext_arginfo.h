@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 9fe3cb0bcc924ca5d27dc3d95b930570d106930e */
+ * Stub hash: e16f272b10ee17e44d46343f1cff259cc6c47ef1 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkGLContext_makeCurrent, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -9,15 +9,15 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkGLContext_getCurrent, 0, 0, GdkGLContext, 1)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GdkGLContext_realize arginfo_class_GdkGLContext_makeCurrent
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkGLContext_getUseEs, 0, 0, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkGLContext_realize, 0, 0, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_GdkGLContext_getUseEs arginfo_class_GdkGLContext_realize
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkGLContext_getVersion, 0, 0, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkGLContext_getApi, 0, 0, GdkGLAPI, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkGLContext_getApi, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_METHOD(GdkGLContext, makeCurrent);

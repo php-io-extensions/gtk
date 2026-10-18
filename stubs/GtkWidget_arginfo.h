@@ -1,5 +1,20 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 53be047d174c8be78962145f61d52b368b8617c1 */
+ * Stub hash: bbf23c9837b30710cd27d243d8bf04b0a7e6db95 */
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GrapheneSize___construct, 0, 0, 2)
+	ZEND_ARG_TYPE_INFO(0, width, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, height, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GrapheneRect___construct, 0, 0, 2)
+	ZEND_ARG_OBJ_INFO(0, origin, GraphenePoint, 0)
+	ZEND_ARG_OBJ_INFO(0, size, GrapheneSize, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_show, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -32,10 +47,10 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_insertActionGroup, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
-	ZEND_ARG_OBJ_INFO(0, group, GObject, 1)
+	ZEND_ARG_OBJ_INFO(0, group, GActionGroup, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_activateAction, 0, 2, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_activateActionVariant, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_OBJ_INFO(0, args, GVariant, 1)
 ZEND_END_ARG_INFO()
@@ -104,10 +119,10 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_removeController arginfo_class_GtkWidget_addController
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_computePoint, 0, 3, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_computePoint, 0, 3, _IS_BOOL, 0)
 	ZEND_ARG_OBJ_INFO(0, target, GtkWidget, 0)
-	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_DOUBLE, 0)
+	ZEND_ARG_OBJ_INFO(0, point, GraphenePoint, 0)
+	ZEND_ARG_OBJ_INFO(1, outPoint, GraphenePoint, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_pick, 0, 3, GtkWidget, 1)
@@ -125,10 +140,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_measure, 0, 2, I
 	ZEND_ARG_TYPE_INFO(0, forSize, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkWidget_getNative arginfo_class_GtkWidget_getParent
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getNative, 0, 0, GtkNative, 1)
+ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_computeBounds, 0, 1, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_computeBounds, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_OBJ_INFO(0, target, GtkWidget, 0)
+	ZEND_ARG_OBJ_INFO(1, outBounds, GrapheneRect, 1)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_getFirstChild arginfo_class_GtkWidget_getParent
@@ -138,10 +155,32 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getDisplay, 0, 0, GdkDisplay, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkWidget_getRoot arginfo_class_GtkWidget_getParent
-
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getSurface, 0, 0, GdkSurface, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getRoot, 0, 0, GtkRoot, 1)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkNative_getForSurface, 0, 1, GtkNative, 1)
+	ZEND_ARG_OBJ_INFO(0, surface, GdkSurface, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkNative_realize arginfo_class_GtkWidget_show
+
+#define arginfo_class_GtkNative_unrealize arginfo_class_GtkWidget_show
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkNative_getSurface, 0, 0, GdkSurface, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNative_getSurfaceTransform, 0, 2, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(1, x, IS_DOUBLE, 1)
+	ZEND_ARG_TYPE_INFO(1, y, IS_DOUBLE, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkRoot_getDisplay arginfo_class_GtkWidget_getDisplay
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkRoot_setFocus, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, focus, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkRoot_getFocus arginfo_class_GtkWidget_getParent
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkBox_new, 0, 2, GtkBox, 0)
 	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
@@ -235,14 +274,12 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPopover_unparent arginfo_class_GtkWidget_show
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setPointingTo, 0, 4, IS_VOID, 0)
-	ZEND_ARG_TYPE_INFO(0, x, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, y, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, width, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, height, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setPointingTo, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, rect, GdkRectangle, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_getPointingTo, 0, 0, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_getPointingTo, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(1, rect, GdkRectangle, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setHasArrow, 0, 1, IS_VOID, 0)
@@ -261,6 +298,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPopoverMenu_getMenuModel arginfo_class_GtkPopoverMenuBar_getMenuModel
 
+ZEND_METHOD(GraphenePoint, __construct);
+ZEND_METHOD(GrapheneSize, __construct);
+ZEND_METHOD(GrapheneRect, __construct);
 ZEND_METHOD(GtkWidget, show);
 ZEND_METHOD(GtkWidget, hide);
 ZEND_METHOD(GtkWidget, getVisible);
@@ -273,7 +313,7 @@ ZEND_METHOD(GtkWidget, getVexpand);
 ZEND_METHOD(GtkWidget, setVexpand);
 ZEND_METHOD(GtkWidget, getParent);
 ZEND_METHOD(GtkWidget, insertActionGroup);
-ZEND_METHOD(GtkWidget, activateAction);
+ZEND_METHOD(GtkWidget, activateActionVariant);
 ZEND_METHOD(GtkWidget, activate);
 ZEND_METHOD(GtkWidget, getHalign);
 ZEND_METHOD(GtkWidget, setHalign);
@@ -308,7 +348,6 @@ ZEND_METHOD(GtkWidget, getFirstChild);
 ZEND_METHOD(GtkWidget, getNextSibling);
 ZEND_METHOD(GtkWidget, getDisplay);
 ZEND_METHOD(GtkWidget, getRoot);
-ZEND_METHOD(GtkWidget, getSurface);
 ZEND_METHOD(GtkBox, new);
 ZEND_METHOD(GtkBox, append);
 ZEND_METHOD(GtkBox, prepend);
@@ -346,6 +385,21 @@ ZEND_METHOD(GtkPopover, popdown);
 ZEND_METHOD(GtkPopoverMenu, newFromModel);
 ZEND_METHOD(GtkPopoverMenu, getMenuModel);
 
+static const zend_function_entry class_GraphenePoint_methods[] = {
+	ZEND_ME(GraphenePoint, __construct, arginfo_class_GraphenePoint___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GrapheneSize_methods[] = {
+	ZEND_ME(GrapheneSize, __construct, arginfo_class_GrapheneSize___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GrapheneRect_methods[] = {
+	ZEND_ME(GrapheneRect, __construct, arginfo_class_GrapheneRect___construct, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
 static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, show, arginfo_class_GtkWidget_show, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, hide, arginfo_class_GtkWidget_hide, ZEND_ACC_PUBLIC)
@@ -359,7 +413,7 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setVexpand, arginfo_class_GtkWidget_setVexpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getParent, arginfo_class_GtkWidget_getParent, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, insertActionGroup, arginfo_class_GtkWidget_insertActionGroup, ZEND_ACC_PUBLIC)
-	ZEND_ME(GtkWidget, activateAction, arginfo_class_GtkWidget_activateAction, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, activateActionVariant, arginfo_class_GtkWidget_activateActionVariant, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, activate, arginfo_class_GtkWidget_activate, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getHalign, arginfo_class_GtkWidget_getHalign, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setHalign, arginfo_class_GtkWidget_setHalign, ZEND_ACC_PUBLIC)
@@ -394,7 +448,22 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, getNextSibling, arginfo_class_GtkWidget_getNextSibling, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getDisplay, arginfo_class_GtkWidget_getDisplay, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getRoot, arginfo_class_GtkWidget_getRoot, ZEND_ACC_PUBLIC)
-	ZEND_ME(GtkWidget, getSurface, arginfo_class_GtkWidget_getSurface, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkNative_methods[] = {
+	ZEND_RAW_FENTRY("getForSurface", NULL, arginfo_class_GtkNative_getForSurface, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("realize", NULL, arginfo_class_GtkNative_realize, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("unrealize", NULL, arginfo_class_GtkNative_unrealize, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getSurface", NULL, arginfo_class_GtkNative_getSurface, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getSurfaceTransform", NULL, arginfo_class_GtkNative_getSurfaceTransform, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkRoot_methods[] = {
+	ZEND_RAW_FENTRY("getDisplay", NULL, arginfo_class_GtkRoot_getDisplay, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("setFocus", NULL, arginfo_class_GtkRoot_setFocus, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("getFocus", NULL, arginfo_class_GtkRoot_getFocus, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
 	ZEND_FE_END
 };
 
@@ -504,12 +573,100 @@ static zend_class_entry *register_class_GtkAlign(void)
 	return class_entry;
 }
 
+static zend_class_entry *register_class_GraphenePoint(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GraphenePoint", class_GraphenePoint_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL);
+
+	zval property_x_default_value;
+	ZVAL_UNDEF(&property_x_default_value);
+	zend_string *property_x_name = zend_string_init("x", sizeof("x") - 1, 1);
+	zend_declare_typed_property(class_entry, property_x_name, &property_x_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_DOUBLE));
+	zend_string_release(property_x_name);
+
+	zval property_y_default_value;
+	ZVAL_UNDEF(&property_y_default_value);
+	zend_string *property_y_name = zend_string_init("y", sizeof("y") - 1, 1);
+	zend_declare_typed_property(class_entry, property_y_name, &property_y_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_DOUBLE));
+	zend_string_release(property_y_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GrapheneSize(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GrapheneSize", class_GrapheneSize_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL);
+
+	zval property_width_default_value;
+	ZVAL_UNDEF(&property_width_default_value);
+	zend_string *property_width_name = zend_string_init("width", sizeof("width") - 1, 1);
+	zend_declare_typed_property(class_entry, property_width_name, &property_width_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_DOUBLE));
+	zend_string_release(property_width_name);
+
+	zval property_height_default_value;
+	ZVAL_UNDEF(&property_height_default_value);
+	zend_string *property_height_name = zend_string_init("height", sizeof("height") - 1, 1);
+	zend_declare_typed_property(class_entry, property_height_name, &property_height_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_MASK(MAY_BE_DOUBLE));
+	zend_string_release(property_height_name);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GrapheneRect(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GrapheneRect", class_GrapheneRect_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL);
+
+	zval property_origin_default_value;
+	ZVAL_UNDEF(&property_origin_default_value);
+	zend_string *property_origin_name = zend_string_init("origin", sizeof("origin") - 1, 1);
+	zend_string *property_origin_class_GraphenePoint = zend_string_init("GraphenePoint", sizeof("GraphenePoint")-1, 1);
+	zend_declare_typed_property(class_entry, property_origin_name, &property_origin_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_origin_class_GraphenePoint, 0, 0));
+	zend_string_release(property_origin_name);
+
+	zval property_size_default_value;
+	ZVAL_UNDEF(&property_size_default_value);
+	zend_string *property_size_name = zend_string_init("size", sizeof("size") - 1, 1);
+	zend_string *property_size_class_GrapheneSize = zend_string_init("GrapheneSize", sizeof("GrapheneSize")-1, 1);
+	zend_declare_typed_property(class_entry, property_size_name, &property_size_default_value, ZEND_ACC_PUBLIC, NULL, (zend_type) ZEND_TYPE_INIT_CLASS(property_size_class_GrapheneSize, 0, 0));
+	zend_string_release(property_size_name);
+
+	return class_entry;
+}
+
 static zend_class_entry *register_class_GtkWidget(zend_class_entry *class_entry_GObject)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkWidget", class_GtkWidget_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkNative(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkNative", class_GtkNative_methods);
+	class_entry = zend_register_internal_interface(&ce);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkRoot(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkRoot", class_GtkRoot_methods);
+	class_entry = zend_register_internal_interface(&ce);
 
 	return class_entry;
 }
@@ -554,12 +711,13 @@ static zend_class_entry *register_class_GtkPopoverMenuBar(zend_class_entry *clas
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkPopover(zend_class_entry *class_entry_GtkWidget)
+static zend_class_entry *register_class_GtkPopover(zend_class_entry *class_entry_GtkWidget, zend_class_entry *class_entry_GtkNative)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkPopover", class_GtkPopover_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GtkNative);
 
 	return class_entry;
 }

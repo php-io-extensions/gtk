@@ -37,10 +37,10 @@ class GtkUriLauncher extends GObject
 
     /**
      * gtk_uri_launcher_launch(): opens the URI in its handler (the browser for http and https).
-     * @param callable $callback called once with (GtkUriLauncher, GAsyncResult)
+     * @param callable|null $callback called once with (GtkUriLauncher, GAsyncResult); null launches with no callback
      */
-    public function launch(?GtkWindow $parent, ?GCancellable $cancellable, callable $callback): void {}
+    public function launch(?GtkWindow $parent, ?GCancellable $cancellable, ?callable $callback): void {}
 
-    /** True when the URI opened; the launch's GError is thrown as GError. A result from any other call is a ValueError. */
+    /** True when the URI opened; the launch's GError is thrown as GError. GTK answers a result from any other call with a critical and false. */
     public function launchFinish(GAsyncResult $result): bool {}
 }

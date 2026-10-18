@@ -1,8 +1,20 @@
 # Log
 
+## 2026-10-17
+
+* 1:1 with GTK, 0.10.2. GTK's own answers pass through; refusals are only the probe-backed crash guards, each a `bindings.json` site with a `tests/Probes` test; `--enable-gtk-probes` builds the switch. [errors and threads](architecture/errors-and-threads.md), [build](runbooks/build.md)
+* Native shapes: out-parameters by reference with the gboolean returned (`computePoint`, `computeBounds`, `getPosition`, `getSurfaceTransform`, `getSelectionBounds`, `getIterAtLine*`, `getLineYrange`, `getPointingTo`); GObject interfaces (`GAction`, `GActionMap`, `GActionGroup`, `GListModel`, `GtkSelectionModel`, `GdkPaintable`, `GtkStyleProvider`, `GtkNative`, `GtkRoot`), native-only; graphene and `GdkRectangle` structs; `GBytes`; `getText` over iters; native NULL as null. [surface](api/surface.md), [object model](architecture/object-model.md)
+* Removed: `gtk_media_backend_available()` (`GtkMediaFile::new()->typeName()`), `GtkWidget::getSurface` (on `GtkNative`). [video](architecture/video.md), [layout](architecture/layout.md)
+* Glue forwards only: one PHP → GValue converter for handler returns, emit and set_property; GtkTextIter, GBytes and GParamSpec signal arguments as objects; a callback dispatched off its owner thread is dropped; `GtkUriLauncher::launch` takes a null callback. [callouts](architecture/callouts.md)
+
+## 2026-10-16
+
+* `GtkPaned` and `GtkNotebook` (compare-app split and tabs, C2). 0.10.2. [surface](api/surface.md)
+* Builds against a PHP whose ext/sockets is shared (Debian and Ubuntu packages leave HAVE_SOCKETS out of php_config.h). 0.10.2.
+
 ## 2026-10-14
 
-* GtkTextIter (a copied boxed kind), GtkTextMark, GtkTextTag, GtkTextTagTable, GtkAdjustment; buffer tags, iters, selection and insert mark; text view monospace, cursor visibility and line y-range; scrolled-window adjustments; g_object_set_property (compare-app text panes, C1). 0.10.2. [surface](api/surface.md)
+* GtkTextIter (a copied boxed kind), GtkTextMark, GtkTextTag, GtkTextTagTable, GtkAdjustment; buffer tags, iters, selection and insert mark; text view monospace, cursor visibility and line y-range; scrolled-window adjustments; g_object_set_property (compare-app text panes, C1). 0.10.1. [surface](api/surface.md)
 * g_signal_emit_by_name refuses an int that does not fit its parameter's C type, through the same check g_object_set_property uses (C1 final review). [surface](api/surface.md)
 
 ## 2026-10-10

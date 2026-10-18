@@ -2,10 +2,15 @@
 
 /** @generate-class-entries */
 
+/** GtkStyleProvider: a source of style information, implemented by GtkCssProvider and GtkSettings. */
+interface GtkStyleProvider
+{
+}
+
 /**
  * @not-serializable
  */
-class GtkCssProvider extends GObject
+class GtkCssProvider extends GObject implements GtkStyleProvider
 {
     public static function new(): GtkCssProvider {}
 

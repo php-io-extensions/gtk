@@ -1,0 +1,49 @@
+{
+    "symbols": {
+        "GObject::typeName": "G_OBJECT_TYPE_NAME",
+        "GParamSpec::getValueType": "G_PARAM_SPEC_VALUE_TYPE"
+    },
+    "glue": {
+        "GtkException": {"methods": []},
+        "GError": {"methods": []},
+        "GObject": {"methods": ["pointer"], "forwards": "address hand-off"},
+        "GMainContext": {"methods": ["pointer"], "forwards": "address hand-off"}
+    },
+    "helpers": {
+        "marshal": [
+            "PHPGTK_NOTEBOOK_PAGE_ARG",
+            "phpgtk_return_enum",
+            "phpgtk_require_callable",
+            "phpgtk_long_fits",
+            "phpgtk_signal_param",
+            "phpgtk_string_array",
+            "phpgtk_require_selection_model",
+            "phpgtk_require_list_model",
+            "phpgtk_long_in_range",
+            "phpgtk_fd_from_zval",
+            "phpgtk_dmabuf_plane",
+            "phpgtk_interface_native_only"
+        ],
+        "translate": [
+            "phpgtk_throw_gerror"
+        ]
+    },
+    "sites": {
+        "gtk-initialized": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "main-thread-macos": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/MainThreadTest.php"},
+        "callout-owner-thread": {"kind": "refusal", "outcome": 3, "probe": "tests/Probes/CalloutThreadTest.php"},
+        "text-iter-stale": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/StaleIterTest.php"},
+        "text-iter-foreign-mark": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/ForeignMarkTest.php"},
+        "gmenu-detailed-action": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/DetailedActionTest.php"},
+        "gtk-version-4-16": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/VersionGateTest.php"},
+        "gtk-version-4-14": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/VersionGateTest.php"},
+        "cairo-region-nth": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/CairoRegionNthTest.php"},
+        "gbytes-string-length": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/GBytesStringLengthTest.php"},
+        "entry-set-text-nchars": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/EntrySetTextNCharsTest.php"},
+        "accels-action-name": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/AccelsActionNameTest.php"},
+        "gtk-initialized-media-file": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-version-4-14-dmabuf-builder": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/VersionGateTest.php"},
+        "text-iter-line-offset-negative": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/IterLineOffsetTest.php"}
+    },
+    "typemap": {}
+}

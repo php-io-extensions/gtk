@@ -44,7 +44,7 @@ function iterate(float $seconds): void
 $mac = PHP_OS_FAMILY === 'Darwin';
 $app = GtkApplication::new('com.projectsaturnstudios.GtkWindowSmoke', GApplicationFlags::NON_UNIQUE);
 g_signal_connect($app, 'activate', fn () => null);
-$app->register();
+$app->register(null);
 $app->hold();
 $log = [];
 
@@ -102,8 +102,8 @@ check($window->getVisible() && in_array('active:yes', $log, true), 'window is up
 check($mac ? $app->getMenubar() === $bar : $scaffold->getParent() === $window, $mac ? 'menu model is the application menubar' : 'menu bar sits inside the window');
 
 // 3. actions
-check($window->activateAction('win.view.refresh', null) && in_array('refresh', $log, true), 'Refresh ran its PHP handler');
-$window->activateAction('win.grid', null);
+check($window->activateActionVariant('win.view.refresh', null) && in_array('refresh', $log, true), 'Refresh ran its PHP handler');
+$window->activateActionVariant('win.grid', null);
 check($grid->getState()->getBoolean() && in_array('grid:on', $log, true), 'Show Grid flipped on through change-state');
 
 if ($hold > 0) {

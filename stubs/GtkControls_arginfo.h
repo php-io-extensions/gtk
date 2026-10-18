@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: d8910ee8638e11b778cf314c76d63ba33a96facf */
+ * Stub hash: 15b0ca94103cb945a31c9e65e4c2462c78237613 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -109,9 +109,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkEntryBuffer_getText arginfo_class_GtkLabel_getText
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntryBuffer_setText, 0, 1, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntryBuffer_setText, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, chars, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, nChars, IS_LONG, 0, "-1")
+	ZEND_ARG_TYPE_INFO(0, nChars, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkEntry_new, 0, 0, GtkEntry, 0)
@@ -132,9 +132,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntry_setVisibility, 0,
 	ZEND_ARG_TYPE_INFO(0, visible, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_setText, 0, 1, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_setText, 0, 2, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, len, IS_LONG, 0, "-1")
+	ZEND_ARG_TYPE_INFO(0, len, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_beginUserAction, 0, 0, IS_VOID, 0)
@@ -142,22 +142,28 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkTextBuffer_endUserAction arginfo_class_GtkTextBuffer_beginUserAction
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getText, 0, 2, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, startOffset, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, endOffset, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, includeHidden, _IS_BOOL, 0, "false")
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getText, 0, 3, IS_STRING, 1)
+	ZEND_ARG_OBJ_INFO(0, start, GtkTextIter, 0)
+	ZEND_ARG_OBJ_INFO(0, end, GtkTextIter, 0)
+	ZEND_ARG_TYPE_INFO(0, includeHiddenChars, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getTagTable, 0, 0, GtkTextTagTable, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtLine, 0, 1, GtkTextIter, 1)
-	ZEND_ARG_TYPE_INFO(0, line, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtLine, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(1, iter, GtkTextIter, 1)
+	ZEND_ARG_TYPE_INFO(0, lineNumber, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtLineOffset, 0, 2, GtkTextIter, 1)
-	ZEND_ARG_TYPE_INFO(0, line, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO(0, offset, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtLineOffset, 0, 3, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(1, iter, GtkTextIter, 1)
+	ZEND_ARG_TYPE_INFO(0, lineNumber, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, charOffset, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtOffset, 0, 1, GtkTextIter, 0)
+	ZEND_ARG_TYPE_INFO(0, charOffset, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getStartIter, 0, 0, GtkTextIter, 0)
@@ -173,7 +179,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkTextBuffer_removeTag arginfo_class_GtkTextBuffer_applyTag
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getSelectionBounds, 0, 0, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getSelectionBounds, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(1, start, GtkTextIter, 1)
+	ZEND_ARG_OBJ_INFO(1, end, GtkTextIter, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_selectRange, 0, 2, IS_VOID, 0)
@@ -215,11 +223,13 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkTextView_setCursorVisible arginfo_class_GtkLabel_setUseMarkup
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextView_getLineYrange, 0, 1, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextView_getLineYrange, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, iter, GtkTextIter, 0)
+	ZEND_ARG_TYPE_INFO(1, y, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO(1, height, IS_LONG, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScale_newWithRange, 0, 4, GtkScale, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScale_newWithRange, 0, 4, GtkScale, 1)
 	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
 	ZEND_ARG_TYPE_INFO(0, min, IS_DOUBLE, 0)
 	ZEND_ARG_TYPE_INFO(0, max, IS_DOUBLE, 0)
@@ -270,8 +280,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkStringList_getString, 0
 	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkStringList_getNItems arginfo_class_GtkTextBuffer_getLineCount
-
 #define arginfo_class_GtkStringObject_getString arginfo_class_GtkLabel_getText
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkDropDown_newFromStrings, 0, 1, GtkDropDown, 0)
@@ -286,7 +294,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkDropDown_getSelectedItem
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkDropDown_setModel, 0, 1, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, model, GObject, 1)
+	ZEND_ARG_OBJ_INFO(0, model, GListModel, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCalendar_new, 0, 0, GtkCalendar, 0)
@@ -339,10 +347,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPicture_setContentFit, 
 	ZEND_ARG_OBJ_INFO(0, contentFit, GtkContentFit, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkPicture_getPaintable arginfo_class_GtkDropDown_getSelectedItem
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPicture_getPaintable, 0, 0, GdkPaintable, 1)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPicture_setPaintable, 0, 1, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, paintable, GObject, 1)
+	ZEND_ARG_OBJ_INFO(0, paintable, GdkPaintable, 1)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPicture_getCanShrink arginfo_class_GtkLabel_getWrap
@@ -374,6 +383,95 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrolledWindow_getHadjus
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkScrolledWindow_getVadjustment arginfo_class_GtkScrolledWindow_getHadjustment
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPaned_new, 0, 1, GtkPaned, 0)
+	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPaned_getStartChild arginfo_class_GtkScrolledWindow_getChild
+
+#define arginfo_class_GtkPaned_setStartChild arginfo_class_GtkScrolledWindow_setChild
+
+#define arginfo_class_GtkPaned_getEndChild arginfo_class_GtkScrolledWindow_getChild
+
+#define arginfo_class_GtkPaned_setEndChild arginfo_class_GtkScrolledWindow_setChild
+
+#define arginfo_class_GtkPaned_getPosition arginfo_class_GtkTextBuffer_getLineCount
+
+#define arginfo_class_GtkPaned_setPosition arginfo_class_GtkStringList_remove
+
+#define arginfo_class_GtkPaned_getResizeStartChild arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPaned_setResizeStartChild, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, resize, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPaned_getResizeEndChild arginfo_class_GtkLabel_getWrap
+
+#define arginfo_class_GtkPaned_setResizeEndChild arginfo_class_GtkPaned_setResizeStartChild
+
+#define arginfo_class_GtkPaned_getShrinkStartChild arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPaned_setShrinkStartChild, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, shrink, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPaned_getShrinkEndChild arginfo_class_GtkLabel_getWrap
+
+#define arginfo_class_GtkPaned_setShrinkEndChild arginfo_class_GtkPaned_setShrinkStartChild
+
+#define arginfo_class_GtkPaned_getWideHandle arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPaned_setWideHandle, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, wide, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkNotebook_new, 0, 0, GtkNotebook, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_appendPage, 0, 2, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+	ZEND_ARG_OBJ_INFO(0, tabLabel, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_removePage, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, pageNum, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_pageNum, 0, 1, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkNotebook_getNPages arginfo_class_GtkTextBuffer_getLineCount
+
+#define arginfo_class_GtkNotebook_getCurrentPage arginfo_class_GtkTextBuffer_getLineCount
+
+#define arginfo_class_GtkNotebook_setCurrentPage arginfo_class_GtkNotebook_removePage
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkNotebook_getNthPage, 0, 1, GtkWidget, 1)
+	ZEND_ARG_TYPE_INFO(0, pageNum, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_setTabLabelText, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+	ZEND_ARG_TYPE_INFO(0, tabText, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_getTabLabelText, 0, 1, IS_STRING, 1)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkNotebook_getShowTabs arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_setShowTabs, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, showTabs, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkNotebook_getScrollable arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_setScrollable, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, scrollable, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_METHOD(GtkLabel, new);
 ZEND_METHOD(GtkLabel, getText);
@@ -423,6 +521,7 @@ ZEND_METHOD(GtkTextBuffer, getText);
 ZEND_METHOD(GtkTextBuffer, getTagTable);
 ZEND_METHOD(GtkTextBuffer, getIterAtLine);
 ZEND_METHOD(GtkTextBuffer, getIterAtLineOffset);
+ZEND_METHOD(GtkTextBuffer, getIterAtOffset);
 ZEND_METHOD(GtkTextBuffer, getStartIter);
 ZEND_METHOD(GtkTextBuffer, getEndIter);
 ZEND_METHOD(GtkTextBuffer, applyTag);
@@ -454,7 +553,6 @@ ZEND_METHOD(GtkStringList, append);
 ZEND_METHOD(GtkStringList, remove);
 ZEND_METHOD(GtkStringList, splice);
 ZEND_METHOD(GtkStringList, getString);
-ZEND_METHOD(GtkStringList, getNItems);
 ZEND_METHOD(GtkStringObject, getString);
 ZEND_METHOD(GtkDropDown, newFromStrings);
 ZEND_METHOD(GtkDropDown, getSelected);
@@ -488,6 +586,37 @@ ZEND_METHOD(GtkScrolledWindow, setChild);
 ZEND_METHOD(GtkScrolledWindow, setPolicy);
 ZEND_METHOD(GtkScrolledWindow, getHadjustment);
 ZEND_METHOD(GtkScrolledWindow, getVadjustment);
+ZEND_METHOD(GtkPaned, new);
+ZEND_METHOD(GtkPaned, getStartChild);
+ZEND_METHOD(GtkPaned, setStartChild);
+ZEND_METHOD(GtkPaned, getEndChild);
+ZEND_METHOD(GtkPaned, setEndChild);
+ZEND_METHOD(GtkPaned, getPosition);
+ZEND_METHOD(GtkPaned, setPosition);
+ZEND_METHOD(GtkPaned, getResizeStartChild);
+ZEND_METHOD(GtkPaned, setResizeStartChild);
+ZEND_METHOD(GtkPaned, getResizeEndChild);
+ZEND_METHOD(GtkPaned, setResizeEndChild);
+ZEND_METHOD(GtkPaned, getShrinkStartChild);
+ZEND_METHOD(GtkPaned, setShrinkStartChild);
+ZEND_METHOD(GtkPaned, getShrinkEndChild);
+ZEND_METHOD(GtkPaned, setShrinkEndChild);
+ZEND_METHOD(GtkPaned, getWideHandle);
+ZEND_METHOD(GtkPaned, setWideHandle);
+ZEND_METHOD(GtkNotebook, new);
+ZEND_METHOD(GtkNotebook, appendPage);
+ZEND_METHOD(GtkNotebook, removePage);
+ZEND_METHOD(GtkNotebook, pageNum);
+ZEND_METHOD(GtkNotebook, getNPages);
+ZEND_METHOD(GtkNotebook, getCurrentPage);
+ZEND_METHOD(GtkNotebook, setCurrentPage);
+ZEND_METHOD(GtkNotebook, getNthPage);
+ZEND_METHOD(GtkNotebook, setTabLabelText);
+ZEND_METHOD(GtkNotebook, getTabLabelText);
+ZEND_METHOD(GtkNotebook, getShowTabs);
+ZEND_METHOD(GtkNotebook, setShowTabs);
+ZEND_METHOD(GtkNotebook, getScrollable);
+ZEND_METHOD(GtkNotebook, setScrollable);
 
 static const zend_function_entry class_GtkLabel_methods[] = {
 	ZEND_ME(GtkLabel, new, arginfo_class_GtkLabel_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
@@ -570,6 +699,7 @@ static const zend_function_entry class_GtkTextBuffer_methods[] = {
 	ZEND_ME(GtkTextBuffer, getTagTable, arginfo_class_GtkTextBuffer_getTagTable, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextBuffer, getIterAtLine, arginfo_class_GtkTextBuffer_getIterAtLine, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextBuffer, getIterAtLineOffset, arginfo_class_GtkTextBuffer_getIterAtLineOffset, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTextBuffer, getIterAtOffset, arginfo_class_GtkTextBuffer_getIterAtOffset, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextBuffer, getStartIter, arginfo_class_GtkTextBuffer_getStartIter, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextBuffer, getEndIter, arginfo_class_GtkTextBuffer_getEndIter, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextBuffer, applyTag, arginfo_class_GtkTextBuffer_applyTag, ZEND_ACC_PUBLIC)
@@ -613,7 +743,6 @@ static const zend_function_entry class_GtkStringList_methods[] = {
 	ZEND_ME(GtkStringList, remove, arginfo_class_GtkStringList_remove, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkStringList, splice, arginfo_class_GtkStringList_splice, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkStringList, getString, arginfo_class_GtkStringList_getString, ZEND_ACC_PUBLIC)
-	ZEND_ME(GtkStringList, getNItems, arginfo_class_GtkStringList_getNItems, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -679,6 +808,45 @@ static const zend_function_entry class_GtkScrolledWindow_methods[] = {
 	ZEND_ME(GtkScrolledWindow, setPolicy, arginfo_class_GtkScrolledWindow_setPolicy, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkScrolledWindow, getHadjustment, arginfo_class_GtkScrolledWindow_getHadjustment, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkScrolledWindow, getVadjustment, arginfo_class_GtkScrolledWindow_getVadjustment, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkPaned_methods[] = {
+	ZEND_ME(GtkPaned, new, arginfo_class_GtkPaned_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkPaned, getStartChild, arginfo_class_GtkPaned_getStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setStartChild, arginfo_class_GtkPaned_setStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getEndChild, arginfo_class_GtkPaned_getEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setEndChild, arginfo_class_GtkPaned_setEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getPosition, arginfo_class_GtkPaned_getPosition, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setPosition, arginfo_class_GtkPaned_setPosition, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getResizeStartChild, arginfo_class_GtkPaned_getResizeStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setResizeStartChild, arginfo_class_GtkPaned_setResizeStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getResizeEndChild, arginfo_class_GtkPaned_getResizeEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setResizeEndChild, arginfo_class_GtkPaned_setResizeEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getShrinkStartChild, arginfo_class_GtkPaned_getShrinkStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setShrinkStartChild, arginfo_class_GtkPaned_setShrinkStartChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getShrinkEndChild, arginfo_class_GtkPaned_getShrinkEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setShrinkEndChild, arginfo_class_GtkPaned_setShrinkEndChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, getWideHandle, arginfo_class_GtkPaned_getWideHandle, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPaned, setWideHandle, arginfo_class_GtkPaned_setWideHandle, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkNotebook_methods[] = {
+	ZEND_ME(GtkNotebook, new, arginfo_class_GtkNotebook_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkNotebook, appendPage, arginfo_class_GtkNotebook_appendPage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, removePage, arginfo_class_GtkNotebook_removePage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, pageNum, arginfo_class_GtkNotebook_pageNum, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getNPages, arginfo_class_GtkNotebook_getNPages, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getCurrentPage, arginfo_class_GtkNotebook_getCurrentPage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, setCurrentPage, arginfo_class_GtkNotebook_setCurrentPage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getNthPage, arginfo_class_GtkNotebook_getNthPage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, setTabLabelText, arginfo_class_GtkNotebook_setTabLabelText, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getTabLabelText, arginfo_class_GtkNotebook_getTabLabelText, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getShowTabs, arginfo_class_GtkNotebook_getShowTabs, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, setShowTabs, arginfo_class_GtkNotebook_setShowTabs, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, getScrollable, arginfo_class_GtkNotebook_getScrollable, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, setScrollable, arginfo_class_GtkNotebook_setScrollable, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -907,12 +1075,13 @@ static zend_class_entry *register_class_GtkScale(zend_class_entry *class_entry_G
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkStringList(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GtkStringList(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GListModel)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkStringList", class_GtkStringList_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GListModel);
 
 	return class_entry;
 }
@@ -992,6 +1161,26 @@ static zend_class_entry *register_class_GtkScrolledWindow(zend_class_entry *clas
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkScrolledWindow", class_GtkScrolledWindow_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkPaned(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkPaned", class_GtkPaned_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkNotebook(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkNotebook", class_GtkNotebook_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;

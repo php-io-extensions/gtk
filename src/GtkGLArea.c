@@ -79,8 +79,8 @@ ZEND_METHOD(GtkGLArea, setAllowedApis)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	if (apis < 0 || apis > (GDK_GL_API_GL | GDK_GL_API_GLES)) {
-		zend_argument_value_error(1, "must be GdkGLAPI flags (GL = 1, GLES = 2)");
+	/* GdkGLAPI is an unsigned flags type: GTK stores any value of it. */
+	if (!phpgtk_long_in_range(apis, 0, (zend_long) G_MAXUINT, 1)) {
 		RETURN_THROWS();
 	}
 	gtk_gl_area_set_allowed_apis(THIS_AREA, (GdkGLAPI) apis);
@@ -116,5 +116,5 @@ ZEND_METHOD(GtkGLArea, getError)
 	if (error == NULL) {
 		RETURN_NULL();
 	}
-	phpgtk_return_string(return_value, error->message);
+	phpgtk_gerror_object(return_value, error);
 }

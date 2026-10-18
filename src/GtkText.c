@@ -111,25 +111,7 @@ ZEND_METHOD(GtkTextTagTable, add)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	GtkTextTag *tag = GTK_TEXT_TAG(PHPGTK_PTR(tag_obj));
-	if (phpgtk_tag_in_table(tag, NULL)) {
-		zend_argument_value_error(1, "is already in a tag table");
-		RETURN_THROWS();
-	}
-
-	gchar *name = NULL;
-	g_object_get(tag, "name", &name, NULL);
-	bool taken = name != NULL && gtk_text_tag_table_lookup(THIS_TABLE, name) != NULL;
-	g_free(name);
-	if (taken) {
-		RETURN_FALSE;
-	}
-
-	if (!gtk_text_tag_table_add(THIS_TABLE, tag)) {
-		RETURN_FALSE;
-	}
-	phpgtk_tag_set_table(tag, THIS_TABLE);
-	RETURN_TRUE;
+	RETURN_BOOL(gtk_text_tag_table_add(THIS_TABLE, GTK_TEXT_TAG(PHPGTK_PTR(tag_obj))));
 }
 
 ZEND_METHOD(GtkTextTagTable, remove)
@@ -141,14 +123,7 @@ ZEND_METHOD(GtkTextTagTable, remove)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	GtkTextTag *tag = GTK_TEXT_TAG(PHPGTK_PTR(tag_obj));
-	if (!phpgtk_tag_in_table(tag, THIS_TABLE)) {
-		zend_argument_value_error(1, "is not in this table");
-		RETURN_THROWS();
-	}
-
-	phpgtk_tag_set_table(tag, NULL);
-	gtk_text_tag_table_remove(THIS_TABLE, tag);
+	gtk_text_tag_table_remove(THIS_TABLE, GTK_TEXT_TAG(PHPGTK_PTR(tag_obj)));
 }
 
 ZEND_METHOD(GtkTextTagTable, lookup)

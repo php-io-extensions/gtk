@@ -9,8 +9,9 @@ static zend_class_entry *phpgtk_ce_GdkEventType;
 static zend_class_entry *phpgtk_ce_GdkScrollRelativeDirection;
 #endif
 
-#define PHPGTK_CONTROLLER_CLASS(name, parent) \
-	phpgtk_ce_##name = register_class_##name(parent); \
+/* The parent class, then the interfaces the class implements. */
+#define PHPGTK_CONTROLLER_CLASS(name, ...) \
+	phpgtk_ce_##name = register_class_##name(__VA_ARGS__); \
 	phpgtk_object_setup(phpgtk_ce_##name); \
 	phpgtk_map_gtype(#name, phpgtk_ce_##name)
 
@@ -38,7 +39,7 @@ void phpgtk_register_GtkEventController(void)
 	PHPGTK_CONTROLLER_CLASS(GtkEventControllerScroll, phpgtk_ce_GtkEventController);
 	PHPGTK_CONTROLLER_CLASS(GtkEventControllerLegacy, phpgtk_ce_GtkEventController);
 	PHPGTK_CONTROLLER_CLASS(GtkIMContext, phpgtk_ce_GObject);
-	PHPGTK_CONTROLLER_CLASS(GtkSettings, phpgtk_ce_GObject);
+	PHPGTK_CONTROLLER_CLASS(GtkSettings, phpgtk_ce_GObject, phpgtk_ce_GtkStyleProvider);
 	PHPGTK_CONTROLLER_CLASS(GtkIMMulticontext, phpgtk_ce_GtkIMContext);
 	PHPGTK_CONTROLLER_CLASS(GtkEventControllerFocus, phpgtk_ce_GtkEventController);
 	PHPGTK_CONTROLLER_CLASS(GtkGesture, phpgtk_ce_GtkEventController);
@@ -105,17 +106,20 @@ ZEND_METHOD(GdkEvent, getEventType)
 
 ZEND_METHOD(GdkEvent, getPosition)
 {
-	double x;
-	double y;
+	zval *x_ref, *y_ref;
+	double x = 0.0;
+	double y = 0.0;
 
-	ZEND_PARSE_PARAMETERS_NONE();
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_ZVAL(x_ref)
+		Z_PARAM_ZVAL(y_ref)
+	ZEND_PARSE_PARAMETERS_END();
 
-	if (!gdk_event_get_position(THIS_EVENT, &x, &y)) {
-		RETURN_NULL();
-	}
-	array_init_size(return_value, 2);
-	add_next_index_double(return_value, x);
-	add_next_index_double(return_value, y);
+	gboolean has_position = gdk_event_get_position(THIS_EVENT, &x, &y);
+
+	ZEND_TRY_ASSIGN_REF_DOUBLE(x_ref, x);
+	ZEND_TRY_ASSIGN_REF_DOUBLE(y_ref, y);
+	RETURN_BOOL(has_position);
 }
 
 ZEND_METHOD(GdkEvent, getPointerEmulated)

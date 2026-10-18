@@ -54,3 +54,82 @@ it('builds a two-column table over a string list and reports selection', functio
     expect($column->getTitle())->toBe('Late');
     $window->destroy();
 });
+
+function singleSelection(): GtkSingleSelection
+{
+    $selection = GtkSingleSelection::new(GtkStringList::new(['a', 'b', 'c']));
+    $selection->setAutoselect(false);
+    $selection->setCanUnselect(true);
+    // Autoselect selected the first item at construction.
+    $selection->setSelected(GTK_INVALID_LIST_POSITION);
+
+    return $selection;
+}
+
+it('derives the signal factory from GtkListItemFactory and the single selection from GtkSelectionModel', function (): void {
+    expect(get_parent_class(GtkSignalListItemFactory::class))->toBe(GtkListItemFactory::class)
+        ->and(GtkSignalListItemFactory::new())->toBeInstanceOf(GtkListItemFactory::class)
+        ->and(singleSelection())->toBeInstanceOf(GtkSelectionModel::class)
+        ->and(singleSelection())->toBeInstanceOf(GListModel::class)
+        ->and(singleSelection()->getNItems())->toBe(3);
+});
+
+it('answers whether a position is selected', function (): void {
+    $selection = singleSelection();
+    $selection->setSelected(1);
+
+    expect($selection->isSelected(1))->toBeTrue()
+        ->and($selection->isSelected(0))->toBeFalse();
+});
+
+it('selects an item with gtk_selection_model_select_item', function (): void {
+    $selection = singleSelection();
+
+    expect($selection->selectItem(2, true))->toBeTrue()
+        ->and($selection->getSelected())->toBe(2);
+});
+
+it('unselects an item with gtk_selection_model_unselect_item', function (): void {
+    $selection = singleSelection();
+    $selection->setSelected(1);
+
+    expect($selection->unselectItem(1))->toBeTrue()
+        ->and($selection->getSelected())->toBe(GTK_INVALID_LIST_POSITION);
+});
+
+it('answers GtkSingleSelection\'s false for a range select', function (): void {
+    $selection = singleSelection();
+
+    expect($selection->selectRange(0, 2, true))->toBeFalse()
+        ->and($selection->getSelected())->toBe(GTK_INVALID_LIST_POSITION);
+});
+
+it('answers GtkSingleSelection\'s false for a range unselect', function (): void {
+    $selection = singleSelection();
+    $selection->setSelected(1);
+
+    expect($selection->unselectRange(0, 3))->toBeFalse()
+        ->and($selection->getSelected())->toBe(1);
+});
+
+it('answers GtkSingleSelection\'s false for select all', function (): void {
+    expect(singleSelection()->selectAll())->toBeFalse();
+});
+
+it('unselects all with gtk_selection_model_unselect_all', function (): void {
+    $selection = singleSelection();
+    $selection->setSelected(1);
+
+    expect($selection->unselectAll())->toBeTrue()
+        ->and($selection->getSelected())->toBe(GTK_INVALID_LIST_POSITION);
+});
+
+it('emits selection-changed with gtk_selection_model_selection_changed', function (): void {
+    $selection = singleSelection();
+    $seen = [];
+    g_signal_connect($selection, 'selection-changed', function (GObject $model, int $position, int $nItems) use (&$seen): void { $seen[] = [$position, $nItems]; });
+
+    $selection->selectionChanged(0, 2);
+
+    expect($seen)->toBe([[0, 2]]);
+});

@@ -83,7 +83,7 @@ static void phpgtk_uri_launched(GObject *source, GAsyncResult *result, gpointer 
 {
 	phpgtk_callout *callout = (phpgtk_callout *) data;
 
-	if (!Z_ISUNDEF(callout->callable)) {
+	if (!Z_ISUNDEF(callout->callable) && !phpgtk_callout_foreign(callout)) {
 		zval argv[2];
 		zval retval;
 
@@ -110,19 +110,17 @@ ZEND_METHOD(GtkUriLauncher, launch)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
-	if (!zend_is_callable(callback, 0, NULL)) {
+	if (Z_TYPE_P(callback) != IS_NULL && !zend_is_callable(callback, 0, NULL)) {
 		zend_argument_type_error(3, "must be a valid callback");
 		RETURN_THROWS();
 	}
-	if (gtk_uri_launcher_get_uri(THIS_LAUNCHER) == NULL) {
-		zend_throw_exception(phpgtk_ce_GtkException, "GtkUriLauncher::launch() needs a URI", 0);
-		RETURN_THROWS();
-	}
 
+	/* A null callback is GIO's fire and forget: no callback, no record. */
 	gtk_uri_launcher_launch(THIS_LAUNCHER,
 		parent != NULL ? GTK_WINDOW(PHPGTK_PTR(parent)) : NULL,
 		cancellable != NULL ? G_CANCELLABLE(PHPGTK_PTR(cancellable)) : NULL,
-		phpgtk_uri_launched, phpgtk_callout_new(callback));
+		Z_TYPE_P(callback) != IS_NULL ? phpgtk_uri_launched : NULL,
+		Z_TYPE_P(callback) != IS_NULL ? phpgtk_callout_new(callback) : NULL);
 }
 
 ZEND_METHOD(GtkUriLauncher, launchFinish)
@@ -134,13 +132,6 @@ ZEND_METHOD(GtkUriLauncher, launchFinish)
 		Z_PARAM_OBJ_OF_CLASS(result, phpgtk_ce_GAsyncResult)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
-
-	/* GTK only logs a critical for a result that is not this launcher's launch. */
-	GAsyncResult *async = G_ASYNC_RESULT(PHPGTK_PTR(result));
-	if (!g_task_is_valid(async, THIS_LAUNCHER) || g_task_get_source_tag(G_TASK(async)) != gtk_uri_launcher_launch) {
-		zend_argument_value_error(1, "is not a result of this launcher's launch()");
-		RETURN_THROWS();
-	}
 
 	if (!gtk_uri_launcher_launch_finish(THIS_LAUNCHER, G_ASYNC_RESULT(PHPGTK_PTR(result)), &error)) {
 		if (error != NULL) {

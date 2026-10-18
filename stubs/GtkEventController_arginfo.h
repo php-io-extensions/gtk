@@ -1,10 +1,12 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: cec71f5ba4dc7efc62f24a26ac1fe5c8de031c3f */
+ * Stub hash: 933dbe85d82ae63074a80d82496c98f21e2290d9 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkEvent_getEventType, 0, 0, GdkEventType, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkEvent_getPosition, 0, 0, IS_ARRAY, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkEvent_getPosition, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(1, x, IS_DOUBLE, 1)
+	ZEND_ARG_TYPE_INFO(1, y, IS_DOUBLE, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkEvent_getPointerEmulated, 0, 0, _IS_BOOL, 0)
@@ -541,12 +543,13 @@ static zend_class_entry *register_class_GtkEventControllerLegacy(zend_class_entr
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkSettings(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GtkSettings(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GtkStyleProvider)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkSettings", class_GtkSettings_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GtkStyleProvider);
 
 	return class_entry;
 }

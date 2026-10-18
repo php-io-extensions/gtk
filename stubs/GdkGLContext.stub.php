@@ -23,8 +23,8 @@ class GdkGLContext extends GObject
     /** gdk_gl_context_get_current(); null when none is current */
     public static function getCurrent(): ?GdkGLContext {}
 
-    /** gdk_gl_context_realize(); its GError is thrown as GtkException */
-    public function realize(): void {}
+    /** gdk_gl_context_realize(): whether GDK realized the context; a GError it reports is thrown as GError */
+    public function realize(): bool {}
 
     public function getUseEs(): bool {}
 
@@ -35,5 +35,6 @@ class GdkGLContext extends GObject
      */
     public function getVersion(): array {}
 
-    public function getApi(): GdkGLAPI {}
+    /** gdk_gl_context_get_api(): GdkGLAPI flags ORed, 0 before the context is realized */
+    public function getApi(): int {}
 }

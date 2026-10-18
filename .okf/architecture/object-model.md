@@ -5,7 +5,7 @@ description: One PHP object per GObject or GMainContext, referenced while PHP ho
 resource: src/runtime.c
 tags: [gtk, zend, lifetime]
 status: draft
-generated: { by: claude-fable/5.1, at: 2026-10-02T17:30:00Z }
+generated: { by: claude-opus/5.5, at: 2026-10-17T18:30:00Z }
 sources:
   - id: runtime
     resource: src/runtime.c
@@ -25,6 +25,10 @@ Class choice: walk `G_OBJECT_TYPE` → `g_type_parent`; first GType name registe
 Arguments annotated `(transfer full)` (`gtk_column_view_new`, `gtk_column_view_column_new`, `gtk_single_selection_new`) get a `g_object_ref()` of PHP's object: the native side owns that one, PHP keeps its own. Enum returns go through `phpgtk_return_enum()`: the native int becomes the stub's case.
 
 Constructors (`GtkApplication::new`) box the new object, then drop the creation reference: PHP's own reference is the only one left.
+
+GBytes → `g_bytes_ref/unref` (`GBytes::new` hands PHP the new reference); GParamSpec → `g_param_spec_ref_sink/unref`.
+
+Interfaces (`GAction`, `GListModel`, `GdkPaintable`, `GtkNative`, …) stand for native GTypes: `phpgtk_interface_native_only` makes declaring a PHP class that implements one a fatal error, unless it extends a bound class whose GType does. A plain PHP object has no native form to hand GTK.
 
 Wrappers are not constructible, not cloneable, not serializable; identity is `===`.
 

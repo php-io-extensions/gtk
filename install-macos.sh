@@ -21,7 +21,7 @@ step() { printf '▶ %s\n' "$*"; }
 
 [[ "$(uname -s)" == "Darwin" ]] || die "This installer targets macOS; on Debian or Raspberry Pi OS use install-debian-trixie.sh."
 pkg-config --exists 'gtk4 >= 4.12' || die "GTK 4.12+ not found by pkg-config — install: brew install gtk4"
-[[ -d "$(brew --prefix gtk4)/lib/gtk-4.0/4.0.0/media" ]] || warn "Homebrew gtk4 has no media backend: GtkVideo plays nothing on this Mac (gtk_media_backend_available() returns false)."
+[[ -d "$(brew --prefix gtk4)/lib/gtk-4.0/4.0.0/media" ]] || warn "Homebrew gtk4 has no media backend: GtkVideo plays nothing on this Mac (GtkMediaFile::new() is a GtkNoMediaFile)."
 
 if [[ $# -gt 0 ]]; then
     PHP_BINS=("$@")

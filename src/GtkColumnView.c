@@ -1,9 +1,39 @@
 #include "runtime.h"
 #include "../stubs/GtkColumnView_arginfo.h"
 
+ZEND_METHOD(GtkSelectionModel, isSelected);
+ZEND_METHOD(GtkSelectionModel, selectItem);
+ZEND_METHOD(GtkSelectionModel, unselectItem);
+ZEND_METHOD(GtkSelectionModel, selectRange);
+ZEND_METHOD(GtkSelectionModel, unselectRange);
+ZEND_METHOD(GtkSelectionModel, selectAll);
+ZEND_METHOD(GtkSelectionModel, unselectAll);
+ZEND_METHOD(GtkSelectionModel, selectionChanged);
+
+static const phpgtk_interface_method phpgtk_GtkSelectionModel_bodies[] = {
+	{"isSelected", zim_GtkSelectionModel_isSelected},
+	{"selectItem", zim_GtkSelectionModel_selectItem},
+	{"unselectItem", zim_GtkSelectionModel_unselectItem},
+	{"selectRange", zim_GtkSelectionModel_selectRange},
+	{"unselectRange", zim_GtkSelectionModel_unselectRange},
+	{"selectAll", zim_GtkSelectionModel_selectAll},
+	{"unselectAll", zim_GtkSelectionModel_unselectAll},
+	{"selectionChanged", zim_GtkSelectionModel_selectionChanged},
+	{NULL, NULL},
+};
+
 void phpgtk_register_GtkColumnView(void)
 {
-	phpgtk_ce_GtkSignalListItemFactory = register_class_GtkSignalListItemFactory(phpgtk_ce_GObject);
+	/* GListModel's methods are copied in with their bodies: GListModel was registered first (GAction.c). */
+	phpgtk_ce_GtkSelectionModel = register_class_GtkSelectionModel(phpgtk_ce_GListModel);
+	phpgtk_interface_bodies(phpgtk_ce_GtkSelectionModel, phpgtk_GtkSelectionModel_bodies);
+	phpgtk_ce_GtkSelectionModel->interface_gets_implemented = phpgtk_interface_native_only;
+
+	phpgtk_ce_GtkListItemFactory = register_class_GtkListItemFactory(phpgtk_ce_GObject);
+	phpgtk_object_setup(phpgtk_ce_GtkListItemFactory);
+	phpgtk_map_gtype("GtkListItemFactory", phpgtk_ce_GtkListItemFactory);
+
+	phpgtk_ce_GtkSignalListItemFactory = register_class_GtkSignalListItemFactory(phpgtk_ce_GtkListItemFactory);
 	phpgtk_object_setup(phpgtk_ce_GtkSignalListItemFactory);
 	phpgtk_map_gtype("GtkSignalListItemFactory", phpgtk_ce_GtkSignalListItemFactory);
 
@@ -19,12 +49,104 @@ void phpgtk_register_GtkColumnView(void)
 	phpgtk_object_setup(phpgtk_ce_GtkColumnView);
 	phpgtk_map_gtype("GtkColumnView", phpgtk_ce_GtkColumnView);
 
-	phpgtk_ce_GtkSingleSelection = register_class_GtkSingleSelection(phpgtk_ce_GObject);
+	phpgtk_ce_GtkSingleSelection = register_class_GtkSingleSelection(phpgtk_ce_GObject, phpgtk_ce_GtkSelectionModel);
 	phpgtk_object_setup(phpgtk_ce_GtkSingleSelection);
 	phpgtk_map_gtype("GtkSingleSelection", phpgtk_ce_GtkSingleSelection);
 }
 
 #define THIS(cast) cast(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+/* ---- GtkSelectionModel ------------------------------------------------- */
+
+/* $this's native object, implementing GtkSelectionModel (GtkSingleSelection). */
+#define THIS_SELECTION_MODEL GTK_SELECTION_MODEL(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkSelectionModel, isSelected)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_selection_model_is_selected(THIS_SELECTION_MODEL, (guint) position));
+}
+
+ZEND_METHOD(GtkSelectionModel, selectItem)
+{
+	zend_long position;
+	bool unselect_rest;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(position)
+		Z_PARAM_BOOL(unselect_rest)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_selection_model_select_item(THIS_SELECTION_MODEL, (guint) position, unselect_rest));
+}
+
+ZEND_METHOD(GtkSelectionModel, unselectItem)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_selection_model_unselect_item(THIS_SELECTION_MODEL, (guint) position));
+}
+
+ZEND_METHOD(GtkSelectionModel, selectRange)
+{
+	zend_long position, n_items;
+	bool unselect_rest;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_LONG(position)
+		Z_PARAM_LONG(n_items)
+		Z_PARAM_BOOL(unselect_rest)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_selection_model_select_range(THIS_SELECTION_MODEL, (guint) position, (guint) n_items, unselect_rest));
+}
+
+ZEND_METHOD(GtkSelectionModel, unselectRange)
+{
+	zend_long position, n_items;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(position)
+		Z_PARAM_LONG(n_items)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_selection_model_unselect_range(THIS_SELECTION_MODEL, (guint) position, (guint) n_items));
+}
+
+ZEND_METHOD(GtkSelectionModel, selectAll)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_selection_model_select_all(THIS_SELECTION_MODEL));
+}
+
+ZEND_METHOD(GtkSelectionModel, unselectAll)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_selection_model_unselect_all(THIS_SELECTION_MODEL));
+}
+
+ZEND_METHOD(GtkSelectionModel, selectionChanged)
+{
+	zend_long position, n_items;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(position)
+		Z_PARAM_LONG(n_items)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_selection_model_selection_changed(THIS_SELECTION_MODEL, (guint) position, (guint) n_items);
+}
 
 /* The model arguments GTK asserts on: refused here with the interface named. */
 static bool phpgtk_require_selection_model(zend_object *model, uint32_t arg_num)
@@ -100,7 +222,7 @@ ZEND_METHOD(GtkColumnViewColumn, new)
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_STR_OR_NULL(title)
-		Z_PARAM_OBJ_OF_CLASS_OR_NULL(factory, phpgtk_ce_GtkSignalListItemFactory)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(factory, phpgtk_ce_GtkListItemFactory)
 	ZEND_PARSE_PARAMETERS_END();
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
@@ -179,11 +301,6 @@ ZEND_METHOD(GtkColumnView, appendColumn)
 		Z_PARAM_OBJ_OF_CLASS(column, phpgtk_ce_GtkColumnViewColumn)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (gtk_column_view_column_get_column_view(GTK_COLUMN_VIEW_COLUMN(PHPGTK_PTR(column))) != NULL) {
-		zend_argument_value_error(1, "is already in a GtkColumnView");
-		RETURN_THROWS();
-	}
-
 	gtk_column_view_append_column(THIS(GTK_COLUMN_VIEW), GTK_COLUMN_VIEW_COLUMN(PHPGTK_PTR(column)));
 }
 
@@ -194,11 +311,6 @@ ZEND_METHOD(GtkColumnView, removeColumn)
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_OBJ_OF_CLASS(column, phpgtk_ce_GtkColumnViewColumn)
 	ZEND_PARSE_PARAMETERS_END();
-
-	if (gtk_column_view_column_get_column_view(GTK_COLUMN_VIEW_COLUMN(PHPGTK_PTR(column))) != THIS(GTK_COLUMN_VIEW)) {
-		zend_argument_value_error(1, "is not a column of this GtkColumnView");
-		RETURN_THROWS();
-	}
 
 	gtk_column_view_remove_column(THIS(GTK_COLUMN_VIEW), GTK_COLUMN_VIEW_COLUMN(PHPGTK_PTR(column)));
 }
