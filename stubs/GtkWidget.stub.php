@@ -18,6 +18,16 @@ enum GtkAlign: int
     case BASELINE_CENTER = 5;
 }
 
+enum GtkDirectionType: int
+{
+    case TAB_FORWARD = 0;
+    case TAB_BACKWARD = 1;
+    case UP = 2;
+    case DOWN = 3;
+    case LEFT = 4;
+    case RIGHT = 5;
+}
+
 /** graphene_point_t: a point, x and y. */
 final class GraphenePoint
 {
@@ -119,6 +129,9 @@ class GtkWidget extends GObject
 
     /** gtk_widget_grab_focus(): false when the widget cannot take focus. */
     public function grabFocus(): bool {}
+
+    /** gtk_widget_child_focus(): false when focus left the widget or nothing inside it took focus. */
+    public function childFocus(GtkDirectionType $direction): bool {}
 
     public function hasFocus(): bool {}
 

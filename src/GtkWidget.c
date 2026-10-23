@@ -12,6 +12,8 @@ ZEND_METHOD(GtkRoot, getDisplay);
 ZEND_METHOD(GtkRoot, setFocus);
 ZEND_METHOD(GtkRoot, getFocus);
 
+static zend_class_entry *phpgtk_ce_GtkDirectionType;
+
 static const phpgtk_interface_method phpgtk_GtkNative_bodies[] = {
 	{"getForSurface", zim_GtkNative_getForSurface},
 	{"realize", zim_GtkNative_realize},
@@ -32,6 +34,7 @@ void phpgtk_register_GtkWidget(void)
 {
 	phpgtk_ce_GtkOrientation = register_class_GtkOrientation();
 	phpgtk_ce_GtkAlign = register_class_GtkAlign();
+	phpgtk_ce_GtkDirectionType = register_class_GtkDirectionType();
 	phpgtk_ce_GraphenePoint = register_class_GraphenePoint();
 	phpgtk_ce_GrapheneSize = register_class_GrapheneSize();
 	phpgtk_ce_GrapheneRect = register_class_GrapheneRect();
@@ -329,6 +332,17 @@ ZEND_METHOD(GtkWidget, grabFocus)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	RETURN_BOOL(gtk_widget_grab_focus(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, childFocus)
+{
+	zend_object *direction;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(direction, phpgtk_ce_GtkDirectionType)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_widget_child_focus(THIS_WIDGET, (GtkDirectionType) phpgtk_enum_value(direction, GTK_DIR_TAB_FORWARD)));
 }
 
 ZEND_METHOD(GtkWidget, hasFocus)

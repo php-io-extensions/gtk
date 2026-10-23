@@ -65,6 +65,26 @@ const GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = UNKNOWN;
  */
 const GTK_INVALID_LIST_POSITION = UNKNOWN;
 
+/**
+ * GtkListScrollFlags (GTK 4.12).
+ *
+ * @var int
+ * @cvalue GTK_LIST_SCROLL_NONE
+ */
+const GTK_LIST_SCROLL_NONE = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue GTK_LIST_SCROLL_FOCUS
+ */
+const GTK_LIST_SCROLL_FOCUS = UNKNOWN;
+
+/**
+ * @var int
+ * @cvalue GTK_LIST_SCROLL_SELECT
+ */
+const GTK_LIST_SCROLL_SELECT = UNKNOWN;
+
 function gtk_style_context_add_provider_for_display(GdkDisplay $display, GtkStyleProvider $provider, int $priority): void {}
 
 function gtk_style_context_remove_provider_for_display(GdkDisplay $display, GtkStyleProvider $provider): void {}
@@ -118,6 +138,19 @@ function g_object_get_property(GObject $instance, string $property): mixed {}
  * property, and a value invalid or out of range for it, with a warning.
  */
 function g_object_set_property(GObject $instance, string $property, mixed $value): void {}
+
+/**
+ * g_object_new_with_properties(): a new instance of the GObject type named $object_type, with
+ * $names[i] set to $values[i] at construction, each value converted as g_object_set_property()
+ * converts it. GLib answers a name that is no GObject type (or one GTK has not registered yet: the
+ * ext registers GtkAlertDialog) with a critical and null, and an unknown property, or a name with
+ * no value, with a critical. An abstract GObject type (GtkWidget) ends the process: GLib calls
+ * g_error(). $values is a list; anything else is a TypeError.
+ *
+ * @param string[] $names
+ * @param mixed[] $values one for each name
+ */
+function g_object_new_with_properties(string $object_type, array $names, mixed $values): ?GObject {}
 
 function gdk_keyval_to_unicode(int $keyval): int {}
 

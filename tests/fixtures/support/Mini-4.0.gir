@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<repository version="1.2" xmlns="http://www.gtk.org/introspection/core/1.0" xmlns:c="http://www.gtk.org/introspection/c/1.0" xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
+  <namespace name="Gtk" version="4.0" c:identifier-prefixes="Gtk" c:symbol-prefixes="gtk">
+    <class name="Mini" c:type="GtkMini" c:symbol-prefix="mini" glib:type-name="GtkMini">
+      <property name="value" writable="1"/>
+      <virtual-method name="changed"/>
+      <glib:signal name="changed"/>
+      <method name="get_value" c:identifier="gtk_mini_get_value"/>
+      <method name="set_value" c:identifier="gtk_mini_set_value"/>
+      <method name="old" c:identifier="gtk_mini_old" deprecated="1" deprecated-version="4.10"/>
+    </class>
+    <class name="MiniChild" c:type="GtkMiniChild" c:symbol-prefix="mini_child" parent="Mini" glib:type-name="GtkMiniChild">
+      <constructor name="new" c:identifier="gtk_mini_child_new"/>
+    </class>
+    <record name="MiniPart" c:type="GtkMiniPart" c:symbol-prefix="mini_part">
+      <method name="free" c:identifier="gtk_mini_part_free"/>
+    </record>
+    <function name="mini_init" c:identifier="gtk_mini_init"/>
+    <function name="mini_moved" c:identifier="gtk_mini_moved" moved-to="Mini.moved"/>
+  </namespace>
+</repository>

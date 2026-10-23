@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 4aeb1c2aace639c0d025b933c6e2fb4b1e419f7c */
+ * Stub hash: 0f8bf57f4f9a4b68122ce87ada541d0ae06f3d2c */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gtk_init, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
@@ -86,6 +86,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_g_object_set_property, 0, 3, IS_
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_g_object_new_with_properties, 0, 3, GObject, 1)
+	ZEND_ARG_TYPE_INFO(0, object_type, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, names, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, values, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_gdk_keyval_to_unicode, 0, 1, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, keyval, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -112,6 +118,7 @@ ZEND_FUNCTION(g_signal_handler_disconnect);
 ZEND_FUNCTION(g_signal_handler_is_connected);
 ZEND_FUNCTION(g_object_get_property);
 ZEND_FUNCTION(g_object_set_property);
+ZEND_FUNCTION(g_object_new_with_properties);
 ZEND_FUNCTION(gdk_keyval_to_unicode);
 ZEND_FUNCTION(gdk_keyval_to_lower);
 
@@ -136,6 +143,7 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(g_signal_handler_is_connected, arginfo_g_signal_handler_is_connected)
 	ZEND_FE(g_object_get_property, arginfo_g_object_get_property)
 	ZEND_FE(g_object_set_property, arginfo_g_object_set_property)
+	ZEND_FE(g_object_new_with_properties, arginfo_g_object_new_with_properties)
 	ZEND_FE(gdk_keyval_to_unicode, arginfo_gdk_keyval_to_unicode)
 	ZEND_FE(gdk_keyval_to_lower, arginfo_gdk_keyval_to_lower)
 	ZEND_FE_END
@@ -147,6 +155,9 @@ static void register_gtk_symbols(int module_number)
 	REGISTER_BOOL_CONSTANT("G_SOURCE_REMOVE", G_SOURCE_REMOVE, CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("GTK_STYLE_PROVIDER_PRIORITY_APPLICATION", GTK_STYLE_PROVIDER_PRIORITY_APPLICATION, CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("GTK_INVALID_LIST_POSITION", GTK_INVALID_LIST_POSITION, CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("GTK_LIST_SCROLL_NONE", GTK_LIST_SCROLL_NONE, CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("GTK_LIST_SCROLL_FOCUS", GTK_LIST_SCROLL_FOCUS, CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("GTK_LIST_SCROLL_SELECT", GTK_LIST_SCROLL_SELECT, CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("GTK_EVENT_CONTROLLER_SCROLL_NONE", GTK_EVENT_CONTROLLER_SCROLL_NONE, CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("GTK_EVENT_CONTROLLER_SCROLL_VERTICAL", GTK_EVENT_CONTROLLER_SCROLL_VERTICAL, CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("GTK_EVENT_CONTROLLER_SCROLL_HORIZONTAL", GTK_EVENT_CONTROLLER_SCROLL_HORIZONTAL, CONST_PERSISTENT);

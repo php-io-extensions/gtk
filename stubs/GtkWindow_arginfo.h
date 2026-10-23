@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a360d7333b280a3da53ca7890eefe32daa5c2110 */
+ * Stub hash: 70264af78ad8476f12144c3e9aaf66ada77a9a47 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 1)
 ZEND_END_ARG_INFO()
@@ -62,6 +62,23 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setHideOnClose, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, setting, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindow_getDefaultWidget arginfo_class_GtkWindow_getChild
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setDefaultWidget, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, defaultWidget, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_getGroup, 0, 0, GtkWindowGroup, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindowGroup_new arginfo_class_GtkWindow_getGroup
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindowGroup_addWindow, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, window, GtkWindow, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindowGroup_removeWindow arginfo_class_GtkWindowGroup_addWindow
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkApplicationWindow_new, 0, 0, GtkApplicationWindow, 1)
 	ZEND_ARG_OBJ_INFO_WITH_DEFAULT_VALUE(0, application, GtkApplication, 1, "null")
@@ -129,6 +146,12 @@ ZEND_METHOD(GtkWindow, getModal);
 ZEND_METHOD(GtkWindow, setModal);
 ZEND_METHOD(GtkWindow, getHideOnClose);
 ZEND_METHOD(GtkWindow, setHideOnClose);
+ZEND_METHOD(GtkWindow, getDefaultWidget);
+ZEND_METHOD(GtkWindow, setDefaultWidget);
+ZEND_METHOD(GtkWindow, getGroup);
+ZEND_METHOD(GtkWindowGroup, new);
+ZEND_METHOD(GtkWindowGroup, addWindow);
+ZEND_METHOD(GtkWindowGroup, removeWindow);
 ZEND_METHOD(GtkApplicationWindow, new);
 ZEND_METHOD(GtkApplicationWindow, getShowMenubar);
 ZEND_METHOD(GtkApplicationWindow, setShowMenubar);
@@ -166,6 +189,16 @@ static const zend_function_entry class_GtkWindow_methods[] = {
 	ZEND_ME(GtkWindow, setModal, arginfo_class_GtkWindow_setModal, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getHideOnClose, arginfo_class_GtkWindow_getHideOnClose, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setHideOnClose, arginfo_class_GtkWindow_setHideOnClose, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, getDefaultWidget, arginfo_class_GtkWindow_getDefaultWidget, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, setDefaultWidget, arginfo_class_GtkWindow_setDefaultWidget, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, getGroup, arginfo_class_GtkWindow_getGroup, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkWindowGroup_methods[] = {
+	ZEND_ME(GtkWindowGroup, new, arginfo_class_GtkWindowGroup_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkWindowGroup, addWindow, arginfo_class_GtkWindowGroup_addWindow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindowGroup, removeWindow, arginfo_class_GtkWindowGroup_removeWindow, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -199,6 +232,16 @@ static zend_class_entry *register_class_GtkWindow(zend_class_entry *class_entry_
 	INIT_CLASS_ENTRY(ce, "GtkWindow", class_GtkWindow_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 	zend_class_implements(class_entry, 2, class_entry_GtkNative, class_entry_GtkRoot);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkWindowGroup(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkWindowGroup", class_GtkWindowGroup_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

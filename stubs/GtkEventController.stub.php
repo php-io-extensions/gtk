@@ -249,3 +249,65 @@ class GtkGestureClick extends GtkGestureSingle
 {
     public static function new(): GtkGestureClick {}
 }
+
+enum GtkShortcutScope: int
+{
+    case LOCAL = 0;
+    case MANAGED = 1;
+    case GLOBAL = 2;
+}
+
+enum GtkShortcutActionFlags: int
+{
+    case EXCLUSIVE = 1;
+}
+
+/**
+ * @not-serializable
+ */
+class GtkShortcutController extends GtkEventController implements GListModel
+{
+    public static function new(): GtkShortcutController {}
+
+    public function addShortcut(GtkShortcut $shortcut): void {}
+
+    public function removeShortcut(GtkShortcut $shortcut): void {}
+
+    public function getScope(): GtkShortcutScope {}
+
+    public function setScope(GtkShortcutScope $scope): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkShortcut extends GObject
+{
+    public static function new(?GtkShortcutTrigger $trigger, ?GtkShortcutAction $action): GtkShortcut {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkShortcutTrigger extends GObject
+{
+    /** Null when GTK cannot parse the string. */
+    public static function parseString(string $string): ?GtkShortcutTrigger {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkShortcutAction extends GObject
+{
+    public function activate(GtkShortcutActionFlags|int $flags, GtkWidget $widget, ?GVariant $args): bool {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkCallbackAction extends GtkShortcutAction
+{
+    /** @param callable $callback called as $callback(GtkWidget $widget, ?GVariant $args): bool */
+    public static function new(callable $callback): GtkCallbackAction {}
+}

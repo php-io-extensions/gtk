@@ -253,3 +253,48 @@ it('reads a property GLib does not know as null, after its critical', function (
         ->and($run['result'])->toBeNull()
         ->and($run['stderr'])->toContain("g_object_get_is_valid_property: object class 'GtkSettings' has no property named 'no-such-property'");
 });
+
+it('parses a shortcut trigger, and answers null for a string it cannot parse', function (): void {
+    expect(GtkShortcutTrigger::parseString('Return|KP_Enter'))->toBeInstanceOf(GtkShortcutTrigger::class)
+        ->and(GtkShortcutTrigger::parseString('<Nope>x'))->toBeNull();
+});
+
+it('holds shortcuts in a shortcut controller', function (): void {
+    $controller = GtkShortcutController::new();
+    $shortcut = GtkShortcut::new(GtkShortcutTrigger::parseString('Escape'), GtkCallbackAction::new(fn (): bool => true));
+    $controller->addShortcut($shortcut);
+
+    expect($controller)->toBeInstanceOf(GtkEventController::class)
+        ->and($controller->getNItems())->toBe(1)
+        ->and($controller->getObject(0))->toBe($shortcut)
+        ->and($controller->getScope())->toBe(GtkShortcutScope::LOCAL);
+
+    $controller->setScope(GtkShortcutScope::MANAGED);
+    $controller->removeShortcut($shortcut);
+    expect($controller->getScope())->toBe(GtkShortcutScope::MANAGED)
+        ->and($controller->getNItems())->toBe(0);
+});
+
+it('calls the callback of a callback action and returns its answer', function (): void {
+    $button = GtkButton::newWithLabel('OK');
+    $calls = [];
+    $answer = true;
+    $action = GtkCallbackAction::new(function (GtkWidget $widget, ?GVariant $args) use (&$calls, &$answer): bool {
+        $calls[] = [$widget, $args];
+
+        return $answer;
+    });
+
+    expect($action->activate(0, $button, null))->toBeTrue();
+    $answer = false;
+    expect($action->activate(GtkShortcutActionFlags::EXCLUSIVE, $button, null))->toBeFalse()
+        ->and($calls)->toBe([[$button, null], [$button, null]]);
+});
+
+it('throws the exception of a callback from activate', function (): void {
+    $action = GtkCallbackAction::new(function (): bool {
+        throw new RuntimeException('from the callback');
+    });
+
+    expect(fn () => $action->activate(0, GtkButton::newWithLabel('OK'), null))->toThrow(RuntimeException::class, 'from the callback');
+});

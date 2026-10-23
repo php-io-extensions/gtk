@@ -49,6 +49,25 @@ class GtkWindow extends GtkWidget implements GtkNative, GtkRoot
     public function getHideOnClose(): bool {}
 
     public function setHideOnClose(bool $setting): void {}
+
+    public function getDefaultWidget(): ?GtkWidget {}
+
+    public function setDefaultWidget(?GtkWidget $defaultWidget): void {}
+
+    /** The window's group, or GTK's default group when it has none. */
+    public function getGroup(): GtkWindowGroup {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkWindowGroup extends GObject
+{
+    public static function new(): GtkWindowGroup {}
+
+    public function addWindow(GtkWindow $window): void {}
+
+    public function removeWindow(GtkWindow $window): void {}
 }
 
 /**

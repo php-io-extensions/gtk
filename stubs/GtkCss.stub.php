@@ -24,6 +24,8 @@ class GdkDisplay extends GObject
 {
     public static function getDefault(): ?GdkDisplay {}
 
+    public function getClipboard(): GdkClipboard {}
+
     /** gdk_display_sync(): flushes the requests queued for the windowing system and waits until it has handled them all (a round trip on Wayland). */
     public function sync(): void {}
 

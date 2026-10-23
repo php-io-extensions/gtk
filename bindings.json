@@ -42,8 +42,12 @@
         "entry-set-text-nchars": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/EntrySetTextNCharsTest.php"},
         "accels-action-name": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/AccelsActionNameTest.php"},
         "gtk-initialized-media-file": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-tree-expander": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
         "gtk-version-4-14-dmabuf-builder": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/VersionGateTest.php"},
         "text-iter-line-offset-negative": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/IterLineOffsetTest.php"}
     },
-    "typemap": {}
+    "typemap": {
+        "GType": ["string"],
+        "GValue": ["mixed"]
+    }
 }

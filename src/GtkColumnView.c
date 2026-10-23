@@ -52,6 +52,21 @@ void phpgtk_register_GtkColumnView(void)
 	phpgtk_ce_GtkSingleSelection = register_class_GtkSingleSelection(phpgtk_ce_GObject, phpgtk_ce_GtkSelectionModel);
 	phpgtk_object_setup(phpgtk_ce_GtkSingleSelection);
 	phpgtk_map_gtype("GtkSingleSelection", phpgtk_ce_GtkSingleSelection);
+
+	phpgtk_ce_GtkTreeListModel = register_class_GtkTreeListModel(phpgtk_ce_GObject, phpgtk_ce_GListModel);
+	phpgtk_object_setup(phpgtk_ce_GtkTreeListModel);
+	phpgtk_map_gtype("GtkTreeListModel", phpgtk_ce_GtkTreeListModel);
+
+	phpgtk_ce_GtkTreeListRow = register_class_GtkTreeListRow(phpgtk_ce_GObject);
+	phpgtk_object_setup(phpgtk_ce_GtkTreeListRow);
+	phpgtk_map_gtype("GtkTreeListRow", phpgtk_ce_GtkTreeListRow);
+
+	phpgtk_ce_GtkTreeExpander = register_class_GtkTreeExpander(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkTreeExpander);
+	phpgtk_map_gtype("GtkTreeExpander", phpgtk_ce_GtkTreeExpander);
+
+	phpgtk_ce_GtkScrollInfo = register_class_GtkScrollInfo();
+	phpgtk_object_setup(phpgtk_ce_GtkScrollInfo);
 }
 
 #define THIS(cast) cast(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
@@ -357,6 +372,284 @@ ZEND_METHOD(GtkColumnView, setShowColumnSeparators)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_column_view_set_show_column_separators(THIS(GTK_COLUMN_VIEW), show);
+}
+
+ZEND_METHOD(GtkColumnView, scrollTo)
+{
+	zend_long pos, flags;
+	zend_object *column = NULL;
+	zend_object *scroll = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(4, 4)
+		Z_PARAM_LONG(pos)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(column, phpgtk_ce_GtkColumnViewColumn)
+		Z_PARAM_LONG(flags)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(scroll, phpgtk_ce_GtkScrollInfo)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(pos, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	/* The scroll argument is (transfer full); the view gets its own reference. */
+	gtk_column_view_scroll_to(THIS(GTK_COLUMN_VIEW), (guint) pos, (GtkColumnViewColumn *) PHPGTK_OPTIONAL_PTR(column),
+		(GtkListScrollFlags) flags, scroll != NULL ? gtk_scroll_info_ref((GtkScrollInfo *) PHPGTK_PTR(scroll)) : NULL);
+}
+
+/* ---- GtkTreeListModel -------------------------------------------------- */
+
+/* GTK asks for a row's children: the item goes to PHP, and a GListModel coming back is GTK's (transfer full). */
+static GListModel *phpgtk_tree_list_create_model(gpointer item, gpointer data)
+{
+	phpgtk_callout *callout = (phpgtk_callout *) data;
+	GListModel *model = NULL;
+	zval arg, retval;
+
+	/* Asked on another thread: the callable is not entered there. */
+	if (phpgtk_callout_foreign(callout)) {
+		return NULL;
+	}
+
+	phpgtk_box_gobject(&arg, item);
+	if (phpgtk_callout_invoke(callout, 1, &arg, &retval)
+		&& Z_TYPE(retval) == IS_OBJECT
+		&& instanceof_function(Z_OBJCE(retval), phpgtk_ce_GObject)
+		&& G_IS_LIST_MODEL(PHPGTK_PTR(Z_OBJ(retval)))) {
+		model = G_LIST_MODEL(g_object_ref(PHPGTK_PTR(Z_OBJ(retval))));
+	}
+	zval_ptr_dtor(&arg);
+	zval_ptr_dtor(&retval);
+
+	return model;
+}
+
+/* The model is finalized: GLib's reference to the callable goes. */
+static void phpgtk_tree_list_released(gpointer data)
+{
+	phpgtk_callout_release((phpgtk_callout *) data);
+}
+
+ZEND_METHOD(GtkTreeListModel, new)
+{
+	zend_object *root;
+	bool passthrough, autoexpand;
+	zval *create_func;
+
+	ZEND_PARSE_PARAMETERS_START(4, 4)
+		Z_PARAM_OBJ_OF_CLASS(root, phpgtk_ce_GObject)
+		Z_PARAM_BOOL(passthrough)
+		Z_PARAM_BOOL(autoexpand)
+		Z_PARAM_ZVAL(create_func)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (!phpgtk_require_list_model(root, 1) || !phpgtk_require_callable(create_func, 4)) {
+		RETURN_THROWS();
+	}
+
+	/* The root argument is (transfer full); the model gets its own reference. */
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_model_new(
+		G_LIST_MODEL(g_object_ref(PHPGTK_PTR(root))), passthrough, autoexpand,
+		phpgtk_tree_list_create_model, phpgtk_callout_new(create_func), phpgtk_tree_list_released));
+}
+
+ZEND_METHOD(GtkTreeListModel, getRow)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_model_get_row(THIS(GTK_TREE_LIST_MODEL), (guint) position));
+}
+
+ZEND_METHOD(GtkTreeListModel, getChildRow)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_model_get_child_row(THIS(GTK_TREE_LIST_MODEL), (guint) position));
+}
+
+/* ---- GtkTreeListRow ---------------------------------------------------- */
+
+ZEND_METHOD(GtkTreeListRow, getItem)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_row_get_item(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, getExpanded)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_tree_list_row_get_expanded(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, setExpanded)
+{
+	bool expanded;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(expanded)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_tree_list_row_set_expanded(THIS(GTK_TREE_LIST_ROW), expanded);
+}
+
+ZEND_METHOD(GtkTreeListRow, isExpandable)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_tree_list_row_is_expandable(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, getDepth)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_tree_list_row_get_depth(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, getPosition)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_tree_list_row_get_position(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, getParent)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_row_get_parent(THIS(GTK_TREE_LIST_ROW)));
+}
+
+ZEND_METHOD(GtkTreeListRow, getChildRow)
+{
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, 0, (zend_long) G_MAXUINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, gtk_tree_list_row_get_child_row(THIS(GTK_TREE_LIST_ROW), (guint) position));
+}
+
+/* ---- GtkTreeExpander --------------------------------------------------- */
+
+ZEND_METHOD(GtkTreeExpander, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-tree-expander */
+
+	phpgtk_box_gobject(return_value, gtk_tree_expander_new());
+}
+
+ZEND_METHOD(GtkTreeExpander, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_tree_expander_get_child(THIS(GTK_TREE_EXPANDER)));
+}
+
+ZEND_METHOD(GtkTreeExpander, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_tree_expander_set_child(THIS(GTK_TREE_EXPANDER), (GtkWidget *) PHPGTK_OPTIONAL_PTR(child));
+}
+
+ZEND_METHOD(GtkTreeExpander, getListRow)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_tree_expander_get_list_row(THIS(GTK_TREE_EXPANDER)));
+}
+
+ZEND_METHOD(GtkTreeExpander, setListRow)
+{
+	zend_object *row = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(row, phpgtk_ce_GtkTreeListRow)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_tree_expander_set_list_row(THIS(GTK_TREE_EXPANDER), (GtkTreeListRow *) PHPGTK_OPTIONAL_PTR(row));
+}
+
+/* ---- GtkScrollInfo ----------------------------------------------------- */
+
+#define THIS_SCROLL_INFO ((GtkScrollInfo *) PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkScrollInfo, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+}
+
+ZEND_METHOD(GtkScrollInfo, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_scroll_info_full(return_value, gtk_scroll_info_new());
+}
+
+ZEND_METHOD(GtkScrollInfo, getEnableHorizontal)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_scroll_info_get_enable_horizontal(THIS_SCROLL_INFO));
+}
+
+ZEND_METHOD(GtkScrollInfo, setEnableHorizontal)
+{
+	bool horizontal;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(horizontal)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_scroll_info_set_enable_horizontal(THIS_SCROLL_INFO, horizontal);
+}
+
+ZEND_METHOD(GtkScrollInfo, getEnableVertical)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_scroll_info_get_enable_vertical(THIS_SCROLL_INFO));
+}
+
+ZEND_METHOD(GtkScrollInfo, setEnableVertical)
+{
+	bool vertical;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(vertical)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_scroll_info_set_enable_vertical(THIS_SCROLL_INFO, vertical);
 }
 
 /* ---- GtkSingleSelection ------------------------------------------------ */

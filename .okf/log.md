@@ -1,5 +1,19 @@
 # Log
 
+## 2026-10-22
+
+* `GtkWidget::childFocus(GtkDirectionType): bool` (`gtk_widget_child_focus`) and the `GtkDirectionType` enum. No new site. [surface](api/surface.md)
+* Coverage: `scripts/support.php` writes `SUPPORT.md` (every live GTK, GDK and GSK member from the GIR files, bound or not; a stub method on a subclass counts for the ancestor's member) and the README API badge; `--check` compares without the date. 525 / 3798 on GTK 4.24.1.
+* 0.10.3: `g_object_new_with_properties` (values converted as `g_object_set_property` converts them); `GtkAlertDialog` (made with it: `gtk_alert_dialog_new` is a printf and is not bound, Angel's ruling after ext-guard required its `...`), `GtkFileDialog`, `GtkFileLauncher`, `GFile` (`GLocalFile`, `GDaemonFile`, `GDummyFile` map to it), `GListStore`, `GdkClipboard`, `GdkDisplay::getClipboard`. Every async call shares `phpgtk_async_ready`. No new site. [surface](api/surface.md)
+
+## 2026-10-20
+
+* 0.10.3: `GtkWindowGroup` (`new`, `addWindow`, `removeWindow`), `GtkWindow` `getDefaultWidget` / `setDefaultWidget` / `getGroup`; `GtkShortcutController` (a `GListModel`), `GtkShortcut`, `GtkShortcutTrigger::parseString`, `GtkShortcutAction::activate`, `GtkCallbackAction` (a `GtkShortcutFunc` trampoline, released at finalize), `GtkShortcutScope`, `GtkShortcutActionFlags`. No new site. [surface](api/surface.md), [callouts](architecture/callouts.md)
+
+## 2026-10-18
+
+* 0.10.3: `GtkTreeListModel` (create-func trampoline, released at finalize), `GtkTreeListRow`, `GtkTreeExpander` (`gtk-initialized-tree-expander` site), `GtkScrollInfo` (boxed, `PHPGTK_SCROLL_INFO`), `GtkColumnView::scrollTo`, `GTK_LIST_SCROLL_*`. [surface](api/surface.md), [callouts](architecture/callouts.md)
+
 ## 2026-10-17
 
 * 1:1 with GTK, 0.10.2. GTK's own answers pass through; refusals are only the probe-backed crash guards, each a `bindings.json` site with a `tests/Probes` test; `--enable-gtk-probes` builds the switch. [errors and threads](architecture/errors-and-threads.md), [build](runbooks/build.md)

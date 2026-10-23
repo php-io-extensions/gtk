@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: bbf23c9837b30710cd27d243d8bf04b0a7e6db95 */
+ * Stub hash: e43617416a143314f8b1970d68226dc9a430fa53 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -94,6 +94,10 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkWidget_isSensitive arginfo_class_GtkWidget_getVisible
 
 #define arginfo_class_GtkWidget_grabFocus arginfo_class_GtkWidget_getVisible
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_childFocus, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(0, direction, GtkDirectionType, 0)
+ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_hasFocus arginfo_class_GtkWidget_getVisible
 
@@ -329,6 +333,7 @@ ZEND_METHOD(GtkWidget, setSensitive);
 ZEND_METHOD(GtkWidget, getColor);
 ZEND_METHOD(GtkWidget, isSensitive);
 ZEND_METHOD(GtkWidget, grabFocus);
+ZEND_METHOD(GtkWidget, childFocus);
 ZEND_METHOD(GtkWidget, hasFocus);
 ZEND_METHOD(GtkWidget, setMarginStart);
 ZEND_METHOD(GtkWidget, setMarginEnd);
@@ -429,6 +434,7 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, getColor, arginfo_class_GtkWidget_getColor, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, isSensitive, arginfo_class_GtkWidget_isSensitive, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, grabFocus, arginfo_class_GtkWidget_grabFocus, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, childFocus, arginfo_class_GtkWidget_childFocus, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, hasFocus, arginfo_class_GtkWidget_hasFocus, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setMarginStart, arginfo_class_GtkWidget_setMarginStart, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setMarginEnd, arginfo_class_GtkWidget_setMarginEnd, ZEND_ACC_PUBLIC)
@@ -569,6 +575,37 @@ static zend_class_entry *register_class_GtkAlign(void)
 	zval enum_case_BASELINE_CENTER_value;
 	ZVAL_LONG(&enum_case_BASELINE_CENTER_value, 5);
 	zend_enum_add_case_cstr(class_entry, "BASELINE_CENTER", &enum_case_BASELINE_CENTER_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkDirectionType(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkDirectionType", IS_LONG, NULL);
+
+	zval enum_case_TAB_FORWARD_value;
+	ZVAL_LONG(&enum_case_TAB_FORWARD_value, 0);
+	zend_enum_add_case_cstr(class_entry, "TAB_FORWARD", &enum_case_TAB_FORWARD_value);
+
+	zval enum_case_TAB_BACKWARD_value;
+	ZVAL_LONG(&enum_case_TAB_BACKWARD_value, 1);
+	zend_enum_add_case_cstr(class_entry, "TAB_BACKWARD", &enum_case_TAB_BACKWARD_value);
+
+	zval enum_case_UP_value;
+	ZVAL_LONG(&enum_case_UP_value, 2);
+	zend_enum_add_case_cstr(class_entry, "UP", &enum_case_UP_value);
+
+	zval enum_case_DOWN_value;
+	ZVAL_LONG(&enum_case_DOWN_value, 3);
+	zend_enum_add_case_cstr(class_entry, "DOWN", &enum_case_DOWN_value);
+
+	zval enum_case_LEFT_value;
+	ZVAL_LONG(&enum_case_LEFT_value, 4);
+	zend_enum_add_case_cstr(class_entry, "LEFT", &enum_case_LEFT_value);
+
+	zval enum_case_RIGHT_value;
+	ZVAL_LONG(&enum_case_RIGHT_value, 5);
+	zend_enum_add_case_cstr(class_entry, "RIGHT", &enum_case_RIGHT_value);
 
 	return class_entry;
 }

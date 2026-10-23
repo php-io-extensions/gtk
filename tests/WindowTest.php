@@ -161,6 +161,33 @@ it('grabs focus into an entry, whose GtkText the window then names as its focus'
         ->and($run['result'])->toBe([true, 'GtkText', true, true, false]);
 });
 
+it('moves focus forward and back through a window\'s children', function (): void {
+    $run = gtkChild(<<<'PHP'
+        $app = GtkApplication::new('com.projectsaturnstudios.GtkTests', GApplicationFlags::NON_UNIQUE);
+        g_signal_connect($app, 'activate', fn (): null => null);
+        $app->register(null);
+        $window = GtkApplicationWindow::new($app);
+        $box = GtkBox::new(GtkOrientation::VERTICAL, 0);
+        $first = GtkButton::newWithLabel('first');
+        $second = GtkButton::newWithLabel('second');
+        $box->append($first);
+        $box->append($second);
+        $window->setChild($box);
+        $window->present();
+        $first->grabFocus();
+
+        $seen = [$window->childFocus(GtkDirectionType::TAB_FORWARD), $window->getFocus() === $second];
+        $seen[] = $window->childFocus(GtkDirectionType::TAB_BACKWARD);
+        $seen[] = $window->getFocus() === $first;
+        $window->destroy();
+
+        return $seen;
+    PHP);
+
+    expect($run['survived'])->toBeTrue()
+        ->and($run['result'])->toBe([true, true, true, true]);
+});
+
 /** A presented window, iterated until GTK gave it its surface. */
 function presentedWindow(): GtkWindow
 {
@@ -265,6 +292,34 @@ it('reads a root\'s focus with gtk_root_get_focus', function (): void {
     $getFocus = new ReflectionMethod(GtkRoot::class, 'getFocus');
 
     expect($getFocus->invoke($window))->toBe($button);
+
+    $window->destroy();
+});
+
+it('puts a window in a window group and takes it out', function (): void {
+    $window = GtkWindow::new();
+    $group = GtkWindowGroup::new();
+    $group->addWindow($window);
+
+    expect($window->getGroup())->toBe($group);
+
+    $group->removeWindow($window);
+    expect($window->getGroup())->not->toBe($group)
+        ->and($window->getGroup())->toBeInstanceOf(GtkWindowGroup::class);
+
+    $window->destroy();
+});
+
+it('sets the default widget of a window', function (): void {
+    $window = GtkWindow::new();
+    $button = GtkButton::newWithLabel('OK');
+    $window->setChild($button);
+    $window->setDefaultWidget($button);
+
+    expect($window->getDefaultWidget())->toBe($button);
+
+    $window->setDefaultWidget(null);
+    expect($window->getDefaultWidget())->toBeNull();
 
     $window->destroy();
 });

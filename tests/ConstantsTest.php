@@ -7,6 +7,10 @@ it('registers the source return values', function (): void {
         ->and(G_SOURCE_REMOVE)->toBeFalse();
 });
 
+it('registers the list scroll flags', function (): void {
+    expect([GTK_LIST_SCROLL_NONE, GTK_LIST_SCROLL_FOCUS, GTK_LIST_SCROLL_SELECT])->toBe([0, 1, 2]);
+});
+
 it('backs GIOCondition with the poll(2) bits', function (): void {
     expect(GIOCondition::IN->value)->toBe(1)
         ->and(GIOCondition::PRI->value)->toBe(2)

@@ -1,6 +1,8 @@
 #include "runtime.h"
 #include "../stubs/GtkWindow_arginfo.h"
 
+static zend_class_entry *phpgtk_ce_GtkWindowGroup;
+
 void phpgtk_register_GtkWindow(void)
 {
 	phpgtk_ce_GtkWindow = register_class_GtkWindow(phpgtk_ce_GtkWidget, phpgtk_ce_GtkNative, phpgtk_ce_GtkRoot);
@@ -14,6 +16,70 @@ void phpgtk_register_GtkWindow(void)
 	phpgtk_ce_GtkAboutDialog = register_class_GtkAboutDialog(phpgtk_ce_GtkWindow);
 	phpgtk_object_setup(phpgtk_ce_GtkAboutDialog);
 	phpgtk_map_gtype("GtkAboutDialog", phpgtk_ce_GtkAboutDialog);
+
+	phpgtk_ce_GtkWindowGroup = register_class_GtkWindowGroup(phpgtk_ce_GObject);
+	phpgtk_object_setup(phpgtk_ce_GtkWindowGroup);
+	phpgtk_map_gtype("GtkWindowGroup", phpgtk_ce_GtkWindowGroup);
+}
+
+ZEND_METHOD(GtkWindow, getDefaultWidget)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_window_get_default_widget(GTK_WINDOW(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))));
+}
+
+ZEND_METHOD(GtkWindow, setDefaultWidget)
+{
+	zend_object *widget = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(widget, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_window_set_default_widget(GTK_WINDOW(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS))), widget != NULL ? GTK_WIDGET(PHPGTK_PTR(widget)) : NULL);
+}
+
+ZEND_METHOD(GtkWindow, getGroup)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_window_get_group(GTK_WINDOW(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))));
+}
+
+/* ---- GtkWindowGroup ----------------------------------------------------- */
+
+#define THIS_GROUP GTK_WINDOW_GROUP(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+/* A plain GObject: new() hands over a full reference. */
+ZEND_METHOD(GtkWindowGroup, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	phpgtk_box_gobject_full(return_value, gtk_window_group_new());
+}
+
+ZEND_METHOD(GtkWindowGroup, addWindow)
+{
+	zend_object *window;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(window, phpgtk_ce_GtkWindow)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_window_group_add_window(THIS_GROUP, GTK_WINDOW(PHPGTK_PTR(window)));
+}
+
+ZEND_METHOD(GtkWindowGroup, removeWindow)
+{
+	zend_object *window;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(window, phpgtk_ce_GtkWindow)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_window_group_remove_window(THIS_GROUP, GTK_WINDOW(PHPGTK_PTR(window)));
 }
 
 #define THIS_WINDOW GTK_WINDOW(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))

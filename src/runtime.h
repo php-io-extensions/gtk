@@ -51,6 +51,7 @@ typedef enum {
 	PHPGTK_BYTES = 7,              /* g_bytes_ref / g_bytes_unref */
 	PHPGTK_CAIRO_REGION = 8,       /* cairo_region_reference / cairo_region_destroy */
 	PHPGTK_PARAM_SPEC = 9,         /* g_param_spec_ref_sink / g_param_spec_unref */
+	PHPGTK_SCROLL_INFO = 10,       /* gtk_scroll_info_ref / gtk_scroll_info_unref (GTK 4.12+) */
 } phpgtk_kind;
 
 /* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
@@ -141,6 +142,12 @@ extern zend_class_entry *phpgtk_ce_GtkLinkButton;
 extern zend_class_entry *phpgtk_ce_GCancellable;
 extern zend_class_entry *phpgtk_ce_GAsyncResult;
 extern zend_class_entry *phpgtk_ce_GtkUriLauncher;
+extern zend_class_entry *phpgtk_ce_GFile;
+extern zend_class_entry *phpgtk_ce_GListStore;
+extern zend_class_entry *phpgtk_ce_GdkClipboard;
+extern zend_class_entry *phpgtk_ce_GtkAlertDialog;
+extern zend_class_entry *phpgtk_ce_GtkFileDialog;
+extern zend_class_entry *phpgtk_ce_GtkFileLauncher;
 extern zend_class_entry *phpgtk_ce_GtkCheckButton;
 extern zend_class_entry *phpgtk_ce_GtkSwitch;
 extern zend_class_entry *phpgtk_ce_GtkToggleButton;
@@ -167,6 +174,10 @@ extern zend_class_entry *phpgtk_ce_GtkListItem;
 extern zend_class_entry *phpgtk_ce_GtkColumnViewColumn;
 extern zend_class_entry *phpgtk_ce_GtkColumnView;
 extern zend_class_entry *phpgtk_ce_GtkSingleSelection;
+extern zend_class_entry *phpgtk_ce_GtkTreeListModel;
+extern zend_class_entry *phpgtk_ce_GtkTreeListRow;
+extern zend_class_entry *phpgtk_ce_GtkTreeExpander;
+extern zend_class_entry *phpgtk_ce_GtkScrollInfo;
 extern zend_class_entry *phpgtk_ce_GtkMediaStream;
 extern zend_class_entry *phpgtk_ce_GtkMediaFile;
 extern zend_class_entry *phpgtk_ce_GtkVideo;
@@ -219,6 +230,7 @@ void phpgtk_register_GdkTexture(void);
 void phpgtk_register_GtkText(void);
 void phpgtk_register_GtkControls(void);
 void phpgtk_register_GtkUriLauncher(void);
+void phpgtk_register_GtkDialogs(void);
 void phpgtk_register_GtkColumnView(void);
 void phpgtk_register_GtkVideo(void);
 void phpgtk_register_GtkWindow(void);
@@ -241,6 +253,7 @@ void phpgtk_box_event(zval *rv, GdkEvent *event);
 void phpgtk_box_variant_full(zval *rv, GVariant *variant);
 void phpgtk_box_bytes_full(zval *rv, GBytes *bytes);
 void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region);
+void phpgtk_box_scroll_info_full(zval *rv, GtkScrollInfo *info);
 
 /* Struct value classes: the struct a GdkRectangle object holds, and a new GdkRectangle / GraphenePoint /
  * GrapheneRect object holding a struct's fields. */
@@ -269,6 +282,9 @@ int phpgtk_interface_native_only(zend_class_entry *iface, zend_class_entry *ce);
 zend_long phpgtk_enum_value(zend_object *obj_or_null, zend_long fallback);
 void phpgtk_return_enum(zval *rv, zend_class_entry *ce, zend_long value);
 bool phpgtk_fd_from_zval(zval *zfd, uint32_t arg_num, int *fd);
+bool phpgtk_require_callable(zval *callable, uint32_t arg_num);
+const char **phpgtk_string_array(HashTable *strings, uint32_t arg_num);
+void phpgtk_async_ready(GObject *source, GAsyncResult *result, gpointer data);
 void phpgtk_gvalue_to_zval(zval *rv, const GValue *value);
 bool phpgtk_zval_to_gvalue(GValue *value, zval *zv);
 

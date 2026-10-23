@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 4081c5822a37ee5acf0662033e404d9c81e85f24 */
+ * Stub hash: a7867201ce9eec5a5722ad867920cfc71f95170f */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCssProvider_new, 0, 0, GtkCssProvider, 0)
 ZEND_END_ARG_INFO()
@@ -9,6 +9,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkCssProvider_loadFromStr
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkDisplay_getDefault, 0, 0, GdkDisplay, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkDisplay_getClipboard, 0, 0, GdkClipboard, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GdkDisplay_sync, 0, 0, IS_VOID, 0)
@@ -22,6 +25,7 @@ ZEND_END_ARG_INFO()
 ZEND_METHOD(GtkCssProvider, new);
 ZEND_METHOD(GtkCssProvider, loadFromString);
 ZEND_METHOD(GdkDisplay, getDefault);
+ZEND_METHOD(GdkDisplay, getClipboard);
 ZEND_METHOD(GdkDisplay, sync);
 #if GTK_CHECK_VERSION(4, 14, 0)
 ZEND_METHOD(GdkDisplay, getDmabufFormats);
@@ -35,6 +39,7 @@ static const zend_function_entry class_GtkCssProvider_methods[] = {
 
 static const zend_function_entry class_GdkDisplay_methods[] = {
 	ZEND_ME(GdkDisplay, getDefault, arginfo_class_GdkDisplay_getDefault, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GdkDisplay, getClipboard, arginfo_class_GdkDisplay_getClipboard, ZEND_ACC_PUBLIC)
 	ZEND_ME(GdkDisplay, sync, arginfo_class_GdkDisplay_sync, ZEND_ACC_PUBLIC)
 #if GTK_CHECK_VERSION(4, 14, 0)
 	ZEND_ME(GdkDisplay, getDmabufFormats, arginfo_class_GdkDisplay_getDmabufFormats, ZEND_ACC_PUBLIC)

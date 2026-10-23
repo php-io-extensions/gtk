@@ -56,6 +56,14 @@ ZEND_METHOD(GdkDisplay, sync)
 	gdk_display_sync(GDK_DISPLAY(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS))));
 }
 
+ZEND_METHOD(GdkDisplay, getClipboard)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	phpgtk_box_gobject(return_value, gdk_display_get_clipboard(GDK_DISPLAY(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))));
+}
+
 #if GTK_CHECK_VERSION(4, 14, 0)
 ZEND_METHOD(GdkDisplay, getDmabufFormats)
 {

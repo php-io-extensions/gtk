@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: f6ba1ab0a7e92bed3747aeef683db09e0f5d032d */
+ * Stub hash: d08399191ad171b58b3fb8025add3c37540d88a7 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkSelectionModel_isSelected, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
@@ -94,6 +94,76 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkColumnView_setShowColum
 	ZEND_ARG_TYPE_INFO(0, showColumnSeparators, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkColumnView_scrollTo, 0, 4, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, pos, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, column, GtkColumnViewColumn, 1)
+	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, scroll, GtkScrollInfo, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTreeListModel_new, 0, 4, GtkTreeListModel, 0)
+	ZEND_ARG_OBJ_INFO(0, root, GListModel, 0)
+	ZEND_ARG_TYPE_INFO(0, passthrough, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, autoexpand, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, createFunc, IS_CALLABLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTreeListModel_getRow, 0, 1, GtkTreeListRow, 1)
+	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkTreeListModel_getChildRow arginfo_class_GtkTreeListModel_getRow
+
+#define arginfo_class_GtkTreeListRow_getItem arginfo_class_GtkListItem_getItem
+
+#define arginfo_class_GtkTreeListRow_getExpanded arginfo_class_GtkSelectionModel_selectAll
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTreeListRow_setExpanded, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, expanded, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkTreeListRow_isExpandable arginfo_class_GtkSelectionModel_selectAll
+
+#define arginfo_class_GtkTreeListRow_getDepth arginfo_class_GtkListItem_getPosition
+
+#define arginfo_class_GtkTreeListRow_getPosition arginfo_class_GtkListItem_getPosition
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTreeListRow_getParent, 0, 0, GtkTreeListRow, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkTreeListRow_getChildRow arginfo_class_GtkTreeListModel_getRow
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTreeExpander_new, 0, 0, GtkTreeExpander, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkTreeExpander_getChild arginfo_class_GtkListItem_getChild
+
+#define arginfo_class_GtkTreeExpander_setChild arginfo_class_GtkListItem_setChild
+
+#define arginfo_class_GtkTreeExpander_getListRow arginfo_class_GtkTreeListRow_getParent
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTreeExpander_setListRow, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, listRow, GtkTreeListRow, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GtkScrollInfo___construct, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrollInfo_new, 0, 0, GtkScrollInfo, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkScrollInfo_getEnableHorizontal arginfo_class_GtkSelectionModel_selectAll
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkScrollInfo_setEnableHorizontal, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, horizontal, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkScrollInfo_getEnableVertical arginfo_class_GtkSelectionModel_selectAll
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkScrollInfo_setEnableVertical, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, vertical, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkSingleSelection_new, 0, 1, GtkSingleSelection, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GListModel, 1)
 ZEND_END_ARG_INFO()
@@ -134,6 +204,29 @@ ZEND_METHOD(GtkColumnView, getModel);
 ZEND_METHOD(GtkColumnView, setModel);
 ZEND_METHOD(GtkColumnView, setShowRowSeparators);
 ZEND_METHOD(GtkColumnView, setShowColumnSeparators);
+ZEND_METHOD(GtkColumnView, scrollTo);
+ZEND_METHOD(GtkTreeListModel, new);
+ZEND_METHOD(GtkTreeListModel, getRow);
+ZEND_METHOD(GtkTreeListModel, getChildRow);
+ZEND_METHOD(GtkTreeListRow, getItem);
+ZEND_METHOD(GtkTreeListRow, getExpanded);
+ZEND_METHOD(GtkTreeListRow, setExpanded);
+ZEND_METHOD(GtkTreeListRow, isExpandable);
+ZEND_METHOD(GtkTreeListRow, getDepth);
+ZEND_METHOD(GtkTreeListRow, getPosition);
+ZEND_METHOD(GtkTreeListRow, getParent);
+ZEND_METHOD(GtkTreeListRow, getChildRow);
+ZEND_METHOD(GtkTreeExpander, new);
+ZEND_METHOD(GtkTreeExpander, getChild);
+ZEND_METHOD(GtkTreeExpander, setChild);
+ZEND_METHOD(GtkTreeExpander, getListRow);
+ZEND_METHOD(GtkTreeExpander, setListRow);
+ZEND_METHOD(GtkScrollInfo, __construct);
+ZEND_METHOD(GtkScrollInfo, new);
+ZEND_METHOD(GtkScrollInfo, getEnableHorizontal);
+ZEND_METHOD(GtkScrollInfo, setEnableHorizontal);
+ZEND_METHOD(GtkScrollInfo, getEnableVertical);
+ZEND_METHOD(GtkScrollInfo, setEnableVertical);
 ZEND_METHOD(GtkSingleSelection, new);
 ZEND_METHOD(GtkSingleSelection, getSelected);
 ZEND_METHOD(GtkSingleSelection, setSelected);
@@ -184,6 +277,45 @@ static const zend_function_entry class_GtkColumnView_methods[] = {
 	ZEND_ME(GtkColumnView, setModel, arginfo_class_GtkColumnView_setModel, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkColumnView, setShowRowSeparators, arginfo_class_GtkColumnView_setShowRowSeparators, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkColumnView, setShowColumnSeparators, arginfo_class_GtkColumnView_setShowColumnSeparators, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkColumnView, scrollTo, arginfo_class_GtkColumnView_scrollTo, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkTreeListModel_methods[] = {
+	ZEND_ME(GtkTreeListModel, new, arginfo_class_GtkTreeListModel_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkTreeListModel, getRow, arginfo_class_GtkTreeListModel_getRow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListModel, getChildRow, arginfo_class_GtkTreeListModel_getChildRow, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkTreeListRow_methods[] = {
+	ZEND_ME(GtkTreeListRow, getItem, arginfo_class_GtkTreeListRow_getItem, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, getExpanded, arginfo_class_GtkTreeListRow_getExpanded, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, setExpanded, arginfo_class_GtkTreeListRow_setExpanded, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, isExpandable, arginfo_class_GtkTreeListRow_isExpandable, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, getDepth, arginfo_class_GtkTreeListRow_getDepth, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, getPosition, arginfo_class_GtkTreeListRow_getPosition, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, getParent, arginfo_class_GtkTreeListRow_getParent, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeListRow, getChildRow, arginfo_class_GtkTreeListRow_getChildRow, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkTreeExpander_methods[] = {
+	ZEND_ME(GtkTreeExpander, new, arginfo_class_GtkTreeExpander_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkTreeExpander, getChild, arginfo_class_GtkTreeExpander_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeExpander, setChild, arginfo_class_GtkTreeExpander_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeExpander, getListRow, arginfo_class_GtkTreeExpander_getListRow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTreeExpander, setListRow, arginfo_class_GtkTreeExpander_setListRow, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkScrollInfo_methods[] = {
+	ZEND_ME(GtkScrollInfo, __construct, arginfo_class_GtkScrollInfo___construct, ZEND_ACC_PRIVATE)
+	ZEND_ME(GtkScrollInfo, new, arginfo_class_GtkScrollInfo_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkScrollInfo, getEnableHorizontal, arginfo_class_GtkScrollInfo_getEnableHorizontal, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkScrollInfo, setEnableHorizontal, arginfo_class_GtkScrollInfo_setEnableHorizontal, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkScrollInfo, getEnableVertical, arginfo_class_GtkScrollInfo_getEnableVertical, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkScrollInfo, setEnableVertical, arginfo_class_GtkScrollInfo_setEnableVertical, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -255,6 +387,47 @@ static zend_class_entry *register_class_GtkColumnView(zend_class_entry *class_en
 
 	INIT_CLASS_ENTRY(ce, "GtkColumnView", class_GtkColumnView_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkTreeListModel(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GListModel)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkTreeListModel", class_GtkTreeListModel_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GListModel);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkTreeListRow(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkTreeListRow", class_GtkTreeListRow_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkTreeExpander(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkTreeExpander", class_GtkTreeExpander_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkScrollInfo(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkScrollInfo", class_GtkScrollInfo_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, NULL, ZEND_ACC_FINAL|ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

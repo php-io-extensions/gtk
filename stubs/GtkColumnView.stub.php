@@ -89,6 +89,93 @@ class GtkColumnView extends GtkWidget
     public function setShowRowSeparators(bool $showRowSeparators): void {}
 
     public function setShowColumnSeparators(bool $showColumnSeparators): void {}
+
+    /** GTK 4.12. $flags: GTK_LIST_SCROLL_* combined with |. */
+    public function scrollTo(int $pos, ?GtkColumnViewColumn $column, int $flags, ?GtkScrollInfo $scroll): void {}
+}
+
+/**
+ * A GListModel of GtkTreeListRow over a root model, each row's children coming from $createFunc.
+ *
+ * @not-serializable
+ */
+class GtkTreeListModel extends GObject implements GListModel
+{
+    /**
+     * @param callable $createFunc called as $createFunc(GObject $item): ?GListModel when GTK needs a row's
+     *                             children; anything but a GListModel makes the row a leaf. Held until the
+     *                             model is finalized.
+     */
+    public static function new(GListModel $root, bool $passthrough, bool $autoexpand, callable $createFunc): GtkTreeListModel {}
+
+    /** The row at a position of the flattened list; null past the end */
+    public function getRow(int $position): ?GtkTreeListRow {}
+
+    /** The row of the root model's item at $position; null past the end */
+    public function getChildRow(int $position): ?GtkTreeListRow {}
+}
+
+/**
+ * One row of a GtkTreeListModel.
+ *
+ * @not-serializable
+ */
+class GtkTreeListRow extends GObject
+{
+    public function getItem(): ?GObject {}
+
+    public function getExpanded(): bool {}
+
+    public function setExpanded(bool $expanded): void {}
+
+    public function isExpandable(): bool {}
+
+    public function getDepth(): int {}
+
+    public function getPosition(): int {}
+
+    public function getParent(): ?GtkTreeListRow {}
+
+    /** null when the row is collapsed or has no such child */
+    public function getChildRow(int $position): ?GtkTreeListRow {}
+}
+
+/**
+ * A widget showing a GtkTreeListRow's expander and depth indentation before its child.
+ *
+ * @not-serializable
+ */
+class GtkTreeExpander extends GtkWidget
+{
+    public static function new(): GtkTreeExpander {}
+
+    public function getChild(): ?GtkWidget {}
+
+    public function setChild(?GtkWidget $child): void {}
+
+    public function getListRow(): ?GtkTreeListRow {}
+
+    public function setListRow(?GtkTreeListRow $listRow): void {}
+}
+
+/**
+ * GTK 4.12. How a scrollTo() scrolls; a boxed, reference-counted struct.
+ *
+ * @not-serializable
+ */
+final class GtkScrollInfo
+{
+    private function __construct() {}
+
+    public static function new(): GtkScrollInfo {}
+
+    public function getEnableHorizontal(): bool {}
+
+    public function setEnableHorizontal(bool $horizontal): void {}
+
+    public function getEnableVertical(): bool {}
+
+    public function setEnableVertical(bool $vertical): void {}
 }
 
 /**

@@ -76,10 +76,10 @@ ZEND_METHOD(GtkUriLauncher, setUri)
 }
 
 /*
- * GIO calls this once. Past request end the callable is detached (UNDEF): nothing is boxed then,
- * and the record is freed here.
+ * The GAsyncReadyCallback of every async call: GIO calls it once with (source, result). Past
+ * request end the callable is detached (UNDEF): nothing is boxed then, and the record is freed here.
  */
-static void phpgtk_uri_launched(GObject *source, GAsyncResult *result, gpointer data)
+void phpgtk_async_ready(GObject *source, GAsyncResult *result, gpointer data)
 {
 	phpgtk_callout *callout = (phpgtk_callout *) data;
 
@@ -119,7 +119,7 @@ ZEND_METHOD(GtkUriLauncher, launch)
 	gtk_uri_launcher_launch(THIS_LAUNCHER,
 		parent != NULL ? GTK_WINDOW(PHPGTK_PTR(parent)) : NULL,
 		cancellable != NULL ? G_CANCELLABLE(PHPGTK_PTR(cancellable)) : NULL,
-		Z_TYPE_P(callback) != IS_NULL ? phpgtk_uri_launched : NULL,
+		Z_TYPE_P(callback) != IS_NULL ? phpgtk_async_ready : NULL,
 		Z_TYPE_P(callback) != IS_NULL ? phpgtk_callout_new(callback) : NULL);
 }
 

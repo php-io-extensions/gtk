@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 933dbe85d82ae63074a80d82496c98f21e2290d9 */
+ * Stub hash: 8ffdbc2f198b4c39265b11942c4d395271c8c243 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GdkEvent_getEventType, 0, 0, GdkEventType, 0)
 ZEND_END_ARG_INFO()
@@ -107,6 +107,41 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkGestureClick_new, 0, 0, GtkGestureClick, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkShortcutController_new, 0, 0, GtkShortcutController, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkShortcutController_addShortcut, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, shortcut, GtkShortcut, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkShortcutController_removeShortcut arginfo_class_GtkShortcutController_addShortcut
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkShortcutController_getScope, 0, 0, GtkShortcutScope, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkShortcutController_setScope, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, scope, GtkShortcutScope, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkShortcut_new, 0, 2, GtkShortcut, 0)
+	ZEND_ARG_OBJ_INFO(0, trigger, GtkShortcutTrigger, 1)
+	ZEND_ARG_OBJ_INFO(0, action, GtkShortcutAction, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkShortcutTrigger_parseString, 0, 1, GtkShortcutTrigger, 1)
+	ZEND_ARG_TYPE_INFO(0, string, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkShortcutAction_activate, 0, 3, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_TYPE_MASK(0, flags, GtkShortcutActionFlags, MAY_BE_LONG, NULL)
+	ZEND_ARG_OBJ_INFO(0, widget, GtkWidget, 0)
+	ZEND_ARG_OBJ_INFO(0, args, GVariant, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCallbackAction_new, 0, 1, GtkCallbackAction, 0)
+	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_METHOD(GdkEvent, getEventType);
 ZEND_METHOD(GdkEvent, getPosition);
 ZEND_METHOD(GdkEvent, getPointerEmulated);
@@ -143,6 +178,15 @@ ZEND_METHOD(GtkGestureSingle, setTouchOnly);
 ZEND_METHOD(GtkGestureSingle, getTouchOnly);
 ZEND_METHOD(GtkGestureLongPress, new);
 ZEND_METHOD(GtkGestureClick, new);
+ZEND_METHOD(GtkShortcutController, new);
+ZEND_METHOD(GtkShortcutController, addShortcut);
+ZEND_METHOD(GtkShortcutController, removeShortcut);
+ZEND_METHOD(GtkShortcutController, getScope);
+ZEND_METHOD(GtkShortcutController, setScope);
+ZEND_METHOD(GtkShortcut, new);
+ZEND_METHOD(GtkShortcutTrigger, parseString);
+ZEND_METHOD(GtkShortcutAction, activate);
+ZEND_METHOD(GtkCallbackAction, new);
 
 static const zend_function_entry class_GdkEvent_methods[] = {
 	ZEND_ME(GdkEvent, getEventType, arginfo_class_GdkEvent_getEventType, ZEND_ACC_PUBLIC)
@@ -245,6 +289,35 @@ static const zend_function_entry class_GtkGestureLongPress_methods[] = {
 
 static const zend_function_entry class_GtkGestureClick_methods[] = {
 	ZEND_ME(GtkGestureClick, new, arginfo_class_GtkGestureClick_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkShortcutController_methods[] = {
+	ZEND_ME(GtkShortcutController, new, arginfo_class_GtkShortcutController_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkShortcutController, addShortcut, arginfo_class_GtkShortcutController_addShortcut, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkShortcutController, removeShortcut, arginfo_class_GtkShortcutController_removeShortcut, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkShortcutController, getScope, arginfo_class_GtkShortcutController_getScope, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkShortcutController, setScope, arginfo_class_GtkShortcutController_setScope, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkShortcut_methods[] = {
+	ZEND_ME(GtkShortcut, new, arginfo_class_GtkShortcut_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkShortcutTrigger_methods[] = {
+	ZEND_ME(GtkShortcutTrigger, parseString, arginfo_class_GtkShortcutTrigger_parseString, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkShortcutAction_methods[] = {
+	ZEND_ME(GtkShortcutAction, activate, arginfo_class_GtkShortcutAction_activate, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkCallbackAction_methods[] = {
+	ZEND_ME(GtkCallbackAction, new, arginfo_class_GtkCallbackAction_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_FE_END
 };
 
@@ -620,6 +693,87 @@ static zend_class_entry *register_class_GtkGestureClick(zend_class_entry *class_
 
 	INIT_CLASS_ENTRY(ce, "GtkGestureClick", class_GtkGestureClick_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkGestureSingle, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcutScope(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkShortcutScope", IS_LONG, NULL);
+
+	zval enum_case_LOCAL_value;
+	ZVAL_LONG(&enum_case_LOCAL_value, 0);
+	zend_enum_add_case_cstr(class_entry, "LOCAL", &enum_case_LOCAL_value);
+
+	zval enum_case_MANAGED_value;
+	ZVAL_LONG(&enum_case_MANAGED_value, 1);
+	zend_enum_add_case_cstr(class_entry, "MANAGED", &enum_case_MANAGED_value);
+
+	zval enum_case_GLOBAL_value;
+	ZVAL_LONG(&enum_case_GLOBAL_value, 2);
+	zend_enum_add_case_cstr(class_entry, "GLOBAL", &enum_case_GLOBAL_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcutActionFlags(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkShortcutActionFlags", IS_LONG, NULL);
+
+	zval enum_case_EXCLUSIVE_value;
+	ZVAL_LONG(&enum_case_EXCLUSIVE_value, 1);
+	zend_enum_add_case_cstr(class_entry, "EXCLUSIVE", &enum_case_EXCLUSIVE_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcutController(zend_class_entry *class_entry_GtkEventController, zend_class_entry *class_entry_GListModel)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkShortcutController", class_GtkShortcutController_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkEventController, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GListModel);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcut(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkShortcut", class_GtkShortcut_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcutTrigger(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkShortcutTrigger", class_GtkShortcutTrigger_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkShortcutAction(zend_class_entry *class_entry_GObject)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkShortcutAction", class_GtkShortcutAction_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkCallbackAction(zend_class_entry *class_entry_GtkShortcutAction)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkCallbackAction", class_GtkCallbackAction_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkShortcutAction, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

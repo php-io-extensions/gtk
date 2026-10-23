@@ -621,7 +621,7 @@ PHPGTK_GET_BOOL(GtkScale, getDrawValue, GTK_SCALE, gtk_scale_get_draw_value)
 /* ---- string arrays ----------------------------------------------------- */
 
 /* A PHP list of strings as a NULL-terminated const char *[]; NULL (with an error thrown) on a non-string element. */
-static const char **phpgtk_string_array(HashTable *strings, uint32_t arg_num)
+const char **phpgtk_string_array(HashTable *strings, uint32_t arg_num)
 {
 	const char **out = safe_emalloc(zend_hash_num_elements(strings) + 1, sizeof(const char *), 0);
 	size_t i = 0;

@@ -133,3 +133,101 @@ it('emits selection-changed with gtk_selection_model_selection_changed', functio
 
     expect($seen)->toBe([[0, 2]]);
 });
+
+/** Roots a, b; a holds a1, a2; b is a leaf. */
+function treeModel(?Closure $create = null): GtkTreeListModel
+{
+    return GtkTreeListModel::new(GtkStringList::new(['a', 'b']), false, false, $create ?? fn (GObject $item): ?GListModel => $item->getString() === 'a' ? GtkStringList::new(['a1', 'a2']) : null);
+}
+
+it('expands rows through the create function and walks them by position, depth and parent', function (): void {
+    $model = treeModel();
+
+    expect($model)->toBeInstanceOf(GListModel::class)
+        ->and($model->getNItems())->toBe(2)
+        ->and($model->getRow(0))->toBeInstanceOf(GtkTreeListRow::class)
+        ->and($model->getRow(0)->isExpandable())->toBeTrue()
+        ->and($model->getRow(1)->isExpandable())->toBeFalse()
+        ->and($model->getRow(0)->getExpanded())->toBeFalse()
+        ->and($model->getRow(5))->toBeNull();
+
+    $model->getRow(0)->setExpanded(true);
+    expect($model->getNItems())->toBe(4)
+        ->and($model->getRow(0)->getExpanded())->toBeTrue()
+        ->and($model->getRow(1)->getDepth())->toBe(1)
+        ->and($model->getRow(1)->getItem()->getString())->toBe('a1')
+        ->and($model->getRow(1)->getParent()->getItem()->getString())->toBe('a')
+        ->and($model->getRow(0)->getParent())->toBeNull()
+        ->and($model->getRow(0)->getChildRow(1)->getPosition())->toBe(2)
+        ->and($model->getRow(0)->getChildRow(7))->toBeNull()
+        ->and($model->getChildRow(1)->getItem()->getString())->toBe('b')
+        ->and($model->getItem(1))->toBeInstanceOf(GtkTreeListRow::class);
+
+    $model->getRow(0)->setExpanded(false);
+    expect($model->getNItems())->toBe(2);
+});
+
+it('releases the create function once the model is finalized', function (): void {
+    $held = new stdClass();
+    $watch = WeakReference::create($held);
+    $model = treeModel(function (GObject $item) use ($held): ?GListModel {
+        return null;
+    });
+    unset($held);
+    expect($watch->get())->not->toBeNull();
+
+    unset($model);
+    gc_collect_cycles();
+    expect($watch->get())->toBeNull();
+});
+
+it('makes a row with an answer that is not a list model a leaf', function (): void {
+    $model = treeModel(fn (GObject $item): mixed => $item->getString() === 'a' ? 'not a model' : null);
+
+    expect($model->getRow(0)->isExpandable())->toBeFalse();
+});
+
+it('surfaces an exception from the create function at the call that asked', function (): void {
+    $model = treeModel(function (GObject $item): ?GListModel {
+        throw new RuntimeException('create failed for '.$item->getString());
+    });
+
+    expect(fn () => $model->getRow(0)->isExpandable())->toThrow(RuntimeException::class, 'create failed for a');
+});
+
+it('holds a tree expander\'s child and list row', function (): void {
+    $model = treeModel();
+    $row = $model->getRow(0);
+    $expander = GtkTreeExpander::new();
+    $label = GtkLabel::new('a');
+
+    expect($expander)->toBeInstanceOf(GtkWidget::class)
+        ->and($expander->getChild())->toBeNull()
+        ->and($expander->getListRow())->toBeNull();
+
+    $expander->setChild($label);
+    $expander->setListRow($row);
+    expect($expander->getChild())->toBe($label)
+        ->and($expander->getListRow())->toBe($row);
+
+    $expander->setListRow(null);
+    expect($expander->getListRow())->toBeNull();
+});
+
+it('sets a scroll info\'s axes and scrolls a column view to a row', function (): void {
+    $info = GtkScrollInfo::new();
+    $info->setEnableHorizontal(false);
+
+    expect($info->getEnableHorizontal())->toBeFalse()
+        ->and($info->getEnableVertical())->toBeTrue();
+
+    $info->setEnableVertical(false);
+    expect($info->getEnableVertical())->toBeFalse();
+
+    $view = GtkColumnView::new(GtkSingleSelection::new(treeModel()));
+    $view->scrollTo(0, null, GTK_LIST_SCROLL_NONE, null);
+    expect($view->getModel()->getSelected())->toBe(0);
+
+    $view->scrollTo(1, null, GTK_LIST_SCROLL_FOCUS | GTK_LIST_SCROLL_SELECT, $info);
+    expect($view->getModel()->getSelected())->toBe(1);
+});

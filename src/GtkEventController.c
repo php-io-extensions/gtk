@@ -5,6 +5,13 @@ static zend_class_entry *phpgtk_ce_GtkPropagationPhase;
 static zend_class_entry *phpgtk_ce_GtkEventSequenceState;
 static zend_class_entry *phpgtk_ce_GdkScrollUnit;
 static zend_class_entry *phpgtk_ce_GdkEventType;
+static zend_class_entry *phpgtk_ce_GtkShortcutScope;
+static zend_class_entry *phpgtk_ce_GtkShortcutActionFlags;
+static zend_class_entry *phpgtk_ce_GtkShortcutController;
+static zend_class_entry *phpgtk_ce_GtkShortcut;
+static zend_class_entry *phpgtk_ce_GtkShortcutTrigger;
+static zend_class_entry *phpgtk_ce_GtkShortcutAction;
+static zend_class_entry *phpgtk_ce_GtkCallbackAction;
 #if GTK_CHECK_VERSION(4, 20, 0)
 static zend_class_entry *phpgtk_ce_GdkScrollRelativeDirection;
 #endif
@@ -46,6 +53,14 @@ void phpgtk_register_GtkEventController(void)
 	PHPGTK_CONTROLLER_CLASS(GtkGestureSingle, phpgtk_ce_GtkGesture);
 	PHPGTK_CONTROLLER_CLASS(GtkGestureClick, phpgtk_ce_GtkGestureSingle);
 	PHPGTK_CONTROLLER_CLASS(GtkGestureLongPress, phpgtk_ce_GtkGestureSingle);
+
+	phpgtk_ce_GtkShortcutScope = register_class_GtkShortcutScope();
+	phpgtk_ce_GtkShortcutActionFlags = register_class_GtkShortcutActionFlags();
+	PHPGTK_CONTROLLER_CLASS(GtkShortcutController, phpgtk_ce_GtkEventController, phpgtk_ce_GListModel);
+	PHPGTK_CONTROLLER_CLASS(GtkShortcut, phpgtk_ce_GObject);
+	PHPGTK_CONTROLLER_CLASS(GtkShortcutTrigger, phpgtk_ce_GObject);
+	PHPGTK_CONTROLLER_CLASS(GtkShortcutAction, phpgtk_ce_GObject);
+	PHPGTK_CONTROLLER_CLASS(GtkCallbackAction, phpgtk_ce_GtkShortcutAction);
 }
 
 #define THIS(cast) cast(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
@@ -348,4 +363,151 @@ ZEND_FUNCTION(gdk_keyval_to_lower)
 	ZEND_PARSE_PARAMETERS_END();
 
 	RETURN_LONG((zend_long) gdk_keyval_to_lower((guint) keyval));
+}
+
+/* ---- shortcuts ---------------------------------------------------------- */
+
+PHPGTK_CONTROLLER_NEW(GtkShortcutController, gtk_shortcut_controller_new)
+
+ZEND_METHOD(GtkShortcutController, addShortcut)
+{
+	zend_object *shortcut;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(shortcut, phpgtk_ce_GtkShortcut)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* The shortcut argument is (transfer full); the controller gets its own reference. */
+	gtk_shortcut_controller_add_shortcut(THIS(GTK_SHORTCUT_CONTROLLER), GTK_SHORTCUT(g_object_ref(PHPGTK_PTR(shortcut))));
+}
+
+ZEND_METHOD(GtkShortcutController, removeShortcut)
+{
+	zend_object *shortcut;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(shortcut, phpgtk_ce_GtkShortcut)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	gtk_shortcut_controller_remove_shortcut(THIS(GTK_SHORTCUT_CONTROLLER), GTK_SHORTCUT(PHPGTK_PTR(shortcut)));
+}
+
+ZEND_METHOD(GtkShortcutController, getScope)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_enum(return_value, phpgtk_ce_GtkShortcutScope, gtk_shortcut_controller_get_scope(THIS(GTK_SHORTCUT_CONTROLLER)));
+}
+
+ZEND_METHOD(GtkShortcutController, setScope)
+{
+	zend_object *scope;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(scope, phpgtk_ce_GtkShortcutScope)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_shortcut_controller_set_scope(THIS(GTK_SHORTCUT_CONTROLLER), (GtkShortcutScope) phpgtk_enum_value(scope, GTK_SHORTCUT_SCOPE_LOCAL));
+}
+
+ZEND_METHOD(GtkShortcut, new)
+{
+	zend_object *trigger = NULL;
+	zend_object *action = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(trigger, phpgtk_ce_GtkShortcutTrigger)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(action, phpgtk_ce_GtkShortcutAction)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* Both arguments are (transfer full); the shortcut gets its own references. */
+	phpgtk_box_gobject_full(return_value, gtk_shortcut_new(
+		trigger != NULL ? GTK_SHORTCUT_TRIGGER(g_object_ref(PHPGTK_PTR(trigger))) : NULL,
+		action != NULL ? GTK_SHORTCUT_ACTION(g_object_ref(PHPGTK_PTR(action))) : NULL));
+}
+
+ZEND_METHOD(GtkShortcutTrigger, parseString)
+{
+	zend_string *string;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(string)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	phpgtk_box_gobject_full(return_value, gtk_shortcut_trigger_parse_string(ZSTR_VAL(string)));
+}
+
+ZEND_METHOD(GtkShortcutAction, activate)
+{
+	zend_object *flags_case = NULL;
+	zend_long flags_long = 0;
+	zend_object *widget;
+	zend_object *args = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS_OR_LONG(flags_case, phpgtk_ce_GtkShortcutActionFlags, flags_long)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(args, phpgtk_ce_GVariant)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	RETURN_BOOL(gtk_shortcut_action_activate(THIS(GTK_SHORTCUT_ACTION),
+		(GtkShortcutActionFlags) phpgtk_enum_value(flags_case, flags_long),
+		GTK_WIDGET(PHPGTK_PTR(widget)),
+		args != NULL ? (GVariant *) PHPGTK_PTR(args) : NULL));
+}
+
+/* GTK activates the action: the widget and the arguments go to PHP, and its bool comes back. */
+static gboolean phpgtk_callback_action_call(GtkWidget *widget, GVariant *args, gpointer data)
+{
+	phpgtk_callout *callout = (phpgtk_callout *) data;
+	zval argv[2], retval;
+	gboolean handled = FALSE;
+
+	/* Activated on another thread: the callable is not entered there. */
+	if (phpgtk_callout_foreign(callout)) {
+		return FALSE;
+	}
+
+	phpgtk_box_gobject(&argv[0], widget);
+	if (args != NULL) {
+		phpgtk_box_variant(&argv[1], args);
+	} else {
+		ZVAL_NULL(&argv[1]);
+	}
+	if (phpgtk_callout_invoke(callout, 2, argv, &retval)) {
+		handled = zend_is_true(&retval);
+	}
+	zval_ptr_dtor(&argv[0]);
+	zval_ptr_dtor(&argv[1]);
+	zval_ptr_dtor(&retval);
+
+	return handled;
+}
+
+/* The action is finalized: GLib's reference to the callable goes. */
+static void phpgtk_callback_action_released(gpointer data)
+{
+	phpgtk_callout_release((phpgtk_callout *) data);
+}
+
+ZEND_METHOD(GtkCallbackAction, new)
+{
+	zval *callback;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ZVAL(callback)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	if (!phpgtk_require_callable(callback, 1)) {
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject_full(return_value, gtk_callback_action_new(
+		phpgtk_callback_action_call, phpgtk_callout_new(callback), phpgtk_callback_action_released));
 }

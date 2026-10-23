@@ -77,6 +77,9 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_PARAM_SPEC:
 				g_param_spec_unref((GParamSpec *) intern->ptr);
 				break;
+			case PHPGTK_SCROLL_INFO:
+				gtk_scroll_info_unref((GtkScrollInfo *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -418,6 +421,22 @@ void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_CairoRegion, region, PHPGTK_CAIRO_REGION);
+}
+
+/* Takes ownership of the caller's reference. */
+void phpgtk_box_scroll_info_full(zval *rv, GtkScrollInfo *info)
+{
+	if (info == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, info)) {
+		gtk_scroll_info_unref(info);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GtkScrollInfo, info, PHPGTK_SCROLL_INFO);
 }
 
 /* Takes PHP's own reference, sinking a floating one; the caller keeps whatever it held (a signal's GParamSpec is transfer none). */

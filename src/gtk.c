@@ -72,6 +72,12 @@ zend_class_entry *phpgtk_ce_GtkLinkButton;
 zend_class_entry *phpgtk_ce_GCancellable;
 zend_class_entry *phpgtk_ce_GAsyncResult;
 zend_class_entry *phpgtk_ce_GtkUriLauncher;
+zend_class_entry *phpgtk_ce_GFile;
+zend_class_entry *phpgtk_ce_GListStore;
+zend_class_entry *phpgtk_ce_GdkClipboard;
+zend_class_entry *phpgtk_ce_GtkAlertDialog;
+zend_class_entry *phpgtk_ce_GtkFileDialog;
+zend_class_entry *phpgtk_ce_GtkFileLauncher;
 zend_class_entry *phpgtk_ce_GtkCheckButton;
 zend_class_entry *phpgtk_ce_GtkSwitch;
 zend_class_entry *phpgtk_ce_GtkToggleButton;
@@ -98,6 +104,10 @@ zend_class_entry *phpgtk_ce_GtkListItem;
 zend_class_entry *phpgtk_ce_GtkColumnViewColumn;
 zend_class_entry *phpgtk_ce_GtkColumnView;
 zend_class_entry *phpgtk_ce_GtkSingleSelection;
+zend_class_entry *phpgtk_ce_GtkTreeListModel;
+zend_class_entry *phpgtk_ce_GtkTreeListRow;
+zend_class_entry *phpgtk_ce_GtkTreeExpander;
+zend_class_entry *phpgtk_ce_GtkScrollInfo;
 zend_class_entry *phpgtk_ce_GtkMediaStream;
 zend_class_entry *phpgtk_ce_GtkMediaFile;
 zend_class_entry *phpgtk_ce_GtkVideo;
@@ -176,7 +186,7 @@ static void phpgtk_source_destroy(gpointer data)
 	phpgtk_callout_release((phpgtk_callout *) data);
 }
 
-static bool phpgtk_require_callable(zval *callable, uint32_t arg_num)
+bool phpgtk_require_callable(zval *callable, uint32_t arg_num)
 {
 	if (!zend_is_callable(callable, 0, NULL)) {
 		zend_argument_type_error(arg_num, "must be a valid callback");
@@ -612,6 +622,73 @@ ZEND_FUNCTION(g_object_set_property)
 	}
 }
 
+/*
+ * n_properties is the count of $names. Each value is converted to its property's type as
+ * g_object_set_property() converts it; a name GLib does not know, or one with no value at its
+ * index, goes in with an empty GValue, which GLib answers with a warning.
+ */
+ZEND_FUNCTION(g_object_new_with_properties)
+{
+	zend_string *type_name;
+	HashTable *names_ht;
+	HashTable *values_ht;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_STR(type_name)
+		Z_PARAM_ARRAY_HT(names_ht)
+		Z_PARAM_ARRAY_HT(values_ht)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	const char **names = phpgtk_string_array(names_ht, 2);
+	if (names == NULL) {
+		RETURN_THROWS();
+	}
+	guint count = zend_hash_num_elements(names_ht);
+	GType type = g_type_from_name(ZSTR_VAL(type_name));
+	GObjectClass *klass = G_TYPE_IS_OBJECT(type) ? g_type_class_ref(type) : NULL;
+	GValue *values = ecalloc(count + 1, sizeof(GValue));
+	bool ok = true;
+
+	for (guint i = 0; i < count; i++) {
+		zval *value = zend_hash_index_find(values_ht, i);
+		GParamSpec *spec = klass != NULL ? g_object_class_find_property(klass, names[i]) : NULL;
+		if (value == NULL || spec == NULL) {
+			continue;
+		}
+		char subject[160];
+		g_snprintf(subject, sizeof(subject), "property %s", names[i]);
+		if (!phpgtk_signal_param(&values[i], G_PARAM_SPEC_VALUE_TYPE(spec), value, 3, subject, "g_object_new_with_properties()")) {
+			ok = false;
+			break;
+		}
+	}
+
+	if (ok) {
+		GObject *object = g_object_new_with_properties(type, count, names, values);
+		if (object == NULL) {
+			RETVAL_NULL();
+		} else {
+			/* A floating reference (GInitiallyUnowned) is sunk, so the box owns the one reference either way. */
+			if (g_object_is_floating(object)) {
+				g_object_ref_sink(object);
+			}
+			phpgtk_box_gobject_full(return_value, object);
+		}
+	}
+
+	for (guint i = 0; i < count; i++) {
+		if (G_IS_VALUE(&values[i])) {
+			g_value_unset(&values[i]);
+		}
+	}
+	efree(values);
+	efree(names);
+	if (klass != NULL) {
+		g_type_class_unref(klass);
+	}
+}
+
 /* ---- GTK -------------------------------------------------------------- */
 
 ZEND_FUNCTION(gtk_init)
@@ -729,6 +806,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkVideo();
 	phpgtk_register_GtkWindow();
 	phpgtk_register_GtkUriLauncher();
+	phpgtk_register_GtkDialogs();
 	phpgtk_register_GMenu();
 
 	return SUCCESS;
