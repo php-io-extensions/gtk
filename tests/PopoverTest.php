@@ -117,3 +117,31 @@ it('claims a gesture\'s sequences, and names the sequence states at their C valu
     expect(array_map(fn (GtkEventSequenceState $s): int => $s->value, GtkEventSequenceState::cases()))->toBe([0, 1, 2])
         ->and($click->setState(GtkEventSequenceState::CLAIMED))->toBeFalse();
 });
+
+it('makes a popover with a child, no autohide and a position, shown under an entry that keeps focus', function (): void {
+    $window = GtkWindow::new();
+    $entry = GtkEntry::new();
+    $window->setChild($entry);
+    $popover = GtkPopover::new();
+    $label = GtkLabel::new('/Users/angel');
+
+    $popover->setChild($label);
+    $popover->setAutohide(false);
+    $popover->setPosition(GtkPositionType::BOTTOM);
+    $popover->setParent($entry);
+    $window->present();
+    iterateUntil(fn (): bool => $window->getMapped());
+    $entry->grabFocus();
+    $popover->popup();
+    iterateUntil(fn (): bool => $popover->getMapped());
+
+    expect($popover->getChild())->toBe($label)
+        ->and($popover->getAutohide())->toBeFalse()
+        ->and($popover->getPosition())->toBe(GtkPositionType::BOTTOM)
+        ->and($popover->getMapped())->toBeTrue()
+        ->and($window->getFocus()?->getParent() === $entry || $window->getFocus() === $entry)->toBeTrue();
+
+    $popover->popdown();
+    $popover->unparent();
+    $window->destroy();
+});

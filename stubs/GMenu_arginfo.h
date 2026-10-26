@@ -1,7 +1,13 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b4ccd815cd426a23187a7d333291f8e689315da6 */
+ * Stub hash: 0164eb5701ae71c3140ee3a29e2f72687a468c17 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenuModel_getNItems, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GMenuModel_getItemAttributeValue, 0, 3, GVariant, 1)
+	ZEND_ARG_TYPE_INFO(0, itemIndex, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, attribute, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, expectedType, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenuModel_isMutable, 0, 0, _IS_BOOL, 0)
@@ -35,6 +41,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenu_insert, 0, 3, IS_VOI
 	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 1)
 	ZEND_ARG_TYPE_INFO(0, detailedAction, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenu_insertItem, 0, 2, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, item, GMenuItem, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenu_remove, 0, 1, IS_VOID, 0)
@@ -83,6 +94,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GMenuItem_setSection, 0, 1
 ZEND_END_ARG_INFO()
 
 ZEND_METHOD(GMenuModel, getNItems);
+ZEND_METHOD(GMenuModel, getItemAttributeValue);
 ZEND_METHOD(GMenuModel, isMutable);
 ZEND_METHOD(GMenu, new);
 ZEND_METHOD(GMenu, append);
@@ -91,6 +103,7 @@ ZEND_METHOD(GMenu, appendSection);
 ZEND_METHOD(GMenu, appendSubmenu);
 ZEND_METHOD(GMenu, prepend);
 ZEND_METHOD(GMenu, insert);
+ZEND_METHOD(GMenu, insertItem);
 ZEND_METHOD(GMenu, remove);
 ZEND_METHOD(GMenu, removeAll);
 ZEND_METHOD(GMenu, freeze);
@@ -105,6 +118,7 @@ ZEND_METHOD(GMenuItem, setSection);
 
 static const zend_function_entry class_GMenuModel_methods[] = {
 	ZEND_ME(GMenuModel, getNItems, arginfo_class_GMenuModel_getNItems, ZEND_ACC_PUBLIC)
+	ZEND_ME(GMenuModel, getItemAttributeValue, arginfo_class_GMenuModel_getItemAttributeValue, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenuModel, isMutable, arginfo_class_GMenuModel_isMutable, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
@@ -117,6 +131,7 @@ static const zend_function_entry class_GMenu_methods[] = {
 	ZEND_ME(GMenu, appendSubmenu, arginfo_class_GMenu_appendSubmenu, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenu, prepend, arginfo_class_GMenu_prepend, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenu, insert, arginfo_class_GMenu_insert, ZEND_ACC_PUBLIC)
+	ZEND_ME(GMenu, insertItem, arginfo_class_GMenu_insertItem, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenu, remove, arginfo_class_GMenu_remove, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenu, removeAll, arginfo_class_GMenu_removeAll, ZEND_ACC_PUBLIC)
 	ZEND_ME(GMenu, freeze, arginfo_class_GMenu_freeze, ZEND_ACC_PUBLIC)

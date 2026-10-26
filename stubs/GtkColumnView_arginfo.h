@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: d08399191ad171b58b3fb8025add3c37540d88a7 */
+ * Stub hash: 9af8d747f1410e4eef0779cd17c1b71d2da66de1 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkSelectionModel_isSelected, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
@@ -68,6 +68,17 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkColumnViewColumn_setResizable, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, resizable, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkListView_new, 0, 2, GtkListView, 0)
+	ZEND_ARG_OBJ_INFO(0, model, GtkSelectionModel, 1)
+	ZEND_ARG_OBJ_INFO(0, factory, GtkListItemFactory, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkListView_setSingleClickActivate, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, singleClickActivate, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkListView_getSingleClickActivate arginfo_class_GtkSelectionModel_selectAll
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkColumnView_new, 0, 1, GtkColumnView, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GtkSelectionModel, 1)
@@ -197,6 +208,9 @@ ZEND_METHOD(GtkColumnViewColumn, getTitle);
 ZEND_METHOD(GtkColumnViewColumn, setTitle);
 ZEND_METHOD(GtkColumnViewColumn, setExpand);
 ZEND_METHOD(GtkColumnViewColumn, setResizable);
+ZEND_METHOD(GtkListView, new);
+ZEND_METHOD(GtkListView, setSingleClickActivate);
+ZEND_METHOD(GtkListView, getSingleClickActivate);
 ZEND_METHOD(GtkColumnView, new);
 ZEND_METHOD(GtkColumnView, appendColumn);
 ZEND_METHOD(GtkColumnView, removeColumn);
@@ -266,6 +280,13 @@ static const zend_function_entry class_GtkColumnViewColumn_methods[] = {
 	ZEND_ME(GtkColumnViewColumn, setTitle, arginfo_class_GtkColumnViewColumn_setTitle, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkColumnViewColumn, setExpand, arginfo_class_GtkColumnViewColumn_setExpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkColumnViewColumn, setResizable, arginfo_class_GtkColumnViewColumn_setResizable, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkListView_methods[] = {
+	ZEND_ME(GtkListView, new, arginfo_class_GtkListView_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkListView, setSingleClickActivate, arginfo_class_GtkListView_setSingleClickActivate, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkListView, getSingleClickActivate, arginfo_class_GtkListView_getSingleClickActivate, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -377,6 +398,16 @@ static zend_class_entry *register_class_GtkColumnViewColumn(zend_class_entry *cl
 
 	INIT_CLASS_ENTRY(ce, "GtkColumnViewColumn", class_GtkColumnViewColumn_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkListView(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkListView", class_GtkListView_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

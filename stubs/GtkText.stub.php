@@ -66,6 +66,11 @@ class GtkTextTagTable extends GObject
  */
 class GtkAdjustment extends GObject
 {
+    public static function new(float $value, float $lower, float $upper, float $stepIncrement, float $pageIncrement, float $pageSize): GtkAdjustment {}
+
+    /** Sets all six at once, value-changed and changed emitted once each. */
+    public function configure(float $value, float $lower, float $upper, float $stepIncrement, float $pageIncrement, float $pageSize): void {}
+
     public function getValue(): float {}
 
     /** GTK clamps the value to lower .. upper - page size. */

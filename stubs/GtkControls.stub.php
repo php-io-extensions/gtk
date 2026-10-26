@@ -87,6 +87,59 @@ class GtkButton extends GtkWidget
     public function getLabel(): ?string {}
 
     public function setLabel(string $label): void {}
+
+    /** Replaces the label: GTK keeps one child, a label, an icon or this. */
+    public function setChild(?GtkWidget $child): void {}
+
+    public function getChild(): ?GtkWidget {}
+
+    public function setHasFrame(bool $hasFrame): void {}
+
+    public function getHasFrame(): bool {}
+}
+
+/**
+ * A button that opens a popover or a menu model below it, with GTK's dropdown arrow.
+ *
+ * @not-serializable
+ */
+class GtkMenuButton extends GtkWidget
+{
+    public static function new(): GtkMenuButton {}
+
+    /** A GtkPopoverMenu built from $menuModel replaces any popover set. */
+    public function setMenuModel(?GMenuModel $menuModel): void {}
+
+    public function getMenuModel(): ?GMenuModel {}
+
+    public function setPopover(?GtkWidget $popover): void {}
+
+    public function getPopover(): ?GtkPopover {}
+
+    /** Replaces the label and the icon: setting one of the three resets the other two. */
+    public function setChild(?GtkWidget $child): void {}
+
+    public function getChild(): ?GtkWidget {}
+
+    public function setHasFrame(bool $hasFrame): void {}
+
+    public function getHasFrame(): bool {}
+
+    public function popup(): void {}
+
+    public function popdown(): void {}
+}
+
+/**
+ * A standalone scroll bar over a GtkAdjustment.
+ *
+ * @not-serializable
+ */
+class GtkScrollbar extends GtkWidget
+{
+    public static function new(GtkOrientation $orientation, ?GtkAdjustment $adjustment): GtkScrollbar {}
+
+    public function getAdjustment(): GtkAdjustment {}
 }
 
 /**
@@ -490,6 +543,9 @@ class GtkNotebook extends GtkWidget
 
     /** gtk_notebook_append_page: the new page's index, or -1 (GTK's critical) when $child or $tabLabel already has a parent. */
     public function appendPage(GtkWidget $child, ?GtkWidget $tabLabel): int {}
+
+    /** gtk_notebook_insert_page: $position -1 appends; the new page's index, or -1 (GTK's critical) as appendPage. */
+    public function insertPage(GtkWidget $child, ?GtkWidget $tabLabel, int $position): int {}
 
     /** -1 removes the last page; an index past the end does nothing. */
     public function removePage(int $pageNum): void {}

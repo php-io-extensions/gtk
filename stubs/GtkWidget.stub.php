@@ -2,6 +2,14 @@
 
 /** @generate-class-entries */
 
+enum GtkPositionType: int
+{
+    case LEFT = 0;
+    case RIGHT = 1;
+    case TOP = 2;
+    case BOTTOM = 3;
+}
+
 enum GtkOrientation: int
 {
     case HORIZONTAL = 0;
@@ -319,6 +327,21 @@ class GtkPopover extends GtkWidget implements GtkNative
     public function popup(): void {}
 
     public function popdown(): void {}
+
+    public static function new(): GtkPopover {}
+
+    public function setChild(?GtkWidget $child): void {}
+
+    public function getChild(): ?GtkWidget {}
+
+    /** An autohide popover grabs the keyboard while shown and closes on a click outside it. */
+    public function setAutohide(bool $autohide): void {}
+
+    public function getAutohide(): bool {}
+
+    public function setPosition(GtkPositionType $position): void {}
+
+    public function getPosition(): GtkPositionType {}
 }
 
 /**

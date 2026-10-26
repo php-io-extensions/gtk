@@ -9,6 +9,9 @@ class GMenuModel extends GObject
 {
     public function getNItems(): int {}
 
+    /** g_menu_model_get_item_attribute_value: null when the item lacks it or its type is not $expectedType. */
+    public function getItemAttributeValue(int $itemIndex, string $attribute, ?string $expectedType): ?GVariant {}
+
     public function isMutable(): bool {}
 }
 
@@ -30,6 +33,9 @@ class GMenu extends GMenuModel
     public function prepend(?string $label, ?string $detailedAction): void {}
 
     public function insert(int $position, ?string $label, ?string $detailedAction): void {}
+
+    /** Copies the item's attributes and links: the item is free to reuse after. */
+    public function insertItem(int $position, GMenuItem $item): void {}
 
     public function remove(int $position): void {}
 

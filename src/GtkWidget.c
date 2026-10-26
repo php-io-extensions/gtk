@@ -66,6 +66,7 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenuBar);
 	phpgtk_map_gtype("GtkPopoverMenuBar", phpgtk_ce_GtkPopoverMenuBar);
 
+	phpgtk_ce_GtkPositionType = register_class_GtkPositionType();
 	phpgtk_ce_GtkPopover = register_class_GtkPopover(phpgtk_ce_GtkWidget, phpgtk_ce_GtkNative);
 	phpgtk_object_setup(phpgtk_ce_GtkPopover);
 	phpgtk_map_gtype("GtkPopover", phpgtk_ce_GtkPopover);
@@ -1082,6 +1083,69 @@ ZEND_METHOD(GtkPopover, getHasArrow)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	RETURN_BOOL(gtk_popover_get_has_arrow(THIS_POPOVER));
+}
+
+ZEND_METHOD(GtkPopover, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-popover */
+
+	phpgtk_box_gobject(return_value, gtk_popover_new());
+}
+
+ZEND_METHOD(GtkPopover, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_popover_set_child(THIS_POPOVER, child != NULL ? GTK_WIDGET(PHPGTK_PTR(child)) : NULL);
+}
+
+ZEND_METHOD(GtkPopover, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_popover_get_child(THIS_POPOVER));
+}
+
+ZEND_METHOD(GtkPopover, setAutohide)
+{
+	bool autohide;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(autohide)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_popover_set_autohide(THIS_POPOVER, autohide);
+}
+
+ZEND_METHOD(GtkPopover, getAutohide)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_popover_get_autohide(THIS_POPOVER));
+}
+
+ZEND_METHOD(GtkPopover, setPosition)
+{
+	zend_object *position;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(position, phpgtk_ce_GtkPositionType)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_popover_set_position(THIS_POPOVER, (GtkPositionType) phpgtk_enum_value(position, 0));
+}
+
+ZEND_METHOD(GtkPopover, getPosition)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_enum(return_value, phpgtk_ce_GtkPositionType, gtk_popover_get_position(THIS_POPOVER));
 }
 
 ZEND_METHOD(GtkPopover, popup)

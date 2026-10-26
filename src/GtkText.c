@@ -139,6 +139,38 @@ ZEND_METHOD(GtkTextTagTable, lookup)
 
 /* ---- GtkAdjustment ----------------------------------------------------- */
 
+ZEND_METHOD(GtkAdjustment, new)
+{
+	double value, lower, upper, step, page, page_size;
+
+	ZEND_PARSE_PARAMETERS_START(6, 6)
+		Z_PARAM_DOUBLE(value)
+		Z_PARAM_DOUBLE(lower)
+		Z_PARAM_DOUBLE(upper)
+		Z_PARAM_DOUBLE(step)
+		Z_PARAM_DOUBLE(page)
+		Z_PARAM_DOUBLE(page_size)
+	ZEND_PARSE_PARAMETERS_END();
+
+	phpgtk_box_gobject(return_value, gtk_adjustment_new(value, lower, upper, step, page, page_size));
+}
+
+ZEND_METHOD(GtkAdjustment, configure)
+{
+	double value, lower, upper, step, page, page_size;
+
+	ZEND_PARSE_PARAMETERS_START(6, 6)
+		Z_PARAM_DOUBLE(value)
+		Z_PARAM_DOUBLE(lower)
+		Z_PARAM_DOUBLE(upper)
+		Z_PARAM_DOUBLE(step)
+		Z_PARAM_DOUBLE(page)
+		Z_PARAM_DOUBLE(page_size)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_adjustment_configure(THIS_ADJUSTMENT, value, lower, upper, step, page, page_size);
+}
+
 ZEND_METHOD(GtkAdjustment, getValue) { ZEND_PARSE_PARAMETERS_NONE(); RETURN_DOUBLE(gtk_adjustment_get_value(THIS_ADJUSTMENT)); }
 ZEND_METHOD(GtkAdjustment, getLower) { ZEND_PARSE_PARAMETERS_NONE(); RETURN_DOUBLE(gtk_adjustment_get_lower(THIS_ADJUSTMENT)); }
 ZEND_METHOD(GtkAdjustment, getUpper) { ZEND_PARSE_PARAMETERS_NONE(); RETURN_DOUBLE(gtk_adjustment_get_upper(THIS_ADJUSTMENT)); }

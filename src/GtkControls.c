@@ -37,6 +37,8 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkScrolledWindow, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkPaned, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkNotebook, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkMenuButton, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkScrollbar, phpgtk_ce_GtkWidget);
 
 #undef PHPGTK_WIDGET_CLASS
 }
@@ -167,6 +169,133 @@ PHPGTK_GET_STRING(GtkLabel, getCurrentUri, GTK_LABEL, gtk_label_get_current_uri)
 PHPGTK_NEW_WITH_LABEL(GtkButton, gtk_button_new_with_label)
 PHPGTK_GET_STRING(GtkButton, getLabel, GTK_BUTTON, gtk_button_get_label)
 PHPGTK_SET_STRING(GtkButton, setLabel, GTK_BUTTON, gtk_button_set_label)
+PHPGTK_GET_BOOL(GtkButton, getHasFrame, GTK_BUTTON, gtk_button_get_has_frame)
+PHPGTK_SET_BOOL(GtkButton, setHasFrame, GTK_BUTTON, gtk_button_set_has_frame)
+
+ZEND_METHOD(GtkButton, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_button_set_child(THIS(GTK_BUTTON), (GtkWidget *) PHPGTK_OPTIONAL_PTR(child));
+}
+
+ZEND_METHOD(GtkButton, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_button_get_child(THIS(GTK_BUTTON)));
+}
+
+/* ---- GtkMenuButton ----------------------------------------------------- */
+
+ZEND_METHOD(GtkMenuButton, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-menu-button */
+
+	phpgtk_box_gobject(return_value, gtk_menu_button_new());
+}
+
+PHPGTK_GET_BOOL(GtkMenuButton, getHasFrame, GTK_MENU_BUTTON, gtk_menu_button_get_has_frame)
+PHPGTK_SET_BOOL(GtkMenuButton, setHasFrame, GTK_MENU_BUTTON, gtk_menu_button_set_has_frame)
+
+ZEND_METHOD(GtkMenuButton, setMenuModel)
+{
+	zend_object *model = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(model, phpgtk_ce_GMenuModel)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_menu_button_set_menu_model(THIS(GTK_MENU_BUTTON), (GMenuModel *) PHPGTK_OPTIONAL_PTR(model));
+}
+
+ZEND_METHOD(GtkMenuButton, getMenuModel)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_menu_button_get_menu_model(THIS(GTK_MENU_BUTTON)));
+}
+
+ZEND_METHOD(GtkMenuButton, setPopover)
+{
+	zend_object *popover = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(popover, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_menu_button_set_popover(THIS(GTK_MENU_BUTTON), (GtkWidget *) PHPGTK_OPTIONAL_PTR(popover));
+}
+
+ZEND_METHOD(GtkMenuButton, getPopover)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_menu_button_get_popover(THIS(GTK_MENU_BUTTON)));
+}
+
+ZEND_METHOD(GtkMenuButton, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_menu_button_set_child(THIS(GTK_MENU_BUTTON), (GtkWidget *) PHPGTK_OPTIONAL_PTR(child));
+}
+
+ZEND_METHOD(GtkMenuButton, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_menu_button_get_child(THIS(GTK_MENU_BUTTON)));
+}
+
+ZEND_METHOD(GtkMenuButton, popup)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_menu_button_popup(THIS(GTK_MENU_BUTTON));
+}
+
+ZEND_METHOD(GtkMenuButton, popdown)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_menu_button_popdown(THIS(GTK_MENU_BUTTON));
+}
+
+/* ---- GtkScrollbar ------------------------------------------------------ */
+
+ZEND_METHOD(GtkScrollbar, new)
+{
+	zend_object *orientation;
+	zend_object *adjustment = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(orientation, phpgtk_ce_GtkOrientation)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(adjustment, phpgtk_ce_GtkAdjustment)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-scrollbar */
+
+	phpgtk_box_gobject(return_value, gtk_scrollbar_new((GtkOrientation) phpgtk_enum_value(orientation, 0),
+		(GtkAdjustment *) PHPGTK_OPTIONAL_PTR(adjustment)));
+}
+
+ZEND_METHOD(GtkScrollbar, getAdjustment)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_scrollbar_get_adjustment(THIS(GTK_SCROLLBAR)));
+}
 
 /* ---- GtkLinkButton ----------------------------------------------------- */
 
@@ -1040,6 +1169,25 @@ ZEND_METHOD(GtkNotebook, appendPage)
 	ZEND_PARSE_PARAMETERS_END();
 
 	RETURN_LONG(gtk_notebook_append_page(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child)), (GtkWidget *) PHPGTK_OPTIONAL_PTR(label)));
+}
+
+ZEND_METHOD(GtkNotebook, insertPage)
+{
+	zend_object *child;
+	zend_object *label = NULL;
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(label, phpgtk_ce_GtkWidget)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, INT_MIN, INT_MAX, 3)) {
+		RETURN_THROWS();
+	}
+
+	RETURN_LONG(gtk_notebook_insert_page(THIS(GTK_NOTEBOOK), GTK_WIDGET(PHPGTK_PTR(child)), (GtkWidget *) PHPGTK_OPTIONAL_PTR(label), (int) position));
 }
 
 /* A page number argument: GTK takes an int. */

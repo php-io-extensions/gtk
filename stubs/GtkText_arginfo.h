@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 54e4976e5efccd8adfd1974244016cbc84885d67 */
+ * Stub hash: f7a6f84ce271eda8713f8195ce36331fabaef100 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GtkTextIter___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -32,6 +32,24 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextTagTable_lookup, 0, 
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkAdjustment_new, 0, 6, GtkAdjustment, 0)
+	ZEND_ARG_TYPE_INFO(0, value, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, lower, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, upper, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, stepIncrement, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, pageIncrement, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, pageSize, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkAdjustment_configure, 0, 6, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, value, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, lower, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, upper, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, stepIncrement, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, pageIncrement, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, pageSize, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkAdjustment_getValue, 0, 0, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
@@ -55,6 +73,8 @@ ZEND_METHOD(GtkTextTag, new);
 ZEND_METHOD(GtkTextTagTable, add);
 ZEND_METHOD(GtkTextTagTable, remove);
 ZEND_METHOD(GtkTextTagTable, lookup);
+ZEND_METHOD(GtkAdjustment, new);
+ZEND_METHOD(GtkAdjustment, configure);
 ZEND_METHOD(GtkAdjustment, getValue);
 ZEND_METHOD(GtkAdjustment, setValue);
 ZEND_METHOD(GtkAdjustment, getLower);
@@ -84,6 +104,8 @@ static const zend_function_entry class_GtkTextTagTable_methods[] = {
 };
 
 static const zend_function_entry class_GtkAdjustment_methods[] = {
+	ZEND_ME(GtkAdjustment, new, arginfo_class_GtkAdjustment_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkAdjustment, configure, arginfo_class_GtkAdjustment_configure, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkAdjustment, getValue, arginfo_class_GtkAdjustment_getValue, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkAdjustment, setValue, arginfo_class_GtkAdjustment_setValue, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkAdjustment, getLower, arginfo_class_GtkAdjustment_getLower, ZEND_ACC_PUBLIC)

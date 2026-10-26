@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: e43617416a143314f8b1970d68226dc9a430fa53 */
+ * Stub hash: 991ff7d1b3e6f93b0b0433c12ac3f495277b7b5d */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -296,6 +296,28 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPopover_popdown arginfo_class_GtkWidget_show
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopover_new, 0, 0, GtkPopover, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setChild, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPopover_getChild arginfo_class_GtkWidget_getParent
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setAutohide, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, autohide, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkPopover_getAutohide arginfo_class_GtkWidget_getVisible
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setPosition, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, position, GtkPositionType, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopover_getPosition, 0, 0, GtkPositionType, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopoverMenu_newFromModel, 0, 1, GtkPopoverMenu, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
 ZEND_END_ARG_INFO()
@@ -387,6 +409,13 @@ ZEND_METHOD(GtkPopover, setHasArrow);
 ZEND_METHOD(GtkPopover, getHasArrow);
 ZEND_METHOD(GtkPopover, popup);
 ZEND_METHOD(GtkPopover, popdown);
+ZEND_METHOD(GtkPopover, new);
+ZEND_METHOD(GtkPopover, setChild);
+ZEND_METHOD(GtkPopover, getChild);
+ZEND_METHOD(GtkPopover, setAutohide);
+ZEND_METHOD(GtkPopover, getAutohide);
+ZEND_METHOD(GtkPopover, setPosition);
+ZEND_METHOD(GtkPopover, getPosition);
 ZEND_METHOD(GtkPopoverMenu, newFromModel);
 ZEND_METHOD(GtkPopoverMenu, getMenuModel);
 
@@ -524,6 +553,13 @@ static const zend_function_entry class_GtkPopover_methods[] = {
 	ZEND_ME(GtkPopover, getHasArrow, arginfo_class_GtkPopover_getHasArrow, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkPopover, popup, arginfo_class_GtkPopover_popup, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkPopover, popdown, arginfo_class_GtkPopover_popdown, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, new, arginfo_class_GtkPopover_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkPopover, setChild, arginfo_class_GtkPopover_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, getChild, arginfo_class_GtkPopover_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, setAutohide, arginfo_class_GtkPopover_setAutohide, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, getAutohide, arginfo_class_GtkPopover_getAutohide, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, setPosition, arginfo_class_GtkPopover_setPosition, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkPopover, getPosition, arginfo_class_GtkPopover_getPosition, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -532,6 +568,29 @@ static const zend_function_entry class_GtkPopoverMenu_methods[] = {
 	ZEND_ME(GtkPopoverMenu, getMenuModel, arginfo_class_GtkPopoverMenu_getMenuModel, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
+
+static zend_class_entry *register_class_GtkPositionType(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkPositionType", IS_LONG, NULL);
+
+	zval enum_case_LEFT_value;
+	ZVAL_LONG(&enum_case_LEFT_value, 0);
+	zend_enum_add_case_cstr(class_entry, "LEFT", &enum_case_LEFT_value);
+
+	zval enum_case_RIGHT_value;
+	ZVAL_LONG(&enum_case_RIGHT_value, 1);
+	zend_enum_add_case_cstr(class_entry, "RIGHT", &enum_case_RIGHT_value);
+
+	zval enum_case_TOP_value;
+	ZVAL_LONG(&enum_case_TOP_value, 2);
+	zend_enum_add_case_cstr(class_entry, "TOP", &enum_case_TOP_value);
+
+	zval enum_case_BOTTOM_value;
+	ZVAL_LONG(&enum_case_BOTTOM_value, 3);
+	zend_enum_add_case_cstr(class_entry, "BOTTOM", &enum_case_BOTTOM_value);
+
+	return class_entry;
+}
 
 static zend_class_entry *register_class_GtkOrientation(void)
 {

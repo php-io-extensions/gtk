@@ -1,7 +1,7 @@
 # ext-gtk
 
 [![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/gtk/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/gtk/actions/workflows/ci.yml)
-[![GTK API](https://img.shields.io/badge/GTK_API-13.8%25_%28526%2F3798%29-blue?style=flat-square)](SUPPORT.md)
+[![GTK API](https://img.shields.io/badge/GTK_API-14.7%25_%28557%2F3798%29-blue?style=flat-square)](SUPPORT.md)
 
 1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
 in C against the Zend API. C functions keep their names (`g_timeout_add`,
@@ -63,15 +63,17 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkSignalListItemFactory`, `GtkListItem`, `GtkSingleSelection` | `new` (signals `setup`, `bind`, `unbind`, `teardown`); `get_position`, `get_item`, `get/set_child`; `new`, `get/set_selected`, `get_selected_item`, `set_autoselect`, `set_can_unselect`, `get_model` |
 | `GtkMediaStream`, `GtkMediaFile`, `GtkVideo` | `play`, `pause`, `get/set_playing`, `get_ended`, `get_error`, `seek`, `is_seekable`, `get_timestamp`, `get_duration`, `get/set_muted`, `get/set_loop`, `has_video`; `new`, `new_for_filename`, `set_filename`, `clear`; `new`, `get/set_media_stream`, `get/set_autoplay`, `set_loop` |
 | `GtkPopoverMenuBar` | `new_from_model`, `get/set_menu_model` |
-| `GtkPopover`, `GtkPopoverMenu` | `set/get_pointing_to` (a `GdkRectangle`; get writes it by reference and returns GTK's gboolean), `set/get_has_arrow`, `popup`, `popdown`, signal `closed`; menu `new_from_model`, `get_menu_model`; attached with its own `setParent` / `unparent` (`gtk_widget_set_parent`, bound for popovers only) |
-| `GMenuModel`, `GMenu`, `GMenuItem` | `get_n_items`, `is_mutable`; `new`, `append`, `append_item`, `append_section`, `append_submenu`, `prepend`, `insert`, `remove`, `remove_all`, `freeze`; `new`, `set_label`, `set_detailed_action`, `set_action_and_target_value`, `set/get_attribute_value`, `set_submenu`, `set_section` |
+| `GtkMenuButton`, `GtkScrollbar`, `GtkListView` | `new`, `get/set_menu_model`, `get/set_popover`, `get/set_child`, `get/set_has_frame`, `popup`, `popdown`; `new(GtkOrientation, GtkAdjustment)`, `get_adjustment`; `new(model, factory)` (both transfer full), `get/set_single_click_activate`, signal `activate` |
+| Button children, adjustments, notebook insert, surface scale | `GtkButton` `get/set_child`, `get/set_has_frame`; `GtkAdjustment` `new`, `configure`; `GtkNotebook` `insert_page`; `GdkSurface` `get_scale` |
+| `GtkPopover`, `GtkPopoverMenu` | `new`, `set/get_child`, `set/get_autohide`, `set/get_position` (`GtkPositionType`), `set/get_pointing_to` (a `GdkRectangle`; get writes it by reference and returns GTK's gboolean), `set/get_has_arrow`, `popup`, `popdown`, signal `closed`; menu `new_from_model`, `get_menu_model`; attached with its own `setParent` / `unparent` (`gtk_widget_set_parent`, bound for popovers only) |
+| `GMenuModel`, `GMenu`, `GMenuItem` | `get_n_items`, `get_item_attribute_value` (an index outside the items, which GMenu reads unchecked, → `ValueError`; a value not of the expected type → null), `is_mutable`; `new`, `append`, `append_item`, `append_section`, `append_submenu`, `prepend`, `insert`, `insert_item`, `remove`, `remove_all`, `freeze`; `new`, `set_label`, `set_detailed_action`, `set_action_and_target_value`, `set/get_attribute_value`, `set_submenu`, `set_section` |
 | `GSimpleAction`, `GSimpleActionGroup` | `new`, `new_stateful`, `set_enabled`, `set_state`, `g_action_get_name/enabled/state`, `g_action_activate`, `g_action_change_state`; `new`, `g_action_map_add/remove/lookup_action`, `g_action_group_has/list/activate_action` |
 | `GVariant` | `new_boolean/string/int32/double`, `get_boolean/string/int32/double`, `get_type_string`, `is_of_type`, `print` |
 | `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner` |
 
 Enums: `GApplicationFlags`, `GIOCondition`, `GtkOrientation`, `GtkAlign`,
 `PangoEllipsizeMode`, `GtkJustification`, `GtkWrapMode`, `GtkContentFit`,
-`GtkPolicyType`. Constants: `G_SOURCE_CONTINUE`, `G_SOURCE_REMOVE`,
+`GtkPolicyType`, `GtkPositionType`. Constants: `G_SOURCE_CONTINUE`, `G_SOURCE_REMOVE`,
 `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION`, `GTK_INVALID_LIST_POSITION`. Errors:
 `GError` (a GError, with its `domain`; also what `GtkMediaStream::getError()`
 returns), `GtkException` (a call refused because making it crashes; see below). The stubs in
@@ -135,8 +137,6 @@ bash install-macos.sh           # Homebrew php@8.4 and php@8.4-zts (needs brew i
 ```
 
 Or with PIE: `pie install php-io-extensions/gtk`.
-
-`venusian build` reads the system packages from `extra.venusian.system` in composer.json: apt packages to build with and the run-time ones a `.deb` depends on or recommends, and the Homebrew ones.
 
 ## Test
 

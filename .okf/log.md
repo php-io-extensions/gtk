@@ -1,5 +1,9 @@
 # Log
 
+## 2026-10-23
+
+* `GtkPopover` new, child, autohide, position (`GtkPositionType`); `GtkMenuButton`, `GtkScrollbar`, `GtkListView`; `GtkButton` child and frame; `GtkAdjustment` new and configure; `GtkNotebook::insertPage`; `GdkSurface::getScale`; `GMenu::insertItem`; `GMenuModel::getItemAttributeValue`. New sites `gtk-initialized-popover`, `-menu-button`, `-list-view`, `-scrollbar` (each through the `gtk-initialized` check) and `menu-model-item-index` (GMenu reads its item array at the index unchecked: SIGSEGV). [surface](api/surface.md)
+
 ## 2026-10-22
 
 * `GtkWidget::childFocus(GtkDirectionType): bool` (`gtk_widget_child_focus`) and the `GtkDirectionType` enum. No new site. [surface](api/surface.md)
@@ -23,13 +27,13 @@
 
 ## 2026-10-16
 
-* `GtkPaned` and `GtkNotebook` (compare-app split and tabs, C2). 0.10.2. [surface](api/surface.md)
+* `GtkPaned` and `GtkNotebook`. 0.10.2. [surface](api/surface.md)
 * Builds against a PHP whose ext/sockets is shared (Debian and Ubuntu packages leave HAVE_SOCKETS out of php_config.h). 0.10.2.
 
 ## 2026-10-14
 
-* GtkTextIter (a copied boxed kind), GtkTextMark, GtkTextTag, GtkTextTagTable, GtkAdjustment; buffer tags, iters, selection and insert mark; text view monospace, cursor visibility and line y-range; scrolled-window adjustments; g_object_set_property (compare-app text panes, C1). 0.10.1. [surface](api/surface.md)
-* g_signal_emit_by_name refuses an int that does not fit its parameter's C type, through the same check g_object_set_property uses (C1 final review). [surface](api/surface.md)
+* GtkTextIter (a copied boxed kind), GtkTextMark, GtkTextTag, GtkTextTagTable, GtkAdjustment; buffer tags, iters, selection and insert mark; text view monospace, cursor visibility and line y-range; scrolled-window adjustments; g_object_set_property. 0.10.1. [surface](api/surface.md)
+* g_signal_emit_by_name refuses an int that does not fit its parameter's C type, through the same check g_object_set_property uses. [surface](api/surface.md)
 
 ## 2026-10-10
 
@@ -39,7 +43,6 @@
 ## 2026-10-09
 
 * [Surface](api/surface.md): GtkPopover and GtkPopoverMenu with their own setParent / unparent (popovers only; GtkWidget still has no unparent), GtkGesture::setState and GtkEventSequenceState. For context menus (HumanInput slice 27).
-* `extra.venusian.system` in composer.json: the apt packages `venusian build` installs to compile the extension, the run-time packages a `.deb` carrying it depends on or recommends beyond what `dpkg-shlibdeps` sees, and the Homebrew packages for a dev install.
 * [Surface](api/surface.md): g_set_prgname / g_get_prgname: GTK's X11 WM_CLASS follows the program name.
 * [Surface](api/surface.md): event controllers for HumanInput's gtk engine. GtkEventController and its key, motion, scroll and focus controllers; GtkGesture, GtkGestureSingle, GtkGestureClick; GtkWidget add/removeController; gdk_keyval_to_unicode and gdk_keyval_to_lower; GtkPropagationPhase and GdkScrollUnit; the scroll-flag and modifier-mask constants. Signals hand keyvals, keycodes and modifier state over as ints.
 * [Surface](api/surface.md): GtkEventController::getCurrentEvent(), GdkEvent and GdkScrollEvent; on GTK 4.20+ GdkScrollEvent::getRelativeDirection() and GdkScrollRelativeDirection, so a reader can undo natural scrolling. SurfaceTest skips stub blocks the running GTK is older than.

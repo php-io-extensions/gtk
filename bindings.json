@@ -44,6 +44,11 @@
         "gtk-initialized-media-file": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
         "gtk-initialized-tree-expander": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
         "gtk-version-4-14-dmabuf-builder": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/VersionGateTest.php"},
+        "gtk-initialized-list-view": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-scrollbar": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-popover": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-menu-button": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "menu-model-item-index": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/MenuItemIndexTest.php"},
         "text-iter-line-offset-negative": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/IterLineOffsetTest.php"}
     },
     "typemap": {

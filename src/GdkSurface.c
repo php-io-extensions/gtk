@@ -23,3 +23,10 @@ ZEND_METHOD(GdkSurface, getHeight)
 
 	RETURN_LONG(gdk_surface_get_height(THIS_SURFACE));
 }
+
+ZEND_METHOD(GdkSurface, getScale)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_DOUBLE(gdk_surface_get_scale(THIS_SURFACE));
+}

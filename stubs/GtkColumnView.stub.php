@@ -72,6 +72,20 @@ class GtkColumnViewColumn extends GObject
 }
 
 /**
+ * A list of rows, one per model item, each built by the factory. Signal activate(guint position).
+ *
+ * @not-serializable
+ */
+class GtkListView extends GtkWidget
+{
+    public static function new(?GtkSelectionModel $model, ?GtkListItemFactory $factory): GtkListView {}
+
+    public function setSingleClickActivate(bool $singleClickActivate): void {}
+
+    public function getSingleClickActivate(): bool {}
+}
+
+/**
  * @not-serializable
  */
 class GtkColumnView extends GtkWidget

@@ -41,6 +41,33 @@ ZEND_METHOD(GMenuModel, getNItems)
 	RETURN_LONG(g_menu_model_get_n_items(THIS_MODEL));
 }
 
+ZEND_METHOD(GMenuModel, getItemAttributeValue)
+{
+	zend_long index;
+	zend_string *attribute;
+	zend_string *expected = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_LONG(index)
+		Z_PARAM_STR(attribute)
+		Z_PARAM_STR_OR_NULL(expected)
+	ZEND_PARSE_PARAMETERS_END();
+
+	/* GMenu reads its item array at the index unchecked: past its items it reads outside the array. */
+	gint n_items = g_menu_model_get_n_items(THIS_MODEL);
+	if (!PHPGTK_PROBE_OFF("menu-model-item-index") && (index < 0 || index >= n_items)) {
+		zend_argument_value_error(1, "must be an item of the model (0..%d), " ZEND_LONG_FMT " is not", n_items - 1, index); /* binding:menu-model-item-index */
+		RETURN_THROWS();
+	}
+
+	GVariant *value = g_menu_model_get_item_attribute_value(THIS_MODEL, (gint) index, ZSTR_VAL(attribute),
+		expected ? G_VARIANT_TYPE(ZSTR_VAL(expected)) : NULL);
+	if (!value) {
+		RETURN_NULL();
+	}
+	phpgtk_box_variant_full(return_value, value);
+}
+
 ZEND_METHOD(GMenuModel, isMutable)
 {
 	ZEND_PARSE_PARAMETERS_NONE();
@@ -148,6 +175,23 @@ ZEND_METHOD(GMenu, insert)
 	}
 
 	g_menu_insert(THIS_MENU, (gint) position, OPTIONAL_STR(label), OPTIONAL_STR(action));
+}
+
+ZEND_METHOD(GMenu, insertItem)
+{
+	zend_long position;
+	zend_object *item;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(position)
+		Z_PARAM_OBJ_OF_CLASS(item, phpgtk_ce_GMenuItem)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, G_MININT, G_MAXINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	g_menu_insert_item(THIS_MENU, (gint) position, G_MENU_ITEM(PHPGTK_PTR(item)));
 }
 
 ZEND_METHOD(GMenu, remove)

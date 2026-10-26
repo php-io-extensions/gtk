@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 15b0ca94103cb945a31c9e65e4c2462c78237613 */
+ * Stub hash: 541b307c5100cca5efd872f6e118424207eed0d6 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -53,6 +53,57 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkButton_setLabel, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkButton_setChild, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkButton_getChild, 0, 0, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkButton_setHasFrame, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, hasFrame, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkButton_getHasFrame arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkMenuButton_new, 0, 0, GtkMenuButton, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkMenuButton_setMenuModel, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, menuModel, GMenuModel, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkMenuButton_getMenuModel, 0, 0, GMenuModel, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkMenuButton_setPopover, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, popover, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkMenuButton_getPopover, 0, 0, GtkPopover, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkMenuButton_setChild arginfo_class_GtkButton_setChild
+
+#define arginfo_class_GtkMenuButton_getChild arginfo_class_GtkButton_getChild
+
+#define arginfo_class_GtkMenuButton_setHasFrame arginfo_class_GtkButton_setHasFrame
+
+#define arginfo_class_GtkMenuButton_getHasFrame arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkMenuButton_popup, 0, 0, IS_VOID, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkMenuButton_popdown arginfo_class_GtkMenuButton_popup
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrollbar_new, 0, 2, GtkScrollbar, 0)
+	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
+	ZEND_ARG_OBJ_INFO(0, adjustment, GtkAdjustment, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrollbar_getAdjustment, 0, 0, GtkAdjustment, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLinkButton_new, 0, 1, GtkLinkButton, 0)
@@ -137,10 +188,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_setText, 0, 
 	ZEND_ARG_TYPE_INFO(0, len, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_beginUserAction, 0, 0, IS_VOID, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkTextBuffer_beginUserAction arginfo_class_GtkMenuButton_popup
 
-#define arginfo_class_GtkTextBuffer_endUserAction arginfo_class_GtkTextBuffer_beginUserAction
+#define arginfo_class_GtkTextBuffer_endUserAction arginfo_class_GtkMenuButton_popup
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getText, 0, 3, IS_STRING, 1)
 	ZEND_ARG_OBJ_INFO(0, start, GtkTextIter, 0)
@@ -316,7 +366,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkProgressBar_setFraction
 	ZEND_ARG_TYPE_INFO(0, fraction, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkProgressBar_pulse arginfo_class_GtkTextBuffer_beginUserAction
+#define arginfo_class_GtkProgressBar_pulse arginfo_class_GtkMenuButton_popup
 
 #define arginfo_class_GtkProgressBar_setPulseStep arginfo_class_GtkProgressBar_setFraction
 
@@ -367,34 +417,30 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrolledWindow_new, 0, 0, GtkScrolledWindow, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrolledWindow_getChild, 0, 0, GtkWidget, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkScrolledWindow_getChild arginfo_class_GtkButton_getChild
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkScrolledWindow_setChild, 0, 1, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkScrolledWindow_setChild arginfo_class_GtkButton_setChild
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkScrolledWindow_setPolicy, 0, 2, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, hscrollbarPolicy, GtkPolicyType, 0)
 	ZEND_ARG_OBJ_INFO(0, vscrollbarPolicy, GtkPolicyType, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkScrolledWindow_getHadjustment, 0, 0, GtkAdjustment, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkScrolledWindow_getHadjustment arginfo_class_GtkScrollbar_getAdjustment
 
-#define arginfo_class_GtkScrolledWindow_getVadjustment arginfo_class_GtkScrolledWindow_getHadjustment
+#define arginfo_class_GtkScrolledWindow_getVadjustment arginfo_class_GtkScrollbar_getAdjustment
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPaned_new, 0, 1, GtkPaned, 0)
 	ZEND_ARG_OBJ_INFO(0, orientation, GtkOrientation, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkPaned_getStartChild arginfo_class_GtkScrolledWindow_getChild
+#define arginfo_class_GtkPaned_getStartChild arginfo_class_GtkButton_getChild
 
-#define arginfo_class_GtkPaned_setStartChild arginfo_class_GtkScrolledWindow_setChild
+#define arginfo_class_GtkPaned_setStartChild arginfo_class_GtkButton_setChild
 
-#define arginfo_class_GtkPaned_getEndChild arginfo_class_GtkScrolledWindow_getChild
+#define arginfo_class_GtkPaned_getEndChild arginfo_class_GtkButton_getChild
 
-#define arginfo_class_GtkPaned_setEndChild arginfo_class_GtkScrolledWindow_setChild
+#define arginfo_class_GtkPaned_setEndChild arginfo_class_GtkButton_setChild
 
 #define arginfo_class_GtkPaned_getPosition arginfo_class_GtkTextBuffer_getLineCount
 
@@ -432,6 +478,12 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_appendPage, 0, 2, IS_LONG, 0)
 	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
 	ZEND_ARG_OBJ_INFO(0, tabLabel, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_insertPage, 0, 3, IS_LONG, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+	ZEND_ARG_OBJ_INFO(0, tabLabel, GtkWidget, 1)
+	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_removePage, 0, 1, IS_VOID, 0)
@@ -489,6 +541,23 @@ ZEND_METHOD(GtkLabel, getCurrentUri);
 ZEND_METHOD(GtkButton, newWithLabel);
 ZEND_METHOD(GtkButton, getLabel);
 ZEND_METHOD(GtkButton, setLabel);
+ZEND_METHOD(GtkButton, setChild);
+ZEND_METHOD(GtkButton, getChild);
+ZEND_METHOD(GtkButton, setHasFrame);
+ZEND_METHOD(GtkButton, getHasFrame);
+ZEND_METHOD(GtkMenuButton, new);
+ZEND_METHOD(GtkMenuButton, setMenuModel);
+ZEND_METHOD(GtkMenuButton, getMenuModel);
+ZEND_METHOD(GtkMenuButton, setPopover);
+ZEND_METHOD(GtkMenuButton, getPopover);
+ZEND_METHOD(GtkMenuButton, setChild);
+ZEND_METHOD(GtkMenuButton, getChild);
+ZEND_METHOD(GtkMenuButton, setHasFrame);
+ZEND_METHOD(GtkMenuButton, getHasFrame);
+ZEND_METHOD(GtkMenuButton, popup);
+ZEND_METHOD(GtkMenuButton, popdown);
+ZEND_METHOD(GtkScrollbar, new);
+ZEND_METHOD(GtkScrollbar, getAdjustment);
 ZEND_METHOD(GtkLinkButton, new);
 ZEND_METHOD(GtkLinkButton, newWithLabel);
 ZEND_METHOD(GtkLinkButton, getUri);
@@ -605,6 +674,7 @@ ZEND_METHOD(GtkPaned, getWideHandle);
 ZEND_METHOD(GtkPaned, setWideHandle);
 ZEND_METHOD(GtkNotebook, new);
 ZEND_METHOD(GtkNotebook, appendPage);
+ZEND_METHOD(GtkNotebook, insertPage);
 ZEND_METHOD(GtkNotebook, removePage);
 ZEND_METHOD(GtkNotebook, pageNum);
 ZEND_METHOD(GtkNotebook, getNPages);
@@ -639,6 +709,31 @@ static const zend_function_entry class_GtkButton_methods[] = {
 	ZEND_ME(GtkButton, newWithLabel, arginfo_class_GtkButton_newWithLabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkButton, getLabel, arginfo_class_GtkButton_getLabel, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkButton, setLabel, arginfo_class_GtkButton_setLabel, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkButton, setChild, arginfo_class_GtkButton_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkButton, getChild, arginfo_class_GtkButton_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkButton, setHasFrame, arginfo_class_GtkButton_setHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkButton, getHasFrame, arginfo_class_GtkButton_getHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkMenuButton_methods[] = {
+	ZEND_ME(GtkMenuButton, new, arginfo_class_GtkMenuButton_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkMenuButton, setMenuModel, arginfo_class_GtkMenuButton_setMenuModel, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, getMenuModel, arginfo_class_GtkMenuButton_getMenuModel, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, setPopover, arginfo_class_GtkMenuButton_setPopover, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, getPopover, arginfo_class_GtkMenuButton_getPopover, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, setChild, arginfo_class_GtkMenuButton_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, getChild, arginfo_class_GtkMenuButton_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, setHasFrame, arginfo_class_GtkMenuButton_setHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, getHasFrame, arginfo_class_GtkMenuButton_getHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, popup, arginfo_class_GtkMenuButton_popup, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkMenuButton, popdown, arginfo_class_GtkMenuButton_popdown, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkScrollbar_methods[] = {
+	ZEND_ME(GtkScrollbar, new, arginfo_class_GtkScrollbar_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkScrollbar, getAdjustment, arginfo_class_GtkScrollbar_getAdjustment, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -835,6 +930,7 @@ static const zend_function_entry class_GtkPaned_methods[] = {
 static const zend_function_entry class_GtkNotebook_methods[] = {
 	ZEND_ME(GtkNotebook, new, arginfo_class_GtkNotebook_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkNotebook, appendPage, arginfo_class_GtkNotebook_appendPage, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkNotebook, insertPage, arginfo_class_GtkNotebook_insertPage, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkNotebook, removePage, arginfo_class_GtkNotebook_removePage, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkNotebook, pageNum, arginfo_class_GtkNotebook_pageNum, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkNotebook, getNPages, arginfo_class_GtkNotebook_getNPages, ZEND_ACC_PUBLIC)
@@ -980,6 +1076,26 @@ static zend_class_entry *register_class_GtkButton(zend_class_entry *class_entry_
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkButton", class_GtkButton_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkMenuButton(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkMenuButton", class_GtkMenuButton_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkScrollbar(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkScrollbar", class_GtkScrollbar_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
