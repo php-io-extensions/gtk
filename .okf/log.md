@@ -1,5 +1,9 @@
 # Log
 
+## 2026-10-27
+
+* `GtkImage` newFromIconName and getIconName (new site `gtk-initialized-image`: the constructor before `gtk_init()` is SIGSEGV); `GtkFileFilter` new, name (+set), addPattern; `GListStore` new (a GType name; an unregistered name is GLib's critical and null) and append; `GtkFileDialog` filters (+set); `GdkClipboard` readTextAsync and readTextFinish, getFormats; `GdkContentFormats` containMimeType (boxed, made by getFormats only). 569 / 3798. [surface](api/surface.md)
+
 ## 2026-10-23
 
 * `GtkPopover` new, child, autohide, position (`GtkPositionType`); `GtkMenuButton`, `GtkScrollbar`, `GtkListView`; `GtkButton` child and frame; `GtkAdjustment` new and configure; `GtkNotebook::insertPage`; `GdkSurface::getScale`; `GMenu::insertItem`; `GMenuModel::getItemAttributeValue`. New sites `gtk-initialized-popover`, `-menu-button`, `-list-view`, `-scrollbar` (each through the `gtk-initialized` check) and `menu-model-item-index` (GMenu reads its item array at the index unchecked: SIGSEGV). [surface](api/surface.md)

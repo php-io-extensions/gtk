@@ -256,6 +256,14 @@ it('loads a picture from a file and reports nothing for a missing one', function
         ->and(GtkPicture::new()->getPaintable())->toBeNull();
 });
 
+it('shows a themed icon and reads its name back', function (): void {
+    $image = GtkImage::newFromIconName('dialog-warning');
+
+    expect($image)->toBeInstanceOf(GtkWidget::class)
+        ->and($image->getIconName())->toBe('dialog-warning')
+        ->and(GtkImage::newFromIconName(null)->getIconName())->toBeNull();
+});
+
 it('hosts a child in a scrolled window beside a separator', function (): void {
     $scrolled = GtkScrolledWindow::new();
     $scrolled->setPolicy(GtkPolicyType::NEVER, GtkPolicyType::AUTOMATIC);

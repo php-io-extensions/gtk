@@ -28,7 +28,7 @@ it('refuses a media file before GTK is initialised, which the media backend look
         ->and($off['signal'])->toBe(PROBE_SIGTRAP);
 });
 
-// Sites gtk-initialized-popover, -menu-button, -list-view and -scrollbar: each constructor goes
+// Sites gtk-initialized-popover, -menu-button, -list-view, -scrollbar and -image: each constructor goes
 // through the gtk-initialized check.
 it('refuses a widget made through its own site before GTK is initialised, which GTK dies on (SIGSEGV) without the refusal', function (string $code): void {
     $kept = gtkChild($code, null, init: false);
@@ -42,6 +42,7 @@ it('refuses a widget made through its own site before GTK is initialised, which 
     'gtk-initialized-menu-button' => ['GtkMenuButton::new(); return "built";'],
     'gtk-initialized-list-view' => ['GtkListView::new(null, null); return "built";'],
     'gtk-initialized-scrollbar' => ['GtkScrollbar::new(GtkOrientation::VERTICAL, null); return "built";'],
+    'gtk-initialized-image' => ['GtkImage::newFromIconName("dialog-warning"); return "built";'],
 ]);
 
 // Site gtk-initialized-media-file: GtkMediaFile::new goes through the gtk-initialized check.

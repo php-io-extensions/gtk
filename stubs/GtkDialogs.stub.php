@@ -23,6 +23,10 @@ class GFile extends GObject
  */
 class GListStore extends GObject implements GListModel
 {
+    /** $itemType is a GType name GLib has registered, such as 'GtkFileFilter'; for any other name GLib warns and this returns null. */
+    public static function new(string $itemType): ?GListStore {}
+
+    public function append(GObject $item): void {}
 }
 
 /**
@@ -31,6 +35,42 @@ class GListStore extends GObject implements GListModel
 class GdkClipboard extends GObject
 {
     public function setText(string $text): void {}
+
+    /** @param callable|null $callback called once with (GdkClipboard, GAsyncResult) */
+    public function readTextAsync(?GCancellable $cancellable, ?callable $callback): void {}
+
+    /** The text, or null when the clipboard holds none. A failed read throws GError. */
+    public function readTextFinish(GAsyncResult $result): ?string {}
+
+    /** The formats the clipboard's content can be read as. */
+    public function getFormats(): GdkContentFormats {}
+}
+
+/**
+ * @not-serializable
+ */
+final class GdkContentFormats
+{
+    /** Made by GdkClipboard::getFormats() only. */
+    private function __construct() {}
+
+    public function containMimeType(string $mimeType): bool {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkFileFilter extends GObject
+{
+    public static function new(): GtkFileFilter {}
+
+    /** The name a file dialog shows for the filter. */
+    public function setName(?string $name): void {}
+
+    public function getName(): ?string {}
+
+    /** A glob such as '*.txt'. */
+    public function addPattern(string $pattern): void {}
 }
 
 /**
@@ -80,6 +120,11 @@ class GtkFileDialog extends GObject
     public function setInitialName(?string $name): void {}
 
     public function setModal(bool $modal): void {}
+
+    /** A GListModel of GtkFileFilter; the dialog offers each one. */
+    public function setFilters(?GListModel $filters): void {}
+
+    public function getFilters(): ?GListModel {}
 
     /** @param callable|null $callback called once with (GtkFileDialog, GAsyncResult) */
     public function open(?GtkWindow $parent, ?GCancellable $cancellable, ?callable $callback): void {}

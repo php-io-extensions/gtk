@@ -52,6 +52,7 @@ typedef enum {
 	PHPGTK_CAIRO_REGION = 8,       /* cairo_region_reference / cairo_region_destroy */
 	PHPGTK_PARAM_SPEC = 9,         /* g_param_spec_ref_sink / g_param_spec_unref */
 	PHPGTK_SCROLL_INFO = 10,       /* gtk_scroll_info_ref / gtk_scroll_info_unref (GTK 4.12+) */
+	PHPGTK_CONTENT_FORMATS = 11,   /* gdk_content_formats_ref / gdk_content_formats_unref */
 } phpgtk_kind;
 
 /* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
@@ -148,6 +149,9 @@ extern zend_class_entry *phpgtk_ce_GdkClipboard;
 extern zend_class_entry *phpgtk_ce_GtkAlertDialog;
 extern zend_class_entry *phpgtk_ce_GtkFileDialog;
 extern zend_class_entry *phpgtk_ce_GtkFileLauncher;
+extern zend_class_entry *phpgtk_ce_GdkContentFormats;
+extern zend_class_entry *phpgtk_ce_GtkFileFilter;
+extern zend_class_entry *phpgtk_ce_GtkImage;
 extern zend_class_entry *phpgtk_ce_GtkCheckButton;
 extern zend_class_entry *phpgtk_ce_GtkSwitch;
 extern zend_class_entry *phpgtk_ce_GtkToggleButton;
@@ -258,6 +262,7 @@ void phpgtk_box_variant_full(zval *rv, GVariant *variant);
 void phpgtk_box_bytes_full(zval *rv, GBytes *bytes);
 void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region);
 void phpgtk_box_scroll_info_full(zval *rv, GtkScrollInfo *info);
+void phpgtk_box_content_formats(zval *rv, GdkContentFormats *formats);
 
 /* Struct value classes: the struct a GdkRectangle object holds, and a new GdkRectangle / GraphenePoint /
  * GrapheneRect object holding a struct's fields. */

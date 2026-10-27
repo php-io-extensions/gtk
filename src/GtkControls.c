@@ -39,6 +39,7 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkNotebook, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkMenuButton, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkScrollbar, phpgtk_ce_GtkWidget);
+	PHPGTK_WIDGET_CLASS(GtkImage, phpgtk_ce_GtkWidget);
 
 #undef PHPGTK_WIDGET_CLASS
 }
@@ -189,6 +190,23 @@ ZEND_METHOD(GtkButton, getChild)
 
 	phpgtk_box_gobject(return_value, gtk_button_get_child(THIS(GTK_BUTTON)));
 }
+
+/* ---- GtkImage ---------------------------------------------------------- */
+
+ZEND_METHOD(GtkImage, newFromIconName)
+{
+	zend_string *icon_name = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR_OR_NULL(icon_name)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-image */
+
+	phpgtk_box_gobject(return_value, gtk_image_new_from_icon_name(icon_name != NULL ? ZSTR_VAL(icon_name) : NULL));
+}
+
+PHPGTK_GET_STRING(GtkImage, getIconName, GTK_IMAGE, gtk_image_get_icon_name)
 
 /* ---- GtkMenuButton ----------------------------------------------------- */
 

@@ -1,7 +1,7 @@
 # ext-gtk
 
 [![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/gtk/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/gtk/actions/workflows/ci.yml)
-[![GTK API](https://img.shields.io/badge/GTK_API-14.7%25_%28557%2F3798%29-blue?style=flat-square)](SUPPORT.md)
+[![GTK API](https://img.shields.io/badge/GTK_API-15.0%25_%28569%2F3798%29-blue?style=flat-square)](SUPPORT.md)
 
 1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
 in C against the Zend API. C functions keep their names (`g_timeout_add`,

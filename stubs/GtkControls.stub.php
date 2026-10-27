@@ -166,6 +166,17 @@ class GtkLinkButton extends GtkButton
 }
 
 /**
+ * @not-serializable
+ */
+class GtkImage extends GtkWidget
+{
+    /** A themed icon such as 'dialog-warning'; null makes an empty image. */
+    public static function newFromIconName(?string $iconName): GtkImage {}
+
+    public function getIconName(): ?string {}
+}
+
+/**
  * GtkCheckButton is not a GtkButton in GTK 4.
  *
  * @not-serializable

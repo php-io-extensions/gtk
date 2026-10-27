@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 541b307c5100cca5efd872f6e118424207eed0d6 */
+ * Stub hash: ec83db4e80437920981941c14748b4ca0f108dca */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -126,6 +126,12 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLinkButton_setVisited, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, visited, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkImage_newFromIconName, 0, 1, GtkImage, 0)
+	ZEND_ARG_TYPE_INFO(0, iconName, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkImage_getIconName arginfo_class_GtkLabel_getCurrentUri
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCheckButton_newWithLabel, 0, 1, GtkCheckButton, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
@@ -564,6 +570,8 @@ ZEND_METHOD(GtkLinkButton, getUri);
 ZEND_METHOD(GtkLinkButton, setUri);
 ZEND_METHOD(GtkLinkButton, getVisited);
 ZEND_METHOD(GtkLinkButton, setVisited);
+ZEND_METHOD(GtkImage, newFromIconName);
+ZEND_METHOD(GtkImage, getIconName);
 ZEND_METHOD(GtkCheckButton, newWithLabel);
 ZEND_METHOD(GtkCheckButton, getActive);
 ZEND_METHOD(GtkCheckButton, setActive);
@@ -744,6 +752,12 @@ static const zend_function_entry class_GtkLinkButton_methods[] = {
 	ZEND_ME(GtkLinkButton, setUri, arginfo_class_GtkLinkButton_setUri, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLinkButton, getVisited, arginfo_class_GtkLinkButton_getVisited, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLinkButton, setVisited, arginfo_class_GtkLinkButton_setVisited, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkImage_methods[] = {
+	ZEND_ME(GtkImage, newFromIconName, arginfo_class_GtkImage_newFromIconName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkImage, getIconName, arginfo_class_GtkImage_getIconName, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -1107,6 +1121,16 @@ static zend_class_entry *register_class_GtkLinkButton(zend_class_entry *class_en
 
 	INIT_CLASS_ENTRY(ce, "GtkLinkButton", class_GtkLinkButton_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkButton, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkImage(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkImage", class_GtkImage_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

@@ -18,6 +18,13 @@ void phpgtk_register_GtkDialogs(void)
 	phpgtk_object_setup(phpgtk_ce_GdkClipboard);
 	phpgtk_map_gtype("GdkClipboard", phpgtk_ce_GdkClipboard);
 
+	phpgtk_ce_GdkContentFormats = register_class_GdkContentFormats();
+	phpgtk_object_setup(phpgtk_ce_GdkContentFormats);
+
+	phpgtk_ce_GtkFileFilter = register_class_GtkFileFilter(phpgtk_ce_GObject);
+	phpgtk_object_setup(phpgtk_ce_GtkFileFilter);
+	phpgtk_map_gtype("GtkFileFilter", phpgtk_ce_GtkFileFilter);
+
 	phpgtk_ce_GtkAlertDialog = register_class_GtkAlertDialog(phpgtk_ce_GObject);
 	phpgtk_object_setup(phpgtk_ce_GtkAlertDialog);
 	phpgtk_map_gtype("GtkAlertDialog", phpgtk_ce_GtkAlertDialog);
@@ -30,8 +37,9 @@ void phpgtk_register_GtkDialogs(void)
 	phpgtk_object_setup(phpgtk_ce_GtkFileLauncher);
 	phpgtk_map_gtype("GtkFileLauncher", phpgtk_ce_GtkFileLauncher);
 
-	/* GTK registers a GType on first use; g_object_new_with_properties() finds GtkAlertDialog by name. */
+	/* GTK registers a GType on first use; g_object_new_with_properties() and GListStore::new() find these by name. */
 	g_type_ensure(GTK_TYPE_ALERT_DIALOG);
+	g_type_ensure(GTK_TYPE_FILE_FILTER);
 }
 
 #define THIS_PTR PHPGTK_PTR(Z_OBJ_P(ZEND_THIS))
@@ -101,6 +109,30 @@ ZEND_METHOD(GFile, getPath)
 	g_free(path);
 }
 
+/* ---- GListStore -------------------------------------------------------- */
+
+ZEND_METHOD(GListStore, new)
+{
+	zend_string *item_type;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(item_type)
+	ZEND_PARSE_PARAMETERS_END();
+
+	phpgtk_box_gobject_full(return_value, g_list_store_new(g_type_from_name(ZSTR_VAL(item_type))));
+}
+
+ZEND_METHOD(GListStore, append)
+{
+	zend_object *item;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(item, phpgtk_ce_GObject)
+	ZEND_PARSE_PARAMETERS_END();
+
+	g_list_store_append(G_LIST_STORE(THIS_PTR), PHPGTK_PTR(item));
+}
+
 /* ---- GdkClipboard ------------------------------------------------------ */
 
 ZEND_METHOD(GdkClipboard, setText)
@@ -113,6 +145,112 @@ ZEND_METHOD(GdkClipboard, setText)
 	PHPGTK_REQUIRE_MAIN_THREAD();
 
 	gdk_clipboard_set_text(GDK_CLIPBOARD(THIS_PTR), ZSTR_VAL(text));
+}
+
+ZEND_METHOD(GdkClipboard, readTextAsync)
+{
+	zend_object *cancellable = NULL;
+	zval *callback;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(cancellable, phpgtk_ce_GCancellable)
+		Z_PARAM_ZVAL(callback)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	if (Z_TYPE_P(callback) != IS_NULL && !phpgtk_require_callable(callback, 2)) {
+		RETURN_THROWS();
+	}
+
+	gdk_clipboard_read_text_async(GDK_CLIPBOARD(THIS_PTR),
+		cancellable != NULL ? G_CANCELLABLE(PHPGTK_PTR(cancellable)) : NULL,
+		Z_TYPE_P(callback) != IS_NULL ? phpgtk_async_ready : NULL,
+		Z_TYPE_P(callback) != IS_NULL ? phpgtk_callout_new(callback) : NULL);
+}
+
+ZEND_METHOD(GdkClipboard, readTextFinish)
+{
+	zend_object *result;
+	GError *error = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(result, phpgtk_ce_GAsyncResult)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	char *text = gdk_clipboard_read_text_finish(GDK_CLIPBOARD(THIS_PTR), G_ASYNC_RESULT(PHPGTK_PTR(result)), &error);
+	if (error != NULL) {
+		phpgtk_throw_gerror(error);
+		g_error_free(error);
+		RETURN_THROWS();
+	}
+
+	phpgtk_return_string(return_value, text);
+	g_free(text);
+}
+
+ZEND_METHOD(GdkClipboard, getFormats)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_content_formats(return_value, gdk_clipboard_get_formats(GDK_CLIPBOARD(THIS_PTR)));
+}
+
+/* ---- GdkContentFormats ------------------------------------------------- */
+
+ZEND_METHOD(GdkContentFormats, __construct)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+}
+
+ZEND_METHOD(GdkContentFormats, containMimeType)
+{
+	zend_string *mime_type;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(mime_type)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gdk_content_formats_contain_mime_type((GdkContentFormats *) THIS_PTR, ZSTR_VAL(mime_type)));
+}
+
+/* ---- GtkFileFilter ----------------------------------------------------- */
+
+#define THIS_FILE_FILTER GTK_FILE_FILTER(THIS_PTR)
+
+ZEND_METHOD(GtkFileFilter, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject_full(return_value, gtk_file_filter_new());
+}
+
+ZEND_METHOD(GtkFileFilter, setName)
+{
+	zend_string *name = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR_OR_NULL(name)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_file_filter_set_name(THIS_FILE_FILTER, name != NULL ? ZSTR_VAL(name) : NULL);
+}
+
+ZEND_METHOD(GtkFileFilter, getName)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_string(return_value, gtk_file_filter_get_name(THIS_FILE_FILTER));
+}
+
+ZEND_METHOD(GtkFileFilter, addPattern)
+{
+	zend_string *pattern;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR(pattern)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_file_filter_add_pattern(THIS_FILE_FILTER, ZSTR_VAL(pattern));
 }
 
 /* ---- GtkAlertDialog ---------------------------------------------------- */
@@ -270,6 +408,24 @@ ZEND_METHOD(GtkFileDialog, setModal)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_file_dialog_set_modal(THIS_FILE_DIALOG, modal);
+}
+
+ZEND_METHOD(GtkFileDialog, setFilters)
+{
+	zend_object *filters = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(filters, phpgtk_ce_GListModel)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_file_dialog_set_filters(THIS_FILE_DIALOG, filters != NULL ? G_LIST_MODEL(PHPGTK_PTR(filters)) : NULL);
+}
+
+ZEND_METHOD(GtkFileDialog, getFilters)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_file_dialog_get_filters(THIS_FILE_DIALOG));
 }
 
 ZEND_METHOD(GtkFileDialog, open)

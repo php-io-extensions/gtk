@@ -80,6 +80,9 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_SCROLL_INFO:
 				gtk_scroll_info_unref((GtkScrollInfo *) intern->ptr);
 				break;
+			case PHPGTK_CONTENT_FORMATS:
+				gdk_content_formats_unref((GdkContentFormats *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -437,6 +440,21 @@ void phpgtk_box_scroll_info_full(zval *rv, GtkScrollInfo *info)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_GtkScrollInfo, info, PHPGTK_SCROLL_INFO);
+}
+
+/* Takes PHP's own reference (gdk_clipboard_get_formats() is transfer none). */
+void phpgtk_box_content_formats(zval *rv, GdkContentFormats *formats)
+{
+	if (formats == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, formats)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GdkContentFormats, gdk_content_formats_ref(formats), PHPGTK_CONTENT_FORMATS);
 }
 
 /* Takes PHP's own reference, sinking a floating one; the caller keeps whatever it held (a signal's GParamSpec is transfer none). */

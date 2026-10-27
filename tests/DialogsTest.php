@@ -103,6 +103,41 @@ it('makes GListStore a GListModel', function (): void {
     expect((new ReflectionClass(GListStore::class))->implementsInterface(GListModel::class))->toBeTrue();
 });
 
+it('sets and reads back a file filter', function (): void {
+    $filter = GtkFileFilter::new();
+    $filter->setName('Text');
+    $filter->addPattern('*.txt');
+    $filter->addPattern('*.md');
+
+    expect($filter->getName())->toBe('Text');
+
+    $filter->setName(null);
+    expect($filter->getName())->toBeNull();
+});
+
+it('holds file filters in a list store that a file dialog takes', function (): void {
+    $filter = GtkFileFilter::new();
+    $filter->setName('Text');
+    $store = GListStore::new('GtkFileFilter');
+    $store->append($filter);
+    $dialog = GtkFileDialog::new();
+    $dialog->setFilters($store);
+
+    expect($store->getNItems())->toBe(1)
+        ->and($store->getItem(0))->toBe($filter)
+        ->and($dialog->getFilters())->toBe($store);
+
+    $dialog->setFilters(null);
+    expect($dialog->getFilters())->toBeNull();
+});
+
+it('makes no list store for a type name GLib does not know, as GLib does: a critical and null', function (): void {
+    $run = gtkChild('return GListStore::new("NoSuchType");');
+
+    expect($run['result'])->toBeNull()
+        ->and($run['stderr'])->toContain('g_list_store_new: assertion');
+});
+
 it('gives the display clipboard', function (): void {
     expect(GdkDisplay::getDefault()->getClipboard())->toBeInstanceOf(GdkClipboard::class);
 });
@@ -123,6 +158,27 @@ describe('macOS', function (): void {
         runWhilePumping('pbpaste');
 
         expect($read)->toBe($text);
+    });
+
+    it('reads back the text it put on the clipboard, and its formats', function (): void {
+        $kept = shell_exec('pbpaste');
+        $clipboard = GdkDisplay::getDefault()->getClipboard();
+        $clipboard->setText('round trip');
+        $result = null;
+        $clipboard->readTextAsync(null, function (GdkClipboard $source, GAsyncResult $r) use (&$result): void {
+            $result = [$source, $r];
+        });
+        $done = pumpUntilDone(function () use (&$result): bool { return $result !== null; }, 2.0);
+        $text = $done ? $result[0]->readTextFinish($result[1]) : null;
+        $formats = $clipboard->getFormats();
+        $clipboard->setText((string) $kept);
+        runWhilePumping('pbpaste');
+
+        expect($done)->toBeTrue()
+            ->and($text)->toBe('round trip')
+            ->and($formats)->toBeInstanceOf(GdkContentFormats::class)
+            ->and($formats->containMimeType('text/plain;charset=utf-8'))->toBeTrue()
+            ->and($formats->containMimeType('image/png'))->toBeFalse();
     });
 
     it('fails to launch a missing file', function (): void {
