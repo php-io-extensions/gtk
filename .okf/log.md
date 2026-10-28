@@ -1,5 +1,9 @@
 # Log
 
+## 2026-10-28
+
+* **Version**: 0.11.0 in `PHP_GTK_VERSION` (`php_gtk.h`); `branch-alias` `dev-main` is `0.11.x-dev`. Promoted with the Venusian 0.11 ecosystem. No API or behaviour change. Built and loaded on Homebrew PHP 8.4 NTS and ZTS (364 passed, 33 skipped each, `XDEBUG_MODE=off`), the Pi on 8.4 ZTS with GTK 4.18.6 (365 passed, 32 skipped) and an x86_64 8.4 NTS box with GTK 4.14.5 / GLib 2.80.0 (356 passed, 37 skipped, 4 failed): the four assert 4.18-era GTK and GLib output — `unselectAll` returning true, the `gdk_memory_texture_new` critical text, and GLib's "requires valid UTF-8" warning.
+
 ## 2026-10-27
 
 * `GtkImage` newFromIconName and getIconName (new site `gtk-initialized-image`: the constructor before `gtk_init()` is SIGSEGV); `GtkFileFilter` new, name (+set), addPattern; `GListStore` new (a GType name; an unregistered name is GLib's critical and null) and append; `GtkFileDialog` filters (+set); `GdkClipboard` readTextAsync and readTextFinish, getFormats; `GdkContentFormats` containMimeType (boxed, made by getFormats only). 569 / 3798. [surface](api/surface.md)
