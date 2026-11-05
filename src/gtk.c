@@ -79,6 +79,15 @@ zend_class_entry *phpgtk_ce_GtkAlertDialog;
 zend_class_entry *phpgtk_ce_GtkFileDialog;
 zend_class_entry *phpgtk_ce_GtkFileLauncher;
 zend_class_entry *phpgtk_ce_GdkContentFormats;
+zend_class_entry *phpgtk_ce_PangoTabAlign;
+zend_class_entry *phpgtk_ce_PangoLanguage;
+zend_class_entry *phpgtk_ce_PangoFontDescription;
+zend_class_entry *phpgtk_ce_PangoContext;
+zend_class_entry *phpgtk_ce_PangoFontMetrics;
+zend_class_entry *phpgtk_ce_PangoFont;
+zend_class_entry *phpgtk_ce_PangoFontFace;
+zend_class_entry *phpgtk_ce_PangoFontFamily;
+zend_class_entry *phpgtk_ce_PangoTabArray;
 zend_class_entry *phpgtk_ce_GtkFileFilter;
 zend_class_entry *phpgtk_ce_GtkImage;
 zend_class_entry *phpgtk_ce_GtkCheckButton;
@@ -815,6 +824,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkUriLauncher();
 	phpgtk_register_GtkDialogs();
 	phpgtk_register_GMenu();
+	phpgtk_register_Pango(module_number);
 
 	return SUCCESS;
 }

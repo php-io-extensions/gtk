@@ -684,6 +684,24 @@ PHPGTK_GET_BOOL(GtkTextView, getEditable, GTK_TEXT_VIEW, gtk_text_view_get_edita
 PHPGTK_SET_BOOL(GtkTextView, setEditable, GTK_TEXT_VIEW, gtk_text_view_set_editable)
 PHPGTK_SET_ENUM(GtkTextView, setWrapMode, GTK_TEXT_VIEW, gtk_text_view_set_wrap_mode, phpgtk_ce_GtkWrapMode, GtkWrapMode)
 
+ZEND_METHOD(GtkTextView, setTabs)
+{
+	zend_object *tabs;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(tabs, phpgtk_ce_PangoTabArray)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_text_view_set_tabs(THIS(GTK_TEXT_VIEW), (PangoTabArray *) PHPGTK_PTR(tabs));
+}
+
+ZEND_METHOD(GtkTextView, getTabs)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_tab_array_full(return_value, gtk_text_view_get_tabs(THIS(GTK_TEXT_VIEW)));
+}
+
 PHPGTK_GET_BOOL(GtkTextView, getMonospace, GTK_TEXT_VIEW, gtk_text_view_get_monospace)
 PHPGTK_SET_BOOL(GtkTextView, setMonospace, GTK_TEXT_VIEW, gtk_text_view_set_monospace)
 PHPGTK_GET_BOOL(GtkTextView, getCursorVisible, GTK_TEXT_VIEW, gtk_text_view_get_cursor_visible)

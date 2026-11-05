@@ -83,6 +83,17 @@ static void phpgtk_free_object(zend_object *object)
 			case PHPGTK_CONTENT_FORMATS:
 				gdk_content_formats_unref((GdkContentFormats *) intern->ptr);
 				break;
+			case PHPGTK_FONT_DESCRIPTION:
+				pango_font_description_free((PangoFontDescription *) intern->ptr);
+				break;
+			case PHPGTK_FONT_METRICS:
+				pango_font_metrics_unref((PangoFontMetrics *) intern->ptr);
+				break;
+			case PHPGTK_TAB_ARRAY:
+				pango_tab_array_free((PangoTabArray *) intern->ptr);
+				break;
+			case PHPGTK_LANGUAGE:
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -455,6 +466,56 @@ void phpgtk_box_content_formats(zval *rv, GdkContentFormats *formats)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_GdkContentFormats, gdk_content_formats_ref(formats), PHPGTK_CONTENT_FORMATS);
+}
+
+void phpgtk_box_font_description_full(zval *rv, PangoFontDescription *desc)
+{
+	if (desc == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_PangoFontDescription, desc, PHPGTK_FONT_DESCRIPTION);
+}
+
+/* pango_context_get_metrics() may hand back a cached metrics PHP already boxes: that box keeps its one reference. */
+void phpgtk_box_font_metrics_full(zval *rv, PangoFontMetrics *metrics)
+{
+	if (metrics == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, metrics)) {
+		pango_font_metrics_unref(metrics);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_PangoFontMetrics, metrics, PHPGTK_FONT_METRICS);
+}
+
+void phpgtk_box_tab_array_full(zval *rv, PangoTabArray *tabs)
+{
+	if (tabs == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_PangoTabArray, tabs, PHPGTK_TAB_ARRAY);
+}
+
+void phpgtk_box_language(zval *rv, PangoLanguage *language)
+{
+	if (language == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, language)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_PangoLanguage, language, PHPGTK_LANGUAGE);
 }
 
 /* Takes PHP's own reference, sinking a floating one; the caller keeps whatever it held (a signal's GParamSpec is transfer none). */

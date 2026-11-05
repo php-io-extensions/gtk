@@ -321,6 +321,12 @@ class GtkTextView extends GtkWidget
 
     public function setCursorVisible(bool $setting): void {}
 
+    /** gtk_text_view_set_tabs(): the view keeps its own copy. */
+    public function setTabs(PangoTabArray $tabs): void {}
+
+    /** gtk_text_view_get_tabs(): a copy of the view's stops; null when it uses the default tabs. */
+    public function getTabs(): ?PangoTabArray {}
+
     /**
      * gtk_text_view_get_line_yrange(): the line's top y and height, in buffer coordinates, written to $y
      * and $height; GTK's estimate (0 and 0 before the view is laid out)

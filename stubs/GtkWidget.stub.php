@@ -190,6 +190,9 @@ class GtkWidget extends GObject
     /** gtk_widget_get_display(): the display the widget is on. */
     public function getDisplay(): GdkDisplay {}
 
+    /** gtk_widget_get_pango_context(): the widget's own context, following its font and direction. */
+    public function getPangoContext(): PangoContext {}
+
     /** gtk_widget_get_root(): the GtkRoot ancestor (a window), boxed as its widget class */
     public function getRoot(): ?GtkRoot {}
 }

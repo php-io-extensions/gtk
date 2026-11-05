@@ -53,6 +53,10 @@ typedef enum {
 	PHPGTK_PARAM_SPEC = 9,         /* g_param_spec_ref_sink / g_param_spec_unref */
 	PHPGTK_SCROLL_INFO = 10,       /* gtk_scroll_info_ref / gtk_scroll_info_unref (GTK 4.12+) */
 	PHPGTK_CONTENT_FORMATS = 11,   /* gdk_content_formats_ref / gdk_content_formats_unref */
+	PHPGTK_FONT_DESCRIPTION = 12,  /* owned: pango_font_description_free */
+	PHPGTK_FONT_METRICS = 13,      /* owned reference: pango_font_metrics_unref */
+	PHPGTK_TAB_ARRAY = 14,         /* owned: pango_tab_array_free */
+	PHPGTK_LANGUAGE = 15,          /* Pango's own for the process: nothing to free */
 } phpgtk_kind;
 
 /* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
@@ -210,6 +214,15 @@ extern zend_class_entry *phpgtk_ce_GraphenePoint;
 extern zend_class_entry *phpgtk_ce_GrapheneSize;
 extern zend_class_entry *phpgtk_ce_GrapheneRect;
 extern zend_class_entry *phpgtk_ce_GtkListItemFactory;
+extern zend_class_entry *phpgtk_ce_PangoTabAlign;
+extern zend_class_entry *phpgtk_ce_PangoLanguage;
+extern zend_class_entry *phpgtk_ce_PangoFontDescription;
+extern zend_class_entry *phpgtk_ce_PangoContext;
+extern zend_class_entry *phpgtk_ce_PangoFontMetrics;
+extern zend_class_entry *phpgtk_ce_PangoFont;
+extern zend_class_entry *phpgtk_ce_PangoFontFace;
+extern zend_class_entry *phpgtk_ce_PangoFontFamily;
+extern zend_class_entry *phpgtk_ce_PangoTabArray;
 
 /* Interfaces. */
 extern zend_class_entry *phpgtk_ce_GAction;
@@ -244,6 +257,7 @@ void phpgtk_register_GtkVideo(void);
 void phpgtk_register_GtkWindow(void);
 void phpgtk_register_GMenu(void);
 void phpgtk_register_GAction(void);
+void phpgtk_register_Pango(int module_number);
 
 /* Object model. */
 void phpgtk_object_setup(zend_class_entry *ce);
@@ -263,6 +277,12 @@ void phpgtk_box_bytes_full(zval *rv, GBytes *bytes);
 void phpgtk_box_cairo_region_full(zval *rv, cairo_region_t *region);
 void phpgtk_box_scroll_info_full(zval *rv, GtkScrollInfo *info);
 void phpgtk_box_content_formats(zval *rv, GdkContentFormats *formats);
+/* Each takes the caller's ownership (a new or copied value, transfer full); NULL boxes as null. */
+void phpgtk_box_font_description_full(zval *rv, PangoFontDescription *desc);
+void phpgtk_box_font_metrics_full(zval *rv, PangoFontMetrics *metrics);
+void phpgtk_box_tab_array_full(zval *rv, PangoTabArray *tabs);
+/* Pango keeps a language for the life of the process; the box frees nothing. */
+void phpgtk_box_language(zval *rv, PangoLanguage *language);
 
 /* Struct value classes: the struct a GdkRectangle object holds, and a new GdkRectangle / GraphenePoint /
  * GrapheneRect object holding a struct's fields. */

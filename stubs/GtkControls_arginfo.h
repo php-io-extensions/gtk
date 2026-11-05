@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: ec83db4e80437920981941c14748b4ca0f108dca */
+ * Stub hash: 279d16657bf9c7fb9884757bc80c4749eb05c4dd */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -278,6 +278,13 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkTextView_getCursorVisible arginfo_class_GtkLabel_getWrap
 
 #define arginfo_class_GtkTextView_setCursorVisible arginfo_class_GtkLabel_setUseMarkup
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextView_setTabs, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, tabs, PangoTabArray, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextView_getTabs, 0, 0, PangoTabArray, 1)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextView_getLineYrange, 0, 3, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, iter, GtkTextIter, 0)
@@ -617,6 +624,8 @@ ZEND_METHOD(GtkTextView, getMonospace);
 ZEND_METHOD(GtkTextView, setMonospace);
 ZEND_METHOD(GtkTextView, getCursorVisible);
 ZEND_METHOD(GtkTextView, setCursorVisible);
+ZEND_METHOD(GtkTextView, setTabs);
+ZEND_METHOD(GtkTextView, getTabs);
 ZEND_METHOD(GtkTextView, getLineYrange);
 ZEND_METHOD(GtkScale, newWithRange);
 ZEND_METHOD(GtkScale, getValue);
@@ -831,6 +840,8 @@ static const zend_function_entry class_GtkTextView_methods[] = {
 	ZEND_ME(GtkTextView, setMonospace, arginfo_class_GtkTextView_setMonospace, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextView, getCursorVisible, arginfo_class_GtkTextView_getCursorVisible, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextView, setCursorVisible, arginfo_class_GtkTextView_setCursorVisible, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTextView, setTabs, arginfo_class_GtkTextView_setTabs, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkTextView, getTabs, arginfo_class_GtkTextView_getTabs, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkTextView, getLineYrange, arginfo_class_GtkTextView_getLineYrange, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };

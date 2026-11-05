@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 991ff7d1b3e6f93b0b0433c12ac3f495277b7b5d */
+ * Stub hash: 30f9a773cea79c0fd1d0c66c2bc861731c8dcf9f */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -157,6 +157,9 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkWidget_getNextSibling arginfo_class_GtkWidget_getParent
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getDisplay, 0, 0, GdkDisplay, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getPangoContext, 0, 0, PangoContext, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getRoot, 0, 0, GtkRoot, 1)
@@ -374,6 +377,7 @@ ZEND_METHOD(GtkWidget, computeBounds);
 ZEND_METHOD(GtkWidget, getFirstChild);
 ZEND_METHOD(GtkWidget, getNextSibling);
 ZEND_METHOD(GtkWidget, getDisplay);
+ZEND_METHOD(GtkWidget, getPangoContext);
 ZEND_METHOD(GtkWidget, getRoot);
 ZEND_METHOD(GtkBox, new);
 ZEND_METHOD(GtkBox, append);
@@ -482,6 +486,7 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, getFirstChild, arginfo_class_GtkWidget_getFirstChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getNextSibling, arginfo_class_GtkWidget_getNextSibling, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getDisplay, arginfo_class_GtkWidget_getDisplay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getPangoContext, arginfo_class_GtkWidget_getPangoContext, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getRoot, arginfo_class_GtkWidget_getRoot, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };

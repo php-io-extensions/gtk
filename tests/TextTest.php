@@ -20,6 +20,19 @@ function textLineOffsetIter(GtkTextBuffer $buffer, int $lineNumber, int $charOff
     return $iter;
 }
 
+it('sets a text view\'s tab stops from a tab array', function (): void {
+    $view = GtkTextView::new();
+    $tabs = PangoTabArray::new(1, true);
+    $tabs->setTab(0, PangoTabAlign::LEFT, 32);
+    $view->setTabs($tabs);
+    $view->getTabs()->getTab(0, $alignment, $location);
+
+    expect($view->getTabs())->toBeInstanceOf(PangoTabArray::class)
+        ->and($alignment)->toBe(PangoTabAlign::LEFT)
+        ->and($location)->toBe(32)
+        ->and(GtkTextView::new()->getTabs())->toBeNull();
+});
+
 it('tags lines and ranges of a buffer through its tag table and properties', function (): void {
     $buffer = GtkTextView::new()->getBuffer();
     $buffer->setText("one\ntwo\nthree", -1);
