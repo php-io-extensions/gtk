@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.phpgtk.test" path="/org/phpgtk/test/">
+    <key name="flag" type="b"><default>true</default></key>
+    <key name="count" type="i"><default>-7</default></key>
+    <key name="size" type="u"><default>4000000000</default></key>
+    <key name="ratio" type="d"><default>2.5</default></key>
+    <key name="name" type="s"><default>'hello'</default></key>
+  </schema>
+  <!-- No path: g_settings_new() cannot make it. -->
+  <schema id="org.phpgtk.relocatable">
+    <key name="count" type="i"><default>1</default></key>
+  </schema>
+</schemalist>

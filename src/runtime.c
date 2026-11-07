@@ -94,6 +94,12 @@ static void phpgtk_free_object(zend_object *object)
 				break;
 			case PHPGTK_LANGUAGE:
 				break;
+			case PHPGTK_SETTINGS_SCHEMA_SOURCE:
+				g_settings_schema_source_unref((GSettingsSchemaSource *) intern->ptr);
+				break;
+			case PHPGTK_SETTINGS_SCHEMA:
+				g_settings_schema_unref((GSettingsSchema *) intern->ptr);
+				break;
 		}
 
 		intern->ptr = NULL;
@@ -516,6 +522,35 @@ void phpgtk_box_language(zval *rv, PangoLanguage *language)
 	}
 
 	phpgtk_box_new(rv, phpgtk_ce_PangoLanguage, language, PHPGTK_LANGUAGE);
+}
+
+void phpgtk_box_settings_schema_source(zval *rv, GSettingsSchemaSource *source)
+{
+	if (source == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, source)) {
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GSettingsSchemaSource, g_settings_schema_source_ref(source), PHPGTK_SETTINGS_SCHEMA_SOURCE);
+}
+
+void phpgtk_box_settings_schema_full(zval *rv, GSettingsSchema *schema)
+{
+	if (schema == NULL) {
+		ZVAL_NULL(rv);
+		return;
+	}
+
+	if (phpgtk_box_existing(rv, schema)) {
+		g_settings_schema_unref(schema);
+		return;
+	}
+
+	phpgtk_box_new(rv, phpgtk_ce_GSettingsSchema, schema, PHPGTK_SETTINGS_SCHEMA);
 }
 
 /* Takes PHP's own reference, sinking a floating one; the caller keeps whatever it held (a signal's GParamSpec is transfer none). */

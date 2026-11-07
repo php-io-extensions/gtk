@@ -88,6 +88,9 @@ zend_class_entry *phpgtk_ce_PangoFont;
 zend_class_entry *phpgtk_ce_PangoFontFace;
 zend_class_entry *phpgtk_ce_PangoFontFamily;
 zend_class_entry *phpgtk_ce_PangoTabArray;
+zend_class_entry *phpgtk_ce_GSettingsSchemaSource;
+zend_class_entry *phpgtk_ce_GSettingsSchema;
+zend_class_entry *phpgtk_ce_GSettings;
 zend_class_entry *phpgtk_ce_GtkFileFilter;
 zend_class_entry *phpgtk_ce_GtkImage;
 zend_class_entry *phpgtk_ce_GtkCheckButton;
@@ -825,6 +828,7 @@ PHP_MINIT_FUNCTION(gtk)
 	phpgtk_register_GtkDialogs();
 	phpgtk_register_GMenu();
 	phpgtk_register_Pango(module_number);
+	phpgtk_register_GSettings();
 
 	return SUCCESS;
 }

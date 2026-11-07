@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-10-17T18:30:00Z }
+generated: { by: claude-sonnet/5.5, at: 2026-11-06T22:30:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -89,6 +89,7 @@ Naming, all fixed:
 | `GtkStringList`, `GtkStringObject`, `GListModel` | `new(string[])`, append, remove, splice, `getString(int): ?string`; get_string; n_items, item |
 | `GtkDropDown` | new_from_strings, selected, selected item, `setModel(?GListModel)`; `notify::selected` |
 | `GtkCalendar`, `GDateTime` | new, get_date, select_day; `day-selected`. GDateTime: `newLocal(…): ?GDateTime`, year, month, day_of_month, to_unix |
+| `GSettingsSchemaSource`, `GSettingsSchema`, `GSettings` | source: `getDefault(): ?GSettingsSchemaSource` (reference counted, one PHP object), `lookup(string, bool $recursive): ?GSettingsSchema`. Schema: `hasKey`. Settings (a `GObject`): `new(string $schemaId)`, `getBoolean`, `getInt`, `getUint`, `getDouble`, `getString(): ?string`. GIO only: no `gtk_init`. Refusals (`ValueError`): a schema that is not installed (`gsettings-schema-installed`), a schema without a path (`gsettings-schema-path`), a key the schema lacks (`gsettings-key-in-schema-boolean`, `-int`, `-uint`, `-double`, `-string`). A key of another type is GLib's critical, then 0 or null |
 | `GtkProgressBar`, `GtkSpinner`, `GtkSeparator`, `GtkScrolledWindow`, `GtkAdjustment` | fraction, pulse, pulse_step; spinning; new(orientation); child, policy, h/v adjustment; value, lower, upper, page_size, `value-changed` |
 | `GtkEventController` + Key/Motion/Scroll/Focus/Legacy, `GtkGesture`, `GtkGestureSingle`, `GtkGestureClick`, `GtkGestureLongPress` | new, propagation_phase, widget, current_event, scroll unit, set_state, button, current_button, touch_only |
 | `GdkEvent` + `GdkButtonEvent`/`GdkTouchEvent`/`GdkScrollEvent` | event_type, `getPosition(?float &$x, ?float &$y): bool` (surface coords), pointer_emulated, modifier_state; button; emulating_pointer; relative_direction (4.20+). Signal GdkEvent arguments are boxed by type |

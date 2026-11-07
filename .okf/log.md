@@ -1,5 +1,9 @@
 # Log
 
+## 2026-11-06
+
+* GSettings (GIO, in scope by AGENTS.md rule 2): `GSettingsSchemaSource` (`getDefault`, `lookup`; reference counted, the default source boxed with its own reference), `GSettingsSchema` (`hasKey`; unreffed with the object), `GSettings` (a `GObject`: `new`, `getBoolean`, `getInt`, `getUint`, `getDouble`, `getString`). New source `src/GSettings.c`; no new pkg-config module. New sites `gsettings-schema-installed`, `gsettings-schema-path` and `gsettings-key-in-schema-boolean`, `-int`, `-uint`, `-double`, `-string` (each `g_error` in GIO: SIGTRAP; one marker id per line, so one per getter; probes in `tests/Probes`). A key of another type is GLib's critical and 0 or null, passed through. Tests run on Linux only (`tests/SettingsTest.php`, fixture schemas in `tests/fixtures/settings`, found through `GSETTINGS_SCHEMA_DIR` in a child process).
+
 ## 2026-11-04
 
 * Pango (in scope by AGENTS.md rule 2): `PangoLanguage` (fromString, toString; Pango's own, nothing freed), `PangoFontDescription` (fromString; freed with the object), `PangoContext` getMetrics and loadFont, `PangoFontMetrics` ascent, descent, height and approximate char width (Pango units; unreffed with the object; a cached metrics already boxed keeps one reference), `PangoFont` getFace, `PangoFontFace` getFamily, `PangoFontFamily` isMonospace, `PangoTabArray` new, setTab, getTab (out-params by reference) and getPositionsInPixels (freed with the object), `PangoTabAlign`, `PANGO_SCALE`. `GtkWidget` getPangoContext; `GtkTextView` setTabs and getTabs (a copy, null for the default tabs). New source `src/Pango.c`; Pango comes from GTK's own pkg-config. 572 / 3798 (Pango is outside the badge's library set).

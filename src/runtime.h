@@ -57,6 +57,8 @@ typedef enum {
 	PHPGTK_FONT_METRICS = 13,      /* owned reference: pango_font_metrics_unref */
 	PHPGTK_TAB_ARRAY = 14,         /* owned: pango_tab_array_free */
 	PHPGTK_LANGUAGE = 15,          /* Pango's own for the process: nothing to free */
+	PHPGTK_SETTINGS_SCHEMA_SOURCE = 16, /* g_settings_schema_source_ref / g_settings_schema_source_unref */
+	PHPGTK_SETTINGS_SCHEMA = 17,   /* g_settings_schema_ref / g_settings_schema_unref */
 } phpgtk_kind;
 
 /* A GtkTextIter copy, the strong reference that keeps its buffer alive as long as the PHP object lives,
@@ -223,6 +225,9 @@ extern zend_class_entry *phpgtk_ce_PangoFont;
 extern zend_class_entry *phpgtk_ce_PangoFontFace;
 extern zend_class_entry *phpgtk_ce_PangoFontFamily;
 extern zend_class_entry *phpgtk_ce_PangoTabArray;
+extern zend_class_entry *phpgtk_ce_GSettingsSchemaSource;
+extern zend_class_entry *phpgtk_ce_GSettingsSchema;
+extern zend_class_entry *phpgtk_ce_GSettings;
 
 /* Interfaces. */
 extern zend_class_entry *phpgtk_ce_GAction;
@@ -258,6 +263,7 @@ void phpgtk_register_GtkWindow(void);
 void phpgtk_register_GMenu(void);
 void phpgtk_register_GAction(void);
 void phpgtk_register_Pango(int module_number);
+void phpgtk_register_GSettings(void);
 
 /* Object model. */
 void phpgtk_object_setup(zend_class_entry *ce);
@@ -283,6 +289,9 @@ void phpgtk_box_font_metrics_full(zval *rv, PangoFontMetrics *metrics);
 void phpgtk_box_tab_array_full(zval *rv, PangoTabArray *tabs);
 /* Pango keeps a language for the life of the process; the box frees nothing. */
 void phpgtk_box_language(zval *rv, PangoLanguage *language);
+/* The default schema source is transfer none: the box takes its own reference. A looked-up schema is transfer full. */
+void phpgtk_box_settings_schema_source(zval *rv, GSettingsSchemaSource *source);
+void phpgtk_box_settings_schema_full(zval *rv, GSettingsSchema *schema);
 
 /* Struct value classes: the struct a GdkRectangle object holds, and a new GdkRectangle / GraphenePoint /
  * GrapheneRect object holding a struct's fields. */

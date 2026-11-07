@@ -172,6 +172,40 @@ function gtkChild(string $code, ?string $siteOff = null, bool $gmalloc = false, 
     ];
 }
 
+/**
+ * gtkChild() (GTK not initialised) with the schemas of tests/fixtures/settings compiled into a temp directory and
+ * found through GSETTINGS_SCHEMA_DIR, on the memory backend. The default schema source reads the variable once
+ * per process, which is why the code runs in a child.
+ */
+function settingsChild(string $code, ?string $siteOff = null): array
+{
+    static $dir = null;
+
+    if ($dir === null) {
+        $dir = sys_get_temp_dir().'/gtk-settings-'.getmypid();
+        mkdir($dir);
+        copy(__DIR__.'/fixtures/settings/org.phpgtk.test.gschema.xml', $dir.'/org.phpgtk.test.gschema.xml');
+        exec('glib-compile-schemas '.escapeshellarg($dir).' 2>&1', $output, $status);
+        register_shutdown_function(function () use ($dir): void {
+            array_map('unlink', glob($dir.'/*'));
+            rmdir($dir);
+        });
+        if ($status !== 0) {
+            test()->markTestSkipped('glib-compile-schemas failed: '.implode(' ', $output));
+        }
+    }
+
+    putenv('GSETTINGS_SCHEMA_DIR='.$dir);
+    putenv('GSETTINGS_BACKEND=memory');
+
+    try {
+        return gtkChild($code, $siteOff, init: false);
+    } finally {
+        putenv('GSETTINGS_SCHEMA_DIR');
+        putenv('GSETTINGS_BACKEND');
+    }
+}
+
 /** One application for the process: GTK initialises once, on its startup. */
 function testApplication(): GtkApplication
 {

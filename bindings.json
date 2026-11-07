@@ -50,7 +50,14 @@
         "gtk-initialized-menu-button": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
         "menu-model-item-index": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/MenuItemIndexTest.php"},
         "gtk-initialized-image": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
-        "text-iter-line-offset-negative": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/IterLineOffsetTest.php"}
+        "text-iter-line-offset-negative": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/IterLineOffsetTest.php"},
+        "gsettings-schema-installed": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsSchemaInstalledTest.php"},
+        "gsettings-schema-path": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsSchemaPathTest.php"},
+        "gsettings-key-in-schema-boolean": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsKeyInSchemaTest.php"},
+        "gsettings-key-in-schema-int": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsKeyInSchemaTest.php"},
+        "gsettings-key-in-schema-uint": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsKeyInSchemaTest.php"},
+        "gsettings-key-in-schema-double": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsKeyInSchemaTest.php"},
+        "gsettings-key-in-schema-string": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/GSettingsKeyInSchemaTest.php"}
     },
     "typemap": {
         "GType": ["string"],

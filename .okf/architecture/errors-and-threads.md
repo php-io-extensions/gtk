@@ -5,7 +5,7 @@ description: GError after the call becomes the GError exception; the only refusa
 resource: src/runtime.h
 tags: [gtk, errors, threads, refusals]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-10-17T18:30:00Z }
+generated: { by: claude-sonnet/5.5, at: 2026-11-06T22:30:00Z }
 sources:
   - id: header
     resource: src/runtime.h
@@ -38,6 +38,9 @@ sources:
 | `gbytes-string-length` | SIGSEGV | `GBytes::new` string form with a size past the string |
 | `cairo-region-nth` | SIGSEGV | `CairoRegion::getRectangle` outside `0 … numRectangles() - 1` |
 | `gmenu-detailed-action` | SIGTRAP (`g_error`) | `GMenu` / `GMenuItem` detailed action names GLib cannot parse |
+| `gsettings-schema-installed` | SIGTRAP (`g_error`) | `GSettings::new` with an id no installed schema has |
+| `gsettings-schema-path` | SIGTRAP (`g_error`) | `GSettings::new` with a schema that has no path (`g_settings_new` has no path argument) |
+| `gsettings-key-in-schema-boolean`, `-int`, `-uint`, `-double`, `-string` | SIGTRAP (`g_error`) | `GSettings` `getBoolean`, `getInt`, `getUint`, `getDouble`, `getString` with a key the schema lacks (one site per getter) |
 | `accels-action-name` | SIGABRT | `GtkApplication::setAccelsForAction` with an unparsable action name |
 | `gtk-version-4-16`, `gtk-version-4-14`, `gtk-version-4-14-dmabuf-builder` | exit 127, symbol lookup error | a class built against newer headers called on an older GTK |
 
