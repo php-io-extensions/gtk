@@ -1,5 +1,9 @@
 # Log
 
+## 2026-11-08
+
+* **Version**: 0.11.1 in `PHP_GTK_VERSION` (`php_gtk.h`) and the version test; nothing else changed.
+
 ## 2026-11-06
 
 * GSettings (GIO, in scope by AGENTS.md rule 2): `GSettingsSchemaSource` (`getDefault`, `lookup`; reference counted, the default source boxed with its own reference), `GSettingsSchema` (`hasKey`; unreffed with the object), `GSettings` (a `GObject`: `new`, `getBoolean`, `getInt`, `getUint`, `getDouble`, `getString`). New source `src/GSettings.c`; no new pkg-config module. New sites `gsettings-schema-installed`, `gsettings-schema-path` and `gsettings-key-in-schema-boolean`, `-int`, `-uint`, `-double`, `-string` (each `g_error` in GIO: SIGTRAP; one marker id per line, so one per getter; probes in `tests/Probes`). A key of another type is GLib's critical and 0 or null, passed through. Tests run on Linux only (`tests/SettingsTest.php`, fixture schemas in `tests/fixtures/settings`, found through `GSETTINGS_SCHEMA_DIR` in a child process).
