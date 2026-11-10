@@ -30,6 +30,8 @@
     },
     "sites": {
         "gtk-initialized": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-grid-view": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
+        "gtk-initialized-header-bar": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/InitializedTest.php"},
         "main-thread-macos": {"kind": "refusal", "outcome": 2, "probe": "tests/Probes/MainThreadTest.php"},
         "callout-owner-thread": {"kind": "refusal", "outcome": 3, "probe": "tests/Probes/CalloutThreadTest.php"},
         "text-iter-stale": {"kind": "refusal", "outcome": 1, "probe": "tests/Probes/StaleIterTest.php"},

@@ -204,6 +204,24 @@ ZEND_METHOD(GtkWindow, setChild)
 	gtk_window_set_child(THIS_WINDOW, child != NULL ? GTK_WIDGET(PHPGTK_PTR(child)) : NULL);
 }
 
+ZEND_METHOD(GtkWindow, getTitlebar)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_window_get_titlebar(THIS_WINDOW));
+}
+
+ZEND_METHOD(GtkWindow, setTitlebar)
+{
+	zend_object *titlebar = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(titlebar, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_window_set_titlebar(THIS_WINDOW, titlebar != NULL ? GTK_WIDGET(PHPGTK_PTR(titlebar)) : NULL);
+}
+
 ZEND_METHOD(GtkWindow, present)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

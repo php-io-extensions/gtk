@@ -83,6 +83,11 @@ class GtkWidget extends GObject
 
     public function setVisible(bool $visible): void {}
 
+    public function getOpacity(): float {}
+
+    /** GTK clamps $opacity to 0.0..1.0; CSS opacity on the widget multiplies with it. */
+    public function setOpacity(float $opacity): void {}
+
     public function getHexpand(): bool {}
 
     public function setHexpand(bool $expand): void {}

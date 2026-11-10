@@ -23,6 +23,10 @@ class GtkWindow extends GtkWidget implements GtkNative, GtkRoot
 
     public function setChild(?GtkWidget $child): void {}
 
+    public function getTitlebar(): ?GtkWidget {}
+
+    public function setTitlebar(?GtkWidget $titlebar): void {}
+
     public function present(): void {}
 
     public function close(): void {}

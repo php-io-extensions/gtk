@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 279d16657bf9c7fb9884757bc80c4749eb05c4dd */
+ * Stub hash: 2e4448710a9dca19e7e661b0fe282bf6b8cd7fa2 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -163,6 +163,29 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_GtkToggleButton_getActive arginfo_class_GtkLabel_getWrap
 
 #define arginfo_class_GtkToggleButton_setActive arginfo_class_GtkSwitch_setActive
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkToggleButton_setGroup, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, group, GtkToggleButton, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkHeaderBar_new, 0, 0, GtkHeaderBar, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkHeaderBar_packStart, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkHeaderBar_packEnd arginfo_class_GtkHeaderBar_packStart
+
+#define arginfo_class_GtkHeaderBar_getTitleWidget arginfo_class_GtkButton_getChild
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkHeaderBar_setTitleWidget, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, titleWidget, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkHeaderBar_getShowTitleButtons arginfo_class_GtkLabel_getWrap
+
+#define arginfo_class_GtkHeaderBar_setShowTitleButtons arginfo_class_GtkLabel_setUseMarkup
 
 #define arginfo_class_GtkEntryBuffer_getText arginfo_class_GtkLabel_getText
 
@@ -590,6 +613,14 @@ ZEND_METHOD(GtkSwitch, setActive);
 ZEND_METHOD(GtkToggleButton, newWithLabel);
 ZEND_METHOD(GtkToggleButton, getActive);
 ZEND_METHOD(GtkToggleButton, setActive);
+ZEND_METHOD(GtkToggleButton, setGroup);
+ZEND_METHOD(GtkHeaderBar, new);
+ZEND_METHOD(GtkHeaderBar, packStart);
+ZEND_METHOD(GtkHeaderBar, packEnd);
+ZEND_METHOD(GtkHeaderBar, getTitleWidget);
+ZEND_METHOD(GtkHeaderBar, setTitleWidget);
+ZEND_METHOD(GtkHeaderBar, getShowTitleButtons);
+ZEND_METHOD(GtkHeaderBar, setShowTitleButtons);
 ZEND_METHOD(GtkEntryBuffer, getText);
 ZEND_METHOD(GtkEntryBuffer, setText);
 ZEND_METHOD(GtkEntry, new);
@@ -790,6 +821,18 @@ static const zend_function_entry class_GtkToggleButton_methods[] = {
 	ZEND_ME(GtkToggleButton, newWithLabel, arginfo_class_GtkToggleButton_newWithLabel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkToggleButton, getActive, arginfo_class_GtkToggleButton_getActive, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkToggleButton, setActive, arginfo_class_GtkToggleButton_setActive, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkToggleButton, setGroup, arginfo_class_GtkToggleButton_setGroup, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkHeaderBar_methods[] = {
+	ZEND_ME(GtkHeaderBar, new, arginfo_class_GtkHeaderBar_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkHeaderBar, packStart, arginfo_class_GtkHeaderBar_packStart, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkHeaderBar, packEnd, arginfo_class_GtkHeaderBar_packEnd, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkHeaderBar, getTitleWidget, arginfo_class_GtkHeaderBar_getTitleWidget, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkHeaderBar, setTitleWidget, arginfo_class_GtkHeaderBar_setTitleWidget, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkHeaderBar, getShowTitleButtons, arginfo_class_GtkHeaderBar_getShowTitleButtons, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkHeaderBar, setShowTitleButtons, arginfo_class_GtkHeaderBar_setShowTitleButtons, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -1172,6 +1215,16 @@ static zend_class_entry *register_class_GtkToggleButton(zend_class_entry *class_
 
 	INIT_CLASS_ENTRY(ce, "GtkToggleButton", class_GtkToggleButton_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkButton, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkHeaderBar(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkHeaderBar", class_GtkHeaderBar_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;
 }

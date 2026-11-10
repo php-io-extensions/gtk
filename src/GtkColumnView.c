@@ -49,6 +49,10 @@ void phpgtk_register_GtkColumnView(void)
 	phpgtk_object_setup(phpgtk_ce_GtkListView);
 	phpgtk_map_gtype("GtkListView", phpgtk_ce_GtkListView);
 
+	phpgtk_ce_GtkGridView = register_class_GtkGridView(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkGridView);
+	phpgtk_map_gtype("GtkGridView", phpgtk_ce_GtkGridView);
+
 	phpgtk_ce_GtkColumnView = register_class_GtkColumnView(phpgtk_ce_GtkWidget);
 	phpgtk_object_setup(phpgtk_ce_GtkColumnView);
 	phpgtk_map_gtype("GtkColumnView", phpgtk_ce_GtkColumnView);
@@ -348,6 +352,80 @@ ZEND_METHOD(GtkListView, getSingleClickActivate)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	RETURN_BOOL(gtk_list_view_get_single_click_activate(THIS(GTK_LIST_VIEW)));
+}
+
+/* ---- GtkGridView ------------------------------------------------------- */
+
+ZEND_METHOD(GtkGridView, new)
+{
+	zend_object *model = NULL;
+	zend_object *factory = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(model, phpgtk_ce_GtkSelectionModel)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(factory, phpgtk_ce_GtkListItemFactory)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-grid-view */
+
+	/* Both arguments are (transfer full); the view gets its own references. */
+	phpgtk_box_gobject(return_value, gtk_grid_view_new(
+		model != NULL ? g_object_ref(GTK_SELECTION_MODEL(PHPGTK_PTR(model))) : NULL,
+		factory != NULL ? g_object_ref(GTK_LIST_ITEM_FACTORY(PHPGTK_PTR(factory))) : NULL));
+}
+
+ZEND_METHOD(GtkGridView, getMinColumns)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_grid_view_get_min_columns(THIS(GTK_GRID_VIEW)));
+}
+
+ZEND_METHOD(GtkGridView, setMinColumns)
+{
+	zend_long columns;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(columns)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_grid_view_set_min_columns(THIS(GTK_GRID_VIEW), (guint) columns);
+}
+
+ZEND_METHOD(GtkGridView, getMaxColumns)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_grid_view_get_max_columns(THIS(GTK_GRID_VIEW)));
+}
+
+ZEND_METHOD(GtkGridView, setMaxColumns)
+{
+	zend_long columns;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(columns)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_grid_view_set_max_columns(THIS(GTK_GRID_VIEW), (guint) columns);
+}
+
+ZEND_METHOD(GtkGridView, setSingleClickActivate)
+{
+	bool single;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(single)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_grid_view_set_single_click_activate(THIS(GTK_GRID_VIEW), single);
+}
+
+ZEND_METHOD(GtkGridView, getSingleClickActivate)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_grid_view_get_single_click_activate(THIS(GTK_GRID_VIEW)));
 }
 
 ZEND_METHOD(GtkColumnView, appendColumn)

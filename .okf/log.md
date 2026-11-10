@@ -1,5 +1,13 @@
 # Log
 
+## 2026-11-10
+
+* `GtkGridView` (new, min/max columns, single-click activate; signal `activate`), `GtkHeaderBar` (new, packStart, packEnd, title widget, show title buttons), `GtkWindow` getTitlebar / setTitlebar, `GtkToggleButton::setGroup`. `tests/GridViewAndHeaderBarTest.php`. New sites `gtk-initialized-grid-view` and `-header-bar` (each constructor before `gtk_init()` is SIGSEGV; probes in `tests/Probes/InitializedTest.php`).
+
+## 2026-11-09
+
+* `GtkWidget` `getOpacity` / `setOpacity` (`gtk_widget_get_opacity`, `gtk_widget_set_opacity`), no refusal. `tests/LayoutTest.php` (11 passed, NTS): a widget takes the opacity it is set to in GTK's 8-bit steps, and GTK clamps 3.0 to 1.0.
+
 ## 2026-11-08
 
 * **Version**: 0.11.1 in `PHP_GTK_VERSION` (`php_gtk.h`) and the version test; nothing else changed.

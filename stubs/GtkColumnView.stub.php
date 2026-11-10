@@ -86,6 +86,28 @@ class GtkListView extends GtkWidget
 }
 
 /**
+ * A grid of cells, one per model item, each built by the factory. Signal activate(guint position).
+ *
+ * @not-serializable
+ */
+class GtkGridView extends GtkWidget
+{
+    public static function new(?GtkSelectionModel $model, ?GtkListItemFactory $factory): GtkGridView {}
+
+    public function getMinColumns(): int {}
+
+    public function setMinColumns(int $minColumns): void {}
+
+    public function getMaxColumns(): int {}
+
+    public function setMaxColumns(int $maxColumns): void {}
+
+    public function setSingleClickActivate(bool $singleClickActivate): void {}
+
+    public function getSingleClickActivate(): bool {}
+}
+
+/**
  * @not-serializable
  */
 class GtkColumnView extends GtkWidget

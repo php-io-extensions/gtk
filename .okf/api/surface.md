@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-sonnet/5.5, at: 2026-11-06T22:30:00Z }
+generated: { by: claude-opus/5.5, at: 2026-11-10T12:00:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -55,7 +55,7 @@ Naming, all fixed:
 | `GVariant` | new_boolean/string/int32/double (`newString` → `?GVariant`), typed getters (`getString(): ?string`; GLib criticals a mismatched type), type string, is_of_type, print |
 | `GMenuModel`, `GMenu`, `GMenuItem` | n_items, is_mutable; append/append_item/append_section/append_submenu/prepend/insert/remove/remove_all/freeze; label, detailed action, action+target, attribute values (`accel` etc.), submenu, section |
 | `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner`; `pointer()` |
-| `GtkWidget` | show/hide (`gtk_widget_show`/`hide`), set/get_visible, realized, mapped, hexpand/vexpand, parent, `insert_action_group(string, ?GActionGroup)`, `activateActionVariant(string, ?GVariant): bool`, grab_focus, `childFocus(GtkDirectionType): bool` (GTK's Tab move inside the widget; on a window from its focus widget), has_focus, add/remove_controller, pick (GTK_PICK_*), get_display |
+| `GtkWidget` | show/hide (`gtk_widget_show`/`hide`), set/get_visible, set/get_opacity (GTK clamps to 0..1 and keeps 8 bits: 0.25 reads back 64/255), realized, mapped, hexpand/vexpand, parent, `insert_action_group(string, ?GActionGroup)`, `activateActionVariant(string, ?GVariant): bool`, grab_focus, `childFocus(GtkDirectionType): bool` (GTK's Tab move inside the widget; on a window from its focus widget), has_focus, add/remove_controller, pick (GTK_PICK_*), get_display |
 | `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request, width/height, sensitive, `is_sensitive`, `get_color`, margins, add/remove/has_css_class, `measure`, `computePoint(target, GraphenePoint, ?GraphenePoint &$out): bool`, `computeBounds(target, ?GrapheneRect &$out): bool` (border box), first_child, next_sibling, `getNative(): ?GtkNative`, `getRoot(): ?GtkRoot` |
 | `GtkNative`, `GtkRoot` | `getSurface(): ?GdkSurface`, `realize`, `getSurfaceTransform(?float &$x, ?float &$y)`, static `getForSurface`; implemented by windows and popovers |
 | `GraphenePoint`, `GrapheneSize`, `GrapheneRect` | the graphene structs (single-precision floats), built from their fields |

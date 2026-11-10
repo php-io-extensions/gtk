@@ -218,6 +218,30 @@ class GtkToggleButton extends GtkButton
     public function getActive(): bool {}
 
     public function setActive(bool $isActive): void {}
+
+    public function setGroup(?GtkToggleButton $group): void {}
+}
+
+/**
+ * A title bar with widgets packed at its start and end and a title widget in the middle.
+ *
+ * @not-serializable
+ */
+class GtkHeaderBar extends GtkWidget
+{
+    public static function new(): GtkHeaderBar {}
+
+    public function packStart(GtkWidget $child): void {}
+
+    public function packEnd(GtkWidget $child): void {}
+
+    public function getTitleWidget(): ?GtkWidget {}
+
+    public function setTitleWidget(?GtkWidget $titleWidget): void {}
+
+    public function getShowTitleButtons(): bool {}
+
+    public function setShowTitleButtons(bool $setting): void {}
 }
 
 /**

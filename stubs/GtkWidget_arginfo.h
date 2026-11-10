@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 30f9a773cea79c0fd1d0c66c2bc861731c8dcf9f */
+ * Stub hash: 35966e82cab892fc92bd9fe4bb5e0de8d5834e50 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -30,6 +30,13 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setVisible, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, visible, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_getOpacity, 0, 0, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setOpacity, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, opacity, IS_DOUBLE, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_getHexpand arginfo_class_GtkWidget_getVisible
@@ -336,6 +343,8 @@ ZEND_METHOD(GtkWidget, getVisible);
 ZEND_METHOD(GtkWidget, getRealized);
 ZEND_METHOD(GtkWidget, getMapped);
 ZEND_METHOD(GtkWidget, setVisible);
+ZEND_METHOD(GtkWidget, getOpacity);
+ZEND_METHOD(GtkWidget, setOpacity);
 ZEND_METHOD(GtkWidget, getHexpand);
 ZEND_METHOD(GtkWidget, setHexpand);
 ZEND_METHOD(GtkWidget, getVexpand);
@@ -445,6 +454,8 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, getRealized, arginfo_class_GtkWidget_getRealized, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getMapped, arginfo_class_GtkWidget_getMapped, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setVisible, arginfo_class_GtkWidget_setVisible, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getOpacity, arginfo_class_GtkWidget_getOpacity, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setOpacity, arginfo_class_GtkWidget_setOpacity, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getHexpand, arginfo_class_GtkWidget_getHexpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setHexpand, arginfo_class_GtkWidget_setHexpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getVexpand, arginfo_class_GtkWidget_getVexpand, ZEND_ACC_PUBLIC)

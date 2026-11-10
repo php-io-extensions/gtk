@@ -130,6 +130,24 @@ ZEND_METHOD(GtkWidget, setVisible)
 	gtk_widget_set_visible(THIS_WIDGET, visible);
 }
 
+ZEND_METHOD(GtkWidget, getOpacity)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_DOUBLE(gtk_widget_get_opacity(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, setOpacity)
+{
+	double opacity;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_DOUBLE(opacity)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_widget_set_opacity(THIS_WIDGET, opacity);
+}
+
 ZEND_METHOD(GtkWidget, getHexpand)
 {
 	ZEND_PARSE_PARAMETERS_NONE();

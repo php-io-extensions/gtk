@@ -197,6 +197,8 @@ extern zend_class_entry *phpgtk_ce_GtkPositionType;
 extern zend_class_entry *phpgtk_ce_GtkMenuButton;
 extern zend_class_entry *phpgtk_ce_GtkScrollbar;
 extern zend_class_entry *phpgtk_ce_GtkListView;
+extern zend_class_entry *phpgtk_ce_GtkGridView;
+extern zend_class_entry *phpgtk_ce_GtkHeaderBar;
 extern zend_class_entry *phpgtk_ce_GtkPopoverMenu;
 extern zend_class_entry *phpgtk_ce_GtkWindow;
 extern zend_class_entry *phpgtk_ce_GtkApplicationWindow;

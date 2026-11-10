@@ -21,6 +21,7 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkCheckButton, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkSwitch, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkToggleButton, phpgtk_ce_GtkButton);
+	PHPGTK_WIDGET_CLASS(GtkHeaderBar, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkEntryBuffer, phpgtk_ce_GObject);
 	PHPGTK_WIDGET_CLASS(GtkEntry, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkTextBuffer, phpgtk_ce_GObject);
@@ -370,6 +371,71 @@ PHPGTK_SET_BOOL(GtkSwitch, setActive, GTK_SWITCH, gtk_switch_set_active)
 PHPGTK_NEW_WITH_LABEL(GtkToggleButton, gtk_toggle_button_new_with_label)
 PHPGTK_GET_BOOL(GtkToggleButton, getActive, GTK_TOGGLE_BUTTON, gtk_toggle_button_get_active)
 PHPGTK_SET_BOOL(GtkToggleButton, setActive, GTK_TOGGLE_BUTTON, gtk_toggle_button_set_active)
+
+ZEND_METHOD(GtkToggleButton, setGroup)
+{
+	zend_object *group = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(group, phpgtk_ce_GtkToggleButton)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_toggle_button_set_group(THIS(GTK_TOGGLE_BUTTON), (GtkToggleButton *) PHPGTK_OPTIONAL_PTR(group));
+}
+
+/* ---- GtkHeaderBar ------------------------------------------------------ */
+
+ZEND_METHOD(GtkHeaderBar, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-header-bar */
+
+	phpgtk_box_gobject(return_value, gtk_header_bar_new());
+}
+
+ZEND_METHOD(GtkHeaderBar, packStart)
+{
+	zend_object *child;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_header_bar_pack_start(THIS(GTK_HEADER_BAR), GTK_WIDGET(PHPGTK_PTR(child)));
+}
+
+ZEND_METHOD(GtkHeaderBar, packEnd)
+{
+	zend_object *child;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_header_bar_pack_end(THIS(GTK_HEADER_BAR), GTK_WIDGET(PHPGTK_PTR(child)));
+}
+
+ZEND_METHOD(GtkHeaderBar, getTitleWidget)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_header_bar_get_title_widget(THIS(GTK_HEADER_BAR)));
+}
+
+ZEND_METHOD(GtkHeaderBar, setTitleWidget)
+{
+	zend_object *title = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(title, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_header_bar_set_title_widget(THIS(GTK_HEADER_BAR), (GtkWidget *) PHPGTK_OPTIONAL_PTR(title));
+}
+
+PHPGTK_GET_BOOL(GtkHeaderBar, getShowTitleButtons, GTK_HEADER_BAR, gtk_header_bar_get_show_title_buttons)
+PHPGTK_SET_BOOL(GtkHeaderBar, setShowTitleButtons, GTK_HEADER_BAR, gtk_header_bar_set_show_title_buttons)
 
 /* ---- GtkEntryBuffer ---------------------------------------------------- */
 

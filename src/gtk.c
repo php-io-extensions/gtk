@@ -132,6 +132,8 @@ zend_class_entry *phpgtk_ce_GtkPositionType;
 zend_class_entry *phpgtk_ce_GtkMenuButton;
 zend_class_entry *phpgtk_ce_GtkScrollbar;
 zend_class_entry *phpgtk_ce_GtkListView;
+zend_class_entry *phpgtk_ce_GtkGridView;
+zend_class_entry *phpgtk_ce_GtkHeaderBar;
 zend_class_entry *phpgtk_ce_GtkPopoverMenu;
 zend_class_entry *phpgtk_ce_GtkWindow;
 zend_class_entry *phpgtk_ce_GtkApplicationWindow;

@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 beforeEach(fn () => testApplication());
 
+it('gives a widget the opacity it is set to, in GTK\'s 8-bit steps and clamped by GTK', function (): void {
+    $label = GtkLabel::new('x');
+
+    expect($label->getOpacity())->toEqualWithDelta(1.0, 0.0001);
+
+    // GTK keeps opacity as an 8-bit value: 0.25 reads back as 64/255.
+    $label->setOpacity(0.25);
+    expect($label->getOpacity())->toEqualWithDelta(0.25, 1 / 255);
+
+    $label->setOpacity(3.0);
+    expect($label->getOpacity())->toEqualWithDelta(1.0, 0.0001);
+});
+
 it('aligns, sizes and styles a widget', function (): void {
     $label = GtkLabel::new('x');
     $label->setHalign(GtkAlign::CENTER);

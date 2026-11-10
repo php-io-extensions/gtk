@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 70264af78ad8476f12144c3e9aaf66ada77a9a47 */
+ * Stub hash: e8f36265d6d0a68e75941f88fce6a30dab920b70 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWindow_new, 0, 0, GtkWindow, 1)
 ZEND_END_ARG_INFO()
@@ -24,6 +24,12 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setChild, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWindow_getTitlebar arginfo_class_GtkWindow_getChild
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_setTitlebar, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, titlebar, GtkWidget, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWindow_present, 0, 0, IS_VOID, 0)
@@ -133,6 +139,8 @@ ZEND_METHOD(GtkWindow, getDefaultSize);
 ZEND_METHOD(GtkWindow, setDefaultSize);
 ZEND_METHOD(GtkWindow, getChild);
 ZEND_METHOD(GtkWindow, setChild);
+ZEND_METHOD(GtkWindow, getTitlebar);
+ZEND_METHOD(GtkWindow, setTitlebar);
 ZEND_METHOD(GtkWindow, present);
 ZEND_METHOD(GtkWindow, close);
 ZEND_METHOD(GtkWindow, destroy);
@@ -176,6 +184,8 @@ static const zend_function_entry class_GtkWindow_methods[] = {
 	ZEND_ME(GtkWindow, setDefaultSize, arginfo_class_GtkWindow_setDefaultSize, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, getChild, arginfo_class_GtkWindow_getChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, setChild, arginfo_class_GtkWindow_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, getTitlebar, arginfo_class_GtkWindow_getTitlebar, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWindow, setTitlebar, arginfo_class_GtkWindow_setTitlebar, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, present, arginfo_class_GtkWindow_present, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, close, arginfo_class_GtkWindow_close, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWindow, destroy, arginfo_class_GtkWindow_destroy, ZEND_ACC_PUBLIC)
