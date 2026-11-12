@@ -148,6 +148,24 @@ PHPGTK_SET_STRING(GtkLabel, setText, GTK_LABEL, gtk_label_set_text)
 PHPGTK_GET_BOOL(GtkLabel, getWrap, GTK_LABEL, gtk_label_get_wrap)
 PHPGTK_SET_BOOL(GtkLabel, setWrap, GTK_LABEL, gtk_label_set_wrap)
 PHPGTK_SET_ENUM(GtkLabel, setEllipsize, GTK_LABEL, gtk_label_set_ellipsize, phpgtk_ce_PangoEllipsizeMode, PangoEllipsizeMode)
+
+ZEND_METHOD(GtkLabel, getLines)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_label_get_lines(THIS(GTK_LABEL)));
+}
+
+ZEND_METHOD(GtkLabel, setLines)
+{
+	zend_long lines;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(lines)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_label_set_lines(THIS(GTK_LABEL), (int) lines);
+}
 PHPGTK_GET_DOUBLE(GtkLabel, getXalign, GTK_LABEL, gtk_label_get_xalign)
 PHPGTK_SET_DOUBLE(GtkLabel, setXalign, GTK_LABEL, gtk_label_set_xalign)
 PHPGTK_SET_ENUM(GtkLabel, setJustify, GTK_LABEL, gtk_label_set_justify, phpgtk_ce_GtkJustification, GtkJustification)
@@ -208,6 +226,25 @@ ZEND_METHOD(GtkImage, newFromIconName)
 }
 
 PHPGTK_GET_STRING(GtkImage, getIconName, GTK_IMAGE, gtk_image_get_icon_name)
+PHPGTK_SET_STRING_OR_NULL(GtkImage, setFromFile, GTK_IMAGE, gtk_image_set_from_file)
+
+ZEND_METHOD(GtkImage, getPixelSize)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_image_get_pixel_size(THIS(GTK_IMAGE)));
+}
+
+ZEND_METHOD(GtkImage, setPixelSize)
+{
+	zend_long size;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(size)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_image_set_pixel_size(THIS(GTK_IMAGE), (int) size);
+}
 
 /* ---- GtkMenuButton ----------------------------------------------------- */
 

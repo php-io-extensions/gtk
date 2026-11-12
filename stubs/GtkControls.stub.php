@@ -59,6 +59,10 @@ class GtkLabel extends GtkWidget
 
     public function setEllipsize(PangoEllipsizeMode $mode): void {}
 
+    public function getLines(): int {}
+
+    public function setLines(int $lines): void {}
+
     public function getXalign(): float {}
 
     public function setXalign(float $xalign): void {}
@@ -174,6 +178,13 @@ class GtkImage extends GtkWidget
     public static function newFromIconName(?string $iconName): GtkImage {}
 
     public function getIconName(): ?string {}
+
+    /** A file GTK cannot read shows the broken-image icon. */
+    public function setFromFile(?string $filename): void {}
+
+    public function getPixelSize(): int {}
+
+    public function setPixelSize(int $pixelSize): void {}
 }
 
 /**

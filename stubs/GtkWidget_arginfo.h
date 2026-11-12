@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 35966e82cab892fc92bd9fe4bb5e0de8d5834e50 */
+ * Stub hash: d4fe1e541693adcc46a0a504c6c5c7c30371d388 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -271,6 +271,21 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkFixed_getChildPosition,
 	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkOverlay_new, 0, 0, GtkOverlay, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkOverlay_getChild arginfo_class_GtkWidget_getParent
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_setChild, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_addOverlay, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, widget, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkOverlay_removeOverlay arginfo_class_GtkOverlay_addOverlay
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopoverMenuBar_newFromModel, 0, 1, GtkPopoverMenuBar, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
 ZEND_END_ARG_INFO()
@@ -309,9 +324,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopover_new, 0, 0, GtkPopover, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPopover_setChild, 0, 1, IS_VOID, 0)
-	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkPopover_setChild arginfo_class_GtkOverlay_setChild
 
 #define arginfo_class_GtkPopover_getChild arginfo_class_GtkWidget_getParent
 
@@ -411,6 +424,11 @@ ZEND_METHOD(GtkFixed, put);
 ZEND_METHOD(GtkFixed, move);
 ZEND_METHOD(GtkFixed, remove);
 ZEND_METHOD(GtkFixed, getChildPosition);
+ZEND_METHOD(GtkOverlay, new);
+ZEND_METHOD(GtkOverlay, getChild);
+ZEND_METHOD(GtkOverlay, setChild);
+ZEND_METHOD(GtkOverlay, addOverlay);
+ZEND_METHOD(GtkOverlay, removeOverlay);
 ZEND_METHOD(GtkPopoverMenuBar, newFromModel);
 ZEND_METHOD(GtkPopoverMenuBar, getMenuModel);
 ZEND_METHOD(GtkPopoverMenuBar, setMenuModel);
@@ -550,6 +568,15 @@ static const zend_function_entry class_GtkFixed_methods[] = {
 	ZEND_ME(GtkFixed, move, arginfo_class_GtkFixed_move, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkFixed, remove, arginfo_class_GtkFixed_remove, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkFixed, getChildPosition, arginfo_class_GtkFixed_getChildPosition, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkOverlay_methods[] = {
+	ZEND_ME(GtkOverlay, new, arginfo_class_GtkOverlay_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkOverlay, getChild, arginfo_class_GtkOverlay_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, setChild, arginfo_class_GtkOverlay_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, addOverlay, arginfo_class_GtkOverlay_addOverlay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, removeOverlay, arginfo_class_GtkOverlay_removeOverlay, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -808,6 +835,16 @@ static zend_class_entry *register_class_GtkFixed(zend_class_entry *class_entry_G
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkFixed", class_GtkFixed_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkOverlay(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkOverlay", class_GtkOverlay_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;

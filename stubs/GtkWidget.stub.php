@@ -295,6 +295,22 @@ class GtkFixed extends GtkWidget
 /**
  * @not-serializable
  */
+class GtkOverlay extends GtkWidget
+{
+    public static function new(): GtkOverlay {}
+
+    public function getChild(): ?GtkWidget {}
+
+    public function setChild(?GtkWidget $child): void {}
+
+    public function addOverlay(GtkWidget $widget): void {}
+
+    public function removeOverlay(GtkWidget $widget): void {}
+}
+
+/**
+ * @not-serializable
+ */
 class GtkPopoverMenuBar extends GtkWidget
 {
     public static function newFromModel(?GMenuModel $model): GtkPopoverMenuBar {}

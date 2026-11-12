@@ -128,6 +128,7 @@ extern zend_class_entry *phpgtk_ce_GtkIMMulticontext;
 extern zend_class_entry *phpgtk_ce_GtkBox;
 extern zend_class_entry *phpgtk_ce_GtkGrid;
 extern zend_class_entry *phpgtk_ce_GtkFixed;
+extern zend_class_entry *phpgtk_ce_GtkOverlay;
 extern zend_class_entry *phpgtk_ce_GtkCssProvider;
 extern zend_class_entry *phpgtk_ce_GdkDisplay;
 extern zend_class_entry *phpgtk_ce_GdkSurface;

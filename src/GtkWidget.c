@@ -62,6 +62,10 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_object_setup(phpgtk_ce_GtkFixed);
 	phpgtk_map_gtype("GtkFixed", phpgtk_ce_GtkFixed);
 
+	phpgtk_ce_GtkOverlay = register_class_GtkOverlay(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkOverlay);
+	phpgtk_map_gtype("GtkOverlay", phpgtk_ce_GtkOverlay);
+
 	phpgtk_ce_GtkPopoverMenuBar = register_class_GtkPopoverMenuBar(phpgtk_ce_GtkWidget);
 	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenuBar);
 	phpgtk_map_gtype("GtkPopoverMenuBar", phpgtk_ce_GtkPopoverMenuBar);
@@ -985,6 +989,59 @@ ZEND_METHOD(GtkFixed, getChildPosition)
 	array_init_size(return_value, 2);
 	add_next_index_double(return_value, x);
 	add_next_index_double(return_value, y);
+}
+
+/* ---- GtkOverlay -------------------------------------------------------- */
+
+#define THIS_OVERLAY GTK_OVERLAY(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkOverlay, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-overlay */
+
+	phpgtk_box_gobject(return_value, gtk_overlay_new());
+}
+
+ZEND_METHOD(GtkOverlay, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_overlay_get_child(THIS_OVERLAY));
+}
+
+ZEND_METHOD(GtkOverlay, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_overlay_set_child(THIS_OVERLAY, (GtkWidget *) PHPGTK_OPTIONAL_PTR(child));
+}
+
+ZEND_METHOD(GtkOverlay, addOverlay)
+{
+	zend_object *widget;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_overlay_add_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)));
+}
+
+ZEND_METHOD(GtkOverlay, removeOverlay)
+{
+	zend_object *widget;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_overlay_remove_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)));
 }
 
 /* ---- GtkPopoverMenuBar ------------------------------------------------- */

@@ -51,6 +51,7 @@ zend_class_entry *phpgtk_ce_GtkIMMulticontext;
 zend_class_entry *phpgtk_ce_GtkBox;
 zend_class_entry *phpgtk_ce_GtkGrid;
 zend_class_entry *phpgtk_ce_GtkFixed;
+zend_class_entry *phpgtk_ce_GtkOverlay;
 zend_class_entry *phpgtk_ce_GtkCssProvider;
 zend_class_entry *phpgtk_ce_GdkDisplay;
 zend_class_entry *phpgtk_ce_GdkSurface;

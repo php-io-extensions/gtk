@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 2e4448710a9dca19e7e661b0fe282bf6b8cd7fa2 */
+ * Stub hash: c874a0432f86a5b2cfcae00200c8176c09e3acc9 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -21,6 +21,13 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_setEllipsize, 0, 1, IS_VOID, 0)
 	ZEND_ARG_OBJ_INFO(0, mode, PangoEllipsizeMode, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_getLines, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_setLines, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, lines, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkLabel_getXalign, 0, 0, IS_DOUBLE, 0)
@@ -132,6 +139,16 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkImage_newFromIconName, 0
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkImage_getIconName arginfo_class_GtkLabel_getCurrentUri
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkImage_setFromFile, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkImage_getPixelSize arginfo_class_GtkLabel_getLines
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkImage_setPixelSize, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, pixelSize, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCheckButton_newWithLabel, 0, 1, GtkCheckButton, 0)
 	ZEND_ARG_TYPE_INFO(0, label, IS_STRING, 0)
@@ -275,8 +292,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextBuffer_getIterAtMark
 	ZEND_ARG_OBJ_INFO(0, mark, GtkTextMark, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_getLineCount, 0, 0, IS_LONG, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkTextBuffer_getLineCount arginfo_class_GtkLabel_getLines
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkTextView_new, 0, 0, GtkTextView, 0)
 ZEND_END_ARG_INFO()
@@ -372,7 +388,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkDropDown_newFromStrings,
 	ZEND_ARG_TYPE_INFO(0, strings, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkDropDown_getSelected arginfo_class_GtkTextBuffer_getLineCount
+#define arginfo_class_GtkDropDown_getSelected arginfo_class_GtkLabel_getLines
 
 #define arginfo_class_GtkDropDown_setSelected arginfo_class_GtkStringList_remove
 
@@ -422,9 +438,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPicture_newForFilename, 
 	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkPicture_setFilename, 0, 1, IS_VOID, 0)
-	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 1)
-ZEND_END_ARG_INFO()
+#define arginfo_class_GtkPicture_setFilename arginfo_class_GtkImage_setFromFile
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPicture_getContentFit, 0, 0, GtkContentFit, 0)
 ZEND_END_ARG_INFO()
@@ -478,7 +492,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkPaned_setEndChild arginfo_class_GtkButton_setChild
 
-#define arginfo_class_GtkPaned_getPosition arginfo_class_GtkTextBuffer_getLineCount
+#define arginfo_class_GtkPaned_getPosition arginfo_class_GtkLabel_getLines
 
 #define arginfo_class_GtkPaned_setPosition arginfo_class_GtkStringList_remove
 
@@ -530,9 +544,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkNotebook_pageNum, 0, 1,
 	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_GtkNotebook_getNPages arginfo_class_GtkTextBuffer_getLineCount
+#define arginfo_class_GtkNotebook_getNPages arginfo_class_GtkLabel_getLines
 
-#define arginfo_class_GtkNotebook_getCurrentPage arginfo_class_GtkTextBuffer_getLineCount
+#define arginfo_class_GtkNotebook_getCurrentPage arginfo_class_GtkLabel_getLines
 
 #define arginfo_class_GtkNotebook_setCurrentPage arginfo_class_GtkNotebook_removePage
 
@@ -567,6 +581,8 @@ ZEND_METHOD(GtkLabel, setText);
 ZEND_METHOD(GtkLabel, getWrap);
 ZEND_METHOD(GtkLabel, setWrap);
 ZEND_METHOD(GtkLabel, setEllipsize);
+ZEND_METHOD(GtkLabel, getLines);
+ZEND_METHOD(GtkLabel, setLines);
 ZEND_METHOD(GtkLabel, getXalign);
 ZEND_METHOD(GtkLabel, setXalign);
 ZEND_METHOD(GtkLabel, setJustify);
@@ -602,6 +618,9 @@ ZEND_METHOD(GtkLinkButton, getVisited);
 ZEND_METHOD(GtkLinkButton, setVisited);
 ZEND_METHOD(GtkImage, newFromIconName);
 ZEND_METHOD(GtkImage, getIconName);
+ZEND_METHOD(GtkImage, setFromFile);
+ZEND_METHOD(GtkImage, getPixelSize);
+ZEND_METHOD(GtkImage, setPixelSize);
 ZEND_METHOD(GtkCheckButton, newWithLabel);
 ZEND_METHOD(GtkCheckButton, getActive);
 ZEND_METHOD(GtkCheckButton, setActive);
@@ -743,6 +762,8 @@ static const zend_function_entry class_GtkLabel_methods[] = {
 	ZEND_ME(GtkLabel, getWrap, arginfo_class_GtkLabel_getWrap, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setWrap, arginfo_class_GtkLabel_setWrap, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setEllipsize, arginfo_class_GtkLabel_setEllipsize, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, getLines, arginfo_class_GtkLabel_getLines, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkLabel, setLines, arginfo_class_GtkLabel_setLines, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, getXalign, arginfo_class_GtkLabel_getXalign, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setXalign, arginfo_class_GtkLabel_setXalign, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkLabel, setJustify, arginfo_class_GtkLabel_setJustify, ZEND_ACC_PUBLIC)
@@ -798,6 +819,9 @@ static const zend_function_entry class_GtkLinkButton_methods[] = {
 static const zend_function_entry class_GtkImage_methods[] = {
 	ZEND_ME(GtkImage, newFromIconName, arginfo_class_GtkImage_newFromIconName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkImage, getIconName, arginfo_class_GtkImage_getIconName, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkImage, setFromFile, arginfo_class_GtkImage_setFromFile, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkImage, getPixelSize, arginfo_class_GtkImage_getPixelSize, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkImage, setPixelSize, arginfo_class_GtkImage_setPixelSize, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 

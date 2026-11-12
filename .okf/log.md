@@ -2,6 +2,12 @@
 
 ## 2026-11-10
 
+* `GtkImage` setFromFile (a file GTK cannot read shows `image-missing`), getPixelSize / setPixelSize, no refusal. `tests/OverlayTest.php`.
+
+* `GtkLabel` getLines / setLines (`gtk_label_get_lines`, `gtk_label_set_lines`), no refusal. `tests/OverlayTest.php`.
+
+* `GtkOverlay` (new, getChild / setChild, addOverlay, removeOverlay). `tests/OverlayTest.php`. New site `gtk-initialized-overlay` (the constructor before `gtk_init()` is SIGSEGV; probe in `tests/Probes/InitializedTest.php`).
+
 * `GtkGridView` (new, min/max columns, single-click activate; signal `activate`), `GtkHeaderBar` (new, packStart, packEnd, title widget, show title buttons), `GtkWindow` getTitlebar / setTitlebar, `GtkToggleButton::setGroup`. `tests/GridViewAndHeaderBarTest.php`. New sites `gtk-initialized-grid-view` and `-header-bar` (each constructor before `gtk_init()` is SIGSEGV; probes in `tests/Probes/InitializedTest.php`).
 
 ## 2026-11-09

@@ -45,6 +45,7 @@ it('refuses a widget made through its own site before GTK is initialised, which 
     'gtk-initialized-image' => ['GtkImage::newFromIconName("dialog-warning"); return "built";'],
     'gtk-initialized-grid-view' => ['GtkGridView::new(null, null); return "built";'],
     'gtk-initialized-header-bar' => ['GtkHeaderBar::new(); return "built";'],
+    'gtk-initialized-overlay' => ['GtkOverlay::new(); return "built";'],
 ]);
 
 // Site gtk-initialized-media-file: GtkMediaFile::new goes through the gtk-initialized check.

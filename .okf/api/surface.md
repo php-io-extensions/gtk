@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-11-10T12:00:00Z }
+generated: { by: claude-opus/5.5, at: 2026-11-10T15:00:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -64,6 +64,7 @@ Naming, all fixed:
 | `GtkAboutDialog` | new; program name, version, copyright, comments, website |
 | `GtkBox`, `GtkPopoverMenuBar` | new(orientation, spacing), append/prepend/remove, insert_child_after, reorder_child_after, spacing, homogeneous; new_from_model, menu model |
 | `GtkGrid`, `GtkFixed` | new, `attach(child, column, row, width, height)`, remove, get_child_at, row/column spacing; new, put, move, remove, `get_child_position` |
+| `GtkOverlay` | new, child, add_overlay, remove_overlay |
 | `GtkPaned`, `GtkNotebook` | start/end child, position, resize/shrink, wide handle; append_page, remove_page, current page, nth_page, page_num, n_pages, tab label text, show_tabs, scrollable; `switch-page` |
 | `GtkPopover`, `GtkPopoverMenu` | `setPointingTo(?GdkRectangle)`, `getPointingTo(?GdkRectangle &$rect): bool`, has_arrow, popup, popdown, `setParent`/`unparent` (bound on popovers only: GtkWidget keeps no unparent, which leaves container child pointers dangling), signal `closed`; newFromModel, getMenuModel |
 | `GtkCssProvider`, `GdkDisplay` | new, `load_from_string`; get_default, sync; `gtk_style_context_add/remove_provider_for_display(display, GtkStyleProvider, …)`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
@@ -77,7 +78,7 @@ Naming, all fixed:
 | `GdkMemoryTextureBuilder` | GTK 4.16+ (refused on an older running GTK): new, `setBytes(GBytes)`, width, height, stride, format, `setUpdateTexture(?GdkTexture)`, `setUpdateRegion(?CairoRegion)` (all void), `build(): ?GdkTexture` |
 | `GdkDmabufTextureBuilder` | GTK 4.14+ on Linux only (refused on an older running GTK): new, display, width, height, fourcc, modifier (a guint64: a negative int is its bits), premultiplied, n_planes, `setFd/setStride/setOffset(int $plane, int)` (the fd is borrowed, never closed), update texture and region (all void), `build(?callable $destroy): ?GdkTexture` (`$destroy` runs once, when GTK finalizes the texture; a failed import throws GTK's `GError`, NULL is returned as null, and neither calls it) |
 | `GdkDmabufFormats` | GTK 4.14+: `GdkDisplay::getDmabufFormats()`, n_formats, `getFormat(int): array{int, int}`, contains |
-| `GtkLabel` | `new(?string)`, text, wrap, ellipsize, xalign, justify, `set_markup` (GTK warns about malformed markup), use_markup, current_uri; signal `activate-link(uri)` |
+| `GtkLabel` | `new(?string)`, text, wrap, ellipsize, lines, xalign, justify, `set_markup` (GTK warns about malformed markup), use_markup, current_uri; signal `activate-link(uri)` |
 | `GtkButton`, `GtkToggleButton`, `GtkLinkButton` | new_with_label, label, `clicked`; active, `toggled`; `new(uri)`, `newWithLabel(uri, ?label)`, uri, visited, `activate-link` |
 | `GCancellable`, `GAsyncResult`, `GtkUriLauncher` | new, cancel, is_cancelled; `new(?uri)`, uri, `launch(?GtkWindow, ?GCancellable, ?callable)` (a null callable launches with no callback; no URI comes back as GTK's GError in `launch_finish`; Linux goes through the desktop portal), `launch_finish` (GError thrown) |
 | `GtkCheckButton`, `GtkSwitch` | new_with_label, active, label; `toggled`. Switch: new, active; `notify::active` |
