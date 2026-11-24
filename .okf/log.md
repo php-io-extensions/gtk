@@ -2,6 +2,8 @@
 
 ## 2026-11-10
 
+* **Version**: 0.11.2 in `PHP_GTK_VERSION` (`php_gtk.h`) and the version test. It carries the bindings logged since 0.11.1: `GtkWidget` opacity, `GtkGridView`, `GtkHeaderBar`, `GtkWindow` titlebar, `GtkToggleButton::setGroup`, `GtkOverlay`, `GtkLabel` lines, `GtkImage` setFromFile and pixel size.
+
 * `GtkImage` setFromFile (a file GTK cannot read shows `image-missing`), getPixelSize / setPixelSize, no refusal. `tests/OverlayTest.php`.
 
 * `GtkLabel` getLines / setLines (`gtk_label_get_lines`, `gtk_label_set_lines`), no refusal. `tests/OverlayTest.php`.
