@@ -1,6 +1,15 @@
 #include "runtime.h"
 #include "../stubs/GtkControls_arginfo.h"
 
+ZEND_METHOD(GtkEditable, getEditable);
+ZEND_METHOD(GtkEditable, setEditable);
+
+static const phpgtk_interface_method phpgtk_GtkEditable_bodies[] = {
+	{"getEditable", zim_GtkEditable_getEditable},
+	{"setEditable", zim_GtkEditable_setEditable},
+	{NULL, NULL},
+};
+
 void phpgtk_register_GtkControls(void)
 {
 	phpgtk_ce_PangoEllipsizeMode = register_class_PangoEllipsizeMode();
@@ -23,7 +32,11 @@ void phpgtk_register_GtkControls(void)
 	PHPGTK_WIDGET_CLASS(GtkToggleButton, phpgtk_ce_GtkButton);
 	PHPGTK_WIDGET_CLASS(GtkHeaderBar, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkEntryBuffer, phpgtk_ce_GObject);
-	PHPGTK_WIDGET_CLASS(GtkEntry, phpgtk_ce_GtkWidget);
+	phpgtk_ce_GtkEntryIconPosition = register_class_GtkEntryIconPosition();
+	phpgtk_ce_GtkEditable = register_class_GtkEditable();
+	phpgtk_interface_bodies(phpgtk_ce_GtkEditable, phpgtk_GtkEditable_bodies);
+	phpgtk_ce_GtkEditable->interface_gets_implemented = phpgtk_interface_native_only;
+	PHPGTK_WIDGET_CLASS(GtkEntry, phpgtk_ce_GtkWidget, phpgtk_ce_GtkEditable);
 	PHPGTK_WIDGET_CLASS(GtkTextBuffer, phpgtk_ce_GObject);
 	PHPGTK_WIDGET_CLASS(GtkTextView, phpgtk_ce_GtkWidget);
 	PHPGTK_WIDGET_CLASS(GtkScale, phpgtk_ce_GtkWidget);
@@ -516,6 +529,53 @@ PHPGTK_GET_STRING(GtkEntry, getPlaceholderText, GTK_ENTRY, gtk_entry_get_placeho
 PHPGTK_SET_STRING_OR_NULL(GtkEntry, setPlaceholderText, GTK_ENTRY, gtk_entry_set_placeholder_text)
 PHPGTK_GET_BOOL(GtkEntry, getVisibility, GTK_ENTRY, gtk_entry_get_visibility)
 PHPGTK_SET_BOOL(GtkEntry, setVisibility, GTK_ENTRY, gtk_entry_set_visibility)
+PHPGTK_GET_BOOL(GtkEntry, getHasFrame, GTK_ENTRY, gtk_entry_get_has_frame)
+PHPGTK_SET_BOOL(GtkEntry, setHasFrame, GTK_ENTRY, gtk_entry_set_has_frame)
+
+ZEND_METHOD(GtkEntry, getMaxLength)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_LONG((zend_long) gtk_entry_get_max_length(THIS(GTK_ENTRY)));
+}
+
+ZEND_METHOD(GtkEntry, setMaxLength)
+{
+	zend_long max;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(max)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(max, G_MININT, G_MAXINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	gtk_entry_set_max_length(THIS(GTK_ENTRY), (int) max);
+}
+
+PHPGTK_GET_BOOL(GtkEntry, getActivatesDefault, GTK_ENTRY, gtk_entry_get_activates_default)
+PHPGTK_SET_BOOL(GtkEntry, setActivatesDefault, GTK_ENTRY, gtk_entry_set_activates_default)
+
+ZEND_METHOD(GtkEntry, setIconFromIconName)
+{
+	zend_object *icon_pos;
+	zend_string *icon_name = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(icon_pos, phpgtk_ce_GtkEntryIconPosition)
+		Z_PARAM_STR_OR_NULL(icon_name)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_entry_set_icon_from_icon_name(THIS(GTK_ENTRY), (GtkEntryIconPosition) phpgtk_enum_value(icon_pos, 0),
+		icon_name != NULL ? ZSTR_VAL(icon_name) : NULL);
+}
+
+/* ---- GtkEditable ------------------------------------------------------- */
+
+/* Registered with the interface: GtkEntry inherits it. */
+PHPGTK_GET_BOOL(GtkEditable, getEditable, GTK_EDITABLE, gtk_editable_get_editable)
+PHPGTK_SET_BOOL(GtkEditable, setEditable, GTK_EDITABLE, gtk_editable_set_editable)
 
 /* ---- GtkTextBuffer ----------------------------------------------------- */
 

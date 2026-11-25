@@ -17,6 +17,23 @@ it('gives a widget the opacity it is set to, in GTK\'s 8-bit steps and clamped b
     expect($label->getOpacity())->toEqualWithDelta(1.0, 0.0001);
 });
 
+it('keeps the overflow and can-target a widget is given', function (): void {
+    $box = GtkBox::new(GtkOrientation::VERTICAL, 0);
+
+    expect($box->getOverflow())->toBe(GtkOverflow::VISIBLE)
+        ->and($box->getCanTarget())->toBeTrue();
+
+    $box->setOverflow(GtkOverflow::HIDDEN);
+    $box->setCanTarget(false);
+    expect($box->getOverflow())->toBe(GtkOverflow::HIDDEN)
+        ->and($box->getCanTarget())->toBeFalse();
+
+    $box->setOverflow(GtkOverflow::VISIBLE);
+    $box->setCanTarget(true);
+    expect($box->getOverflow())->toBe(GtkOverflow::VISIBLE)
+        ->and($box->getCanTarget())->toBeTrue();
+});
+
 it('aligns, sizes and styles a widget', function (): void {
     $label = GtkLabel::new('x');
     $label->setHalign(GtkAlign::CENTER);

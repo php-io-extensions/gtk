@@ -1,5 +1,13 @@
 # Log
 
+## 2026-11-25
+
+* `GtkOverlay` getMeasureOverlay / setMeasureOverlay, getClipOverlay / setClipOverlay (per overlay child). `GtkWidget` getOverflow / setOverflow with enum `GtkOverflow` (VISIBLE, HIDDEN), getCanTarget / setCanTarget. No refusal. `tests/OverlayTest.php` (an unmeasured 200x100 overlay child leaves the natural size of an overlay with an empty main child 0; measured, it is at least 200x100), `tests/LayoutTest.php`. SUPPORT.md regenerated: 621 / 3798.
+
+## 2026-11-24
+
+* `GtkWidget` setCursorFromName, setTooltipText / getTooltipText (null unsets both). `GtkEntry` getHasFrame / setHasFrame, getMaxLength / setMaxLength (GTK clamps to 0..65535 and truncates the text; an int outside C `int` is a `ValueError`), getActivatesDefault / setActivatesDefault, setIconFromIconName with enum `GtkEntryIconPosition`. New interface `GtkEditable` (getEditable / setEditable), implemented by `GtkEntry`, its bodies registered with the interface as `GtkNative`'s are. No refusal. `tests/EntryTest.php`. SUPPORT.md regenerated: 613 / 3798 (it also picks up the bindings since 2026-11-07).
+
 ## 2026-11-10
 
 * **Version**: 0.11.2 in `PHP_GTK_VERSION` (`php_gtk.h`) and the version test. It carries the bindings logged since 0.11.1: `GtkWidget` opacity, `GtkGridView`, `GtkHeaderBar`, `GtkWindow` titlebar, `GtkToggleButton::setGroup`, `GtkOverlay`, `GtkLabel` lines, `GtkImage` setFromFile and pixel size.

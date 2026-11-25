@@ -163,6 +163,8 @@ extern zend_class_entry *phpgtk_ce_GtkCheckButton;
 extern zend_class_entry *phpgtk_ce_GtkSwitch;
 extern zend_class_entry *phpgtk_ce_GtkToggleButton;
 extern zend_class_entry *phpgtk_ce_GtkEntryBuffer;
+extern zend_class_entry *phpgtk_ce_GtkEntryIconPosition;
+extern zend_class_entry *phpgtk_ce_GtkEditable;
 extern zend_class_entry *phpgtk_ce_GtkEntry;
 extern zend_class_entry *phpgtk_ce_GtkTextBuffer;
 extern zend_class_entry *phpgtk_ce_GtkTextView;

@@ -36,6 +36,12 @@ enum GtkDirectionType: int
     case RIGHT = 5;
 }
 
+enum GtkOverflow: int
+{
+    case VISIBLE = 0;
+    case HIDDEN = 1;
+}
+
 /** graphene_point_t: a point, x and y. */
 final class GraphenePoint
 {
@@ -87,6 +93,22 @@ class GtkWidget extends GObject
 
     /** GTK clamps $opacity to 0.0..1.0; CSS opacity on the widget multiplies with it. */
     public function setOpacity(float $opacity): void {}
+
+    /** gtk_widget_set_cursor_from_name(): a CSS cursor name; null unsets the widget's cursor. */
+    public function setCursorFromName(?string $name): void {}
+
+    /** gtk_widget_set_tooltip_text(): null unsets the tooltip. */
+    public function setTooltipText(?string $text): void {}
+
+    public function getTooltipText(): ?string {}
+
+    public function getOverflow(): GtkOverflow {}
+
+    public function setOverflow(GtkOverflow $overflow): void {}
+
+    public function getCanTarget(): bool {}
+
+    public function setCanTarget(bool $canTarget): void {}
 
     public function getHexpand(): bool {}
 
@@ -306,6 +328,14 @@ class GtkOverlay extends GtkWidget
     public function addOverlay(GtkWidget $widget): void {}
 
     public function removeOverlay(GtkWidget $widget): void {}
+
+    public function getMeasureOverlay(GtkWidget $widget): bool {}
+
+    public function setMeasureOverlay(GtkWidget $widget, bool $measure): void {}
+
+    public function getClipOverlay(GtkWidget $widget): bool {}
+
+    public function setClipOverlay(GtkWidget $widget, bool $clipOverlay): void {}
 }
 
 /**

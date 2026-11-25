@@ -98,6 +98,8 @@ zend_class_entry *phpgtk_ce_GtkCheckButton;
 zend_class_entry *phpgtk_ce_GtkSwitch;
 zend_class_entry *phpgtk_ce_GtkToggleButton;
 zend_class_entry *phpgtk_ce_GtkEntryBuffer;
+zend_class_entry *phpgtk_ce_GtkEntryIconPosition;
+zend_class_entry *phpgtk_ce_GtkEditable;
 zend_class_entry *phpgtk_ce_GtkEntry;
 zend_class_entry *phpgtk_ce_GtkTextBuffer;
 zend_class_entry *phpgtk_ce_GtkTextView;

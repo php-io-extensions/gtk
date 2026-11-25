@@ -266,10 +266,24 @@ class GtkEntryBuffer extends GObject
     public function setText(string $chars, int $nChars): void {}
 }
 
+enum GtkEntryIconPosition: int
+{
+    case PRIMARY = 0;
+    case SECONDARY = 1;
+}
+
+/** GtkEditable: a widget whose text the user edits, implemented by GtkEntry. */
+interface GtkEditable
+{
+    public function getEditable(): bool;
+
+    public function setEditable(bool $isEditable): void;
+}
+
 /**
  * @not-serializable
  */
-class GtkEntry extends GtkWidget
+class GtkEntry extends GtkWidget implements GtkEditable
 {
     public static function new(): GtkEntry {}
 
@@ -282,6 +296,22 @@ class GtkEntry extends GtkWidget
     public function getVisibility(): bool {}
 
     public function setVisibility(bool $visible): void {}
+
+    public function getHasFrame(): bool {}
+
+    public function setHasFrame(bool $setting): void {}
+
+    public function getMaxLength(): int {}
+
+    /** gtk_entry_set_max_length(): 0 = no limit; GTK clamps $max to 0..65535 and truncates longer text. */
+    public function setMaxLength(int $max): void {}
+
+    public function getActivatesDefault(): bool {}
+
+    public function setActivatesDefault(bool $setting): void {}
+
+    /** gtk_entry_set_icon_from_icon_name(): null removes the icon at $iconPos. */
+    public function setIconFromIconName(GtkEntryIconPosition $iconPos, ?string $iconName): void {}
 }
 
 /**

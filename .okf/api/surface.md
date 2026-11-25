@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-11-10T15:00:00Z }
+generated: { by: claude-opus/5.5, at: 2026-11-25T06:00:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -24,7 +24,7 @@ Naming, all fixed:
 * Function on no type = global function, C name (`g_timeout_add`, `g_signal_connect`, `gtk_init`).
 * `<prefix>_<type>_<verb>(Type *self, …)` = method on the class named after the type, verb camelCased: `g_application_get_is_registered(app)` → `$app->getIsRegistered()`, `g_main_context_default()` → `GMainContext::default()`.
 * `*_new` = static `new()` (`GtkApplication::new()`); wrappers are never built with `new`, except the struct classes (`GdkRectangle`, `GraphenePoint`, `GrapheneSize`, `GrapheneRect`), whose constructor takes the struct's fields.
-* GObject interfaces are PHP interfaces implemented by the bound classes whose GType implements them (`GAction`, `GActionMap`, `GActionGroup`, `GListModel`, `GtkSelectionModel`, `GdkPaintable`, `GtkStyleProvider`, `GtkNative`, `GtkRoot`); the interface methods live there. Only the ext's own classes may implement them: a PHP class that does is a fatal error at declaration.
+* GObject interfaces are PHP interfaces implemented by the bound classes whose GType implements them (`GAction`, `GActionMap`, `GActionGroup`, `GListModel`, `GtkSelectionModel`, `GdkPaintable`, `GtkStyleProvider`, `GtkNative`, `GtkRoot`, `GtkEditable`); the interface methods live there. Only the ext's own classes may implement them: a PHP class that does is a fatal error at declaration.
 * GEnum/GFlags = backed int enum, prefix dropped (`GApplicationFlags::NON_UNIQUE`). Flags params = `Enum|int` (OR ints).[^headers]
 * `GError **` out-param = thrown `GError` exception after the call; the function's own return stays.
 * Other out-params = by-reference PHP params in native position; a gboolean result is returned.
@@ -55,8 +55,8 @@ Naming, all fixed:
 | `GVariant` | new_boolean/string/int32/double (`newString` → `?GVariant`), typed getters (`getString(): ?string`; GLib criticals a mismatched type), type string, is_of_type, print |
 | `GMenuModel`, `GMenu`, `GMenuItem` | n_items, is_mutable; append/append_item/append_section/append_submenu/prepend/insert/remove/remove_all/freeze; label, detailed action, action+target, attribute values (`accel` etc.), submenu, section |
 | `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner`; `pointer()` |
-| `GtkWidget` | show/hide (`gtk_widget_show`/`hide`), set/get_visible, set/get_opacity (GTK clamps to 0..1 and keeps 8 bits: 0.25 reads back 64/255), realized, mapped, hexpand/vexpand, parent, `insert_action_group(string, ?GActionGroup)`, `activateActionVariant(string, ?GVariant): bool`, grab_focus, `childFocus(GtkDirectionType): bool` (GTK's Tab move inside the widget; on a window from its focus widget), has_focus, add/remove_controller, pick (GTK_PICK_*), get_display |
-| `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request, width/height, sensitive, `is_sensitive`, `get_color`, margins, add/remove/has_css_class, `measure`, `computePoint(target, GraphenePoint, ?GraphenePoint &$out): bool`, `computeBounds(target, ?GrapheneRect &$out): bool` (border box), first_child, next_sibling, `getNative(): ?GtkNative`, `getRoot(): ?GtkRoot` |
+| `GtkWidget` | show/hide (`gtk_widget_show`/`hide`), set/get_visible, set/get_opacity (GTK clamps to 0..1 and keeps 8 bits: 0.25 reads back 64/255), `setCursorFromName(?string)` (null unsets), `setTooltipText(?string)` / `getTooltipText(): ?string`, realized, mapped, hexpand/vexpand, parent, `insert_action_group(string, ?GActionGroup)`, `activateActionVariant(string, ?GVariant): bool`, grab_focus, `childFocus(GtkDirectionType): bool` (GTK's Tab move inside the widget; on a window from its focus widget), has_focus, add/remove_controller, pick (GTK_PICK_*), get_display |
+| `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request, width/height, sensitive, `is_sensitive`, `get_color`, margins, add/remove/has_css_class, `measure`, `computePoint(target, GraphenePoint, ?GraphenePoint &$out): bool`, `computeBounds(target, ?GrapheneRect &$out): bool` (border box), first_child, next_sibling, `getNative(): ?GtkNative`, `getRoot(): ?GtkRoot`, overflow (`GtkOverflow`: VISIBLE, HIDDEN clips the children), can_target |
 | `GtkNative`, `GtkRoot` | `getSurface(): ?GdkSurface`, `realize`, `getSurfaceTransform(?float &$x, ?float &$y)`, static `getForSurface`; implemented by windows and popovers |
 | `GraphenePoint`, `GrapheneSize`, `GrapheneRect` | the graphene structs (single-precision floats), built from their fields |
 | `GtkWindow` | `new(): ?GtkWindow` (transfer none: GTK keeps the toplevel), title, default size, child, present, close, destroy, is_active, transient_for, application, modal, hide_on_close, get_focus |
@@ -64,7 +64,7 @@ Naming, all fixed:
 | `GtkAboutDialog` | new; program name, version, copyright, comments, website |
 | `GtkBox`, `GtkPopoverMenuBar` | new(orientation, spacing), append/prepend/remove, insert_child_after, reorder_child_after, spacing, homogeneous; new_from_model, menu model |
 | `GtkGrid`, `GtkFixed` | new, `attach(child, column, row, width, height)`, remove, get_child_at, row/column spacing; new, put, move, remove, `get_child_position` |
-| `GtkOverlay` | new, child, add_overlay, remove_overlay |
+| `GtkOverlay` | new, child, add_overlay, remove_overlay, `getMeasureOverlay(GtkWidget): bool` / `setMeasureOverlay(GtkWidget, bool)` (a measured overlay child counts in the overlay's size; unmeasured by default), `getClipOverlay(GtkWidget): bool` / `setClipOverlay(GtkWidget, bool)` |
 | `GtkPaned`, `GtkNotebook` | start/end child, position, resize/shrink, wide handle; append_page, remove_page, current page, nth_page, page_num, n_pages, tab label text, show_tabs, scrollable; `switch-page` |
 | `GtkPopover`, `GtkPopoverMenu` | `setPointingTo(?GdkRectangle)`, `getPointingTo(?GdkRectangle &$rect): bool`, has_arrow, popup, popdown, `setParent`/`unparent` (bound on popovers only: GtkWidget keeps no unparent, which leaves container child pointers dangling), signal `closed`; newFromModel, getMenuModel |
 | `GtkCssProvider`, `GdkDisplay` | new, `load_from_string`; get_default, sync; `gtk_style_context_add/remove_provider_for_display(display, GtkStyleProvider, …)`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
@@ -82,7 +82,8 @@ Naming, all fixed:
 | `GtkButton`, `GtkToggleButton`, `GtkLinkButton` | new_with_label, label, `clicked`; active, `toggled`; `new(uri)`, `newWithLabel(uri, ?label)`, uri, visited, `activate-link` |
 | `GCancellable`, `GAsyncResult`, `GtkUriLauncher` | new, cancel, is_cancelled; `new(?uri)`, uri, `launch(?GtkWindow, ?GCancellable, ?callable)` (a null callable launches with no callback; no URI comes back as GTK's GError in `launch_finish`; Linux goes through the desktop portal), `launch_finish` (GError thrown) |
 | `GtkCheckButton`, `GtkSwitch` | new_with_label, active, label; `toggled`. Switch: new, active; `notify::active` |
-| `GtkEntry`, `GtkEntryBuffer` | new, buffer, placeholder text, visibility; `activate`. Buffer: `get_text`, `set_text(string, int $nChars)` |
+| `GtkEntry`, `GtkEntryBuffer` | new, buffer, placeholder text, visibility, has_frame, max_length (0 = none; GTK clamps to 0..65535 and truncates longer text), activates_default, `setIconFromIconName(GtkEntryIconPosition, ?string)` (null removes the icon); `activate`. Buffer: `get_text`, `set_text(string, int $nChars)` |
+| `GtkEditable` | `getEditable`, `setEditable` (`gtk_editable_*`); a GObject interface, implemented by GtkEntry |
 | `GtkTextView`, `GtkTextBuffer` | new, buffer, editable, wrap mode, monospace, cursor_visible, `getLineYrange(iter, ?int &$y, ?int &$height)`. Buffer: `set_text(string, int $len)`, `getText(GtkTextIter, GtkTextIter, bool): ?string`, begin/end_user_action, tag_table, `getIterAtLine(?GtkTextIter &$iter, int $line): bool` and `getIterAtLineOffset(&$iter, int $line, int $offset): bool` (past the end GTK writes the end), `getIterAtOffset`, start/end iters, apply/remove_tag, `getSelectionBounds(&$start, &$end): bool`, select_range, insert mark, iter at mark, line_count; `changed`, `begin-user-action`, `end-user-action`, `insert-text` (a GtkTextIter) |
 | `GtkTextIter` | a copy PHP owns that keeps its buffer alive, valid until the buffer's text changes (then its methods throw `GtkException`, site `text-iter-stale`): line, line_offset, offset, has_tag, get_tags |
 | `GtkTextMark`, `GtkTextTag`, `GtkTextTagTable` | —; new(?name), properties via g_object_set_property; add, remove, lookup |

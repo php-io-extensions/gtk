@@ -13,6 +13,7 @@ ZEND_METHOD(GtkRoot, setFocus);
 ZEND_METHOD(GtkRoot, getFocus);
 
 static zend_class_entry *phpgtk_ce_GtkDirectionType;
+static zend_class_entry *phpgtk_ce_GtkOverflow;
 
 static const phpgtk_interface_method phpgtk_GtkNative_bodies[] = {
 	{"getForSurface", zim_GtkNative_getForSurface},
@@ -35,6 +36,7 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_ce_GtkOrientation = register_class_GtkOrientation();
 	phpgtk_ce_GtkAlign = register_class_GtkAlign();
 	phpgtk_ce_GtkDirectionType = register_class_GtkDirectionType();
+	phpgtk_ce_GtkOverflow = register_class_GtkOverflow();
 	phpgtk_ce_GraphenePoint = register_class_GraphenePoint();
 	phpgtk_ce_GrapheneSize = register_class_GrapheneSize();
 	phpgtk_ce_GrapheneRect = register_class_GrapheneRect();
@@ -150,6 +152,71 @@ ZEND_METHOD(GtkWidget, setOpacity)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_widget_set_opacity(THIS_WIDGET, opacity);
+}
+
+ZEND_METHOD(GtkWidget, setCursorFromName)
+{
+	zend_string *name = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR_OR_NULL(name)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_widget_set_cursor_from_name(THIS_WIDGET, name != NULL ? ZSTR_VAL(name) : NULL);
+}
+
+ZEND_METHOD(GtkWidget, setTooltipText)
+{
+	zend_string *text = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_STR_OR_NULL(text)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_widget_set_tooltip_text(THIS_WIDGET, text != NULL ? ZSTR_VAL(text) : NULL);
+}
+
+ZEND_METHOD(GtkWidget, getTooltipText)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_string(return_value, gtk_widget_get_tooltip_text(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, getOverflow)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_enum(return_value, phpgtk_ce_GtkOverflow, (zend_long) gtk_widget_get_overflow(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, setOverflow)
+{
+	zend_object *overflow;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(overflow, phpgtk_ce_GtkOverflow)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_widget_set_overflow(THIS_WIDGET, (GtkOverflow) phpgtk_enum_value(overflow, 0));
+}
+
+ZEND_METHOD(GtkWidget, getCanTarget)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_widget_get_can_target(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, setCanTarget)
+{
+	bool can_target;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(can_target)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_widget_set_can_target(THIS_WIDGET, can_target);
 }
 
 ZEND_METHOD(GtkWidget, getHexpand)
@@ -1042,6 +1109,54 @@ ZEND_METHOD(GtkOverlay, removeOverlay)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_overlay_remove_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)));
+}
+
+ZEND_METHOD(GtkOverlay, getMeasureOverlay)
+{
+	zend_object *widget;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_overlay_get_measure_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget))));
+}
+
+ZEND_METHOD(GtkOverlay, setMeasureOverlay)
+{
+	zend_object *widget;
+	bool measure;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+		Z_PARAM_BOOL(measure)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_overlay_set_measure_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)), measure);
+}
+
+ZEND_METHOD(GtkOverlay, getClipOverlay)
+{
+	zend_object *widget;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_BOOL(gtk_overlay_get_clip_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget))));
+}
+
+ZEND_METHOD(GtkOverlay, setClipOverlay)
+{
+	zend_object *widget;
+	bool clip_overlay;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(widget, phpgtk_ce_GtkWidget)
+		Z_PARAM_BOOL(clip_overlay)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_overlay_set_clip_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)), clip_overlay);
 }
 
 /* ---- GtkPopoverMenuBar ------------------------------------------------- */

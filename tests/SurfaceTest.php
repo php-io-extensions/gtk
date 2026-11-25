@@ -139,6 +139,7 @@ it('keeps the native interfaces each class implements', function (): void {
         GtkCssProvider::class => [GtkStyleProvider::class],
         GtkSettings::class => [GtkStyleProvider::class],
         GtkStringList::class => [GListModel::class],
+        GtkEntry::class => [GtkEditable::class],
         GtkSingleSelection::class => [GListModel::class, GtkSelectionModel::class],
     ];
 

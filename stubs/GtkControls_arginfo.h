@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: c874a0432f86a5b2cfcae00200c8176c09e3acc9 */
+ * Stub hash: 3b037b4de309638a4ce82dc9dbb0a75189f93596 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -211,6 +211,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntryBuffer_setText, 0,
 	ZEND_ARG_TYPE_INFO(0, nChars, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
+#define arginfo_class_GtkEditable_getEditable arginfo_class_GtkLabel_getWrap
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEditable_setEditable, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, isEditable, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkEntry_new, 0, 0, GtkEntry, 0)
 ZEND_END_ARG_INFO()
 
@@ -227,6 +233,25 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntry_setVisibility, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, visible, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkEntry_getHasFrame arginfo_class_GtkLabel_getWrap
+
+#define arginfo_class_GtkEntry_setHasFrame arginfo_class_GtkLabel_setUseMarkup
+
+#define arginfo_class_GtkEntry_getMaxLength arginfo_class_GtkLabel_getLines
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntry_setMaxLength, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, max, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkEntry_getActivatesDefault arginfo_class_GtkLabel_getWrap
+
+#define arginfo_class_GtkEntry_setActivatesDefault arginfo_class_GtkLabel_setUseMarkup
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkEntry_setIconFromIconName, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, iconPos, GtkEntryIconPosition, 0)
+	ZEND_ARG_TYPE_INFO(0, iconName, IS_STRING, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkTextBuffer_setText, 0, 2, IS_VOID, 0)
@@ -648,6 +673,13 @@ ZEND_METHOD(GtkEntry, getPlaceholderText);
 ZEND_METHOD(GtkEntry, setPlaceholderText);
 ZEND_METHOD(GtkEntry, getVisibility);
 ZEND_METHOD(GtkEntry, setVisibility);
+ZEND_METHOD(GtkEntry, getHasFrame);
+ZEND_METHOD(GtkEntry, setHasFrame);
+ZEND_METHOD(GtkEntry, getMaxLength);
+ZEND_METHOD(GtkEntry, setMaxLength);
+ZEND_METHOD(GtkEntry, getActivatesDefault);
+ZEND_METHOD(GtkEntry, setActivatesDefault);
+ZEND_METHOD(GtkEntry, setIconFromIconName);
 ZEND_METHOD(GtkTextBuffer, setText);
 ZEND_METHOD(GtkTextBuffer, beginUserAction);
 ZEND_METHOD(GtkTextBuffer, endUserAction);
@@ -866,6 +898,12 @@ static const zend_function_entry class_GtkEntryBuffer_methods[] = {
 	ZEND_FE_END
 };
 
+static const zend_function_entry class_GtkEditable_methods[] = {
+	ZEND_RAW_FENTRY("getEditable", NULL, arginfo_class_GtkEditable_getEditable, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_RAW_FENTRY("setEditable", NULL, arginfo_class_GtkEditable_setEditable, ZEND_ACC_PUBLIC|ZEND_ACC_ABSTRACT, NULL, NULL)
+	ZEND_FE_END
+};
+
 static const zend_function_entry class_GtkEntry_methods[] = {
 	ZEND_ME(GtkEntry, new, arginfo_class_GtkEntry_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkEntry, getBuffer, arginfo_class_GtkEntry_getBuffer, ZEND_ACC_PUBLIC)
@@ -873,6 +911,13 @@ static const zend_function_entry class_GtkEntry_methods[] = {
 	ZEND_ME(GtkEntry, setPlaceholderText, arginfo_class_GtkEntry_setPlaceholderText, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkEntry, getVisibility, arginfo_class_GtkEntry_getVisibility, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkEntry, setVisibility, arginfo_class_GtkEntry_setVisibility, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, getHasFrame, arginfo_class_GtkEntry_getHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, setHasFrame, arginfo_class_GtkEntry_setHasFrame, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, getMaxLength, arginfo_class_GtkEntry_getMaxLength, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, setMaxLength, arginfo_class_GtkEntry_setMaxLength, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, getActivatesDefault, arginfo_class_GtkEntry_getActivatesDefault, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, setActivatesDefault, arginfo_class_GtkEntry_setActivatesDefault, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkEntry, setIconFromIconName, arginfo_class_GtkEntry_setIconFromIconName, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -1263,12 +1308,38 @@ static zend_class_entry *register_class_GtkEntryBuffer(zend_class_entry *class_e
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkEntry(zend_class_entry *class_entry_GtkWidget)
+static zend_class_entry *register_class_GtkEntryIconPosition(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkEntryIconPosition", IS_LONG, NULL);
+
+	zval enum_case_PRIMARY_value;
+	ZVAL_LONG(&enum_case_PRIMARY_value, 0);
+	zend_enum_add_case_cstr(class_entry, "PRIMARY", &enum_case_PRIMARY_value);
+
+	zval enum_case_SECONDARY_value;
+	ZVAL_LONG(&enum_case_SECONDARY_value, 1);
+	zend_enum_add_case_cstr(class_entry, "SECONDARY", &enum_case_SECONDARY_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkEditable(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkEditable", class_GtkEditable_methods);
+	class_entry = zend_register_internal_interface(&ce);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkEntry(zend_class_entry *class_entry_GtkWidget, zend_class_entry *class_entry_GtkEditable)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkEntry", class_GtkEntry_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GtkEditable);
 
 	return class_entry;
 }

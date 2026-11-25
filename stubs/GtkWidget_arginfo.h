@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: d4fe1e541693adcc46a0a504c6c5c7c30371d388 */
+ * Stub hash: f27817ff2b869c02277f3f51018f24f5bf247ce3 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -37,6 +37,30 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setOpacity, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, opacity, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setCursorFromName, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setTooltipText, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, text, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_getTooltipText, 0, 0, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getOverflow, 0, 0, GtkOverflow, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setOverflow, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, overflow, GtkOverflow, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkWidget_getCanTarget arginfo_class_GtkWidget_getVisible
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setCanTarget, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, canTarget, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkWidget_getHexpand arginfo_class_GtkWidget_getVisible
@@ -286,6 +310,22 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkOverlay_removeOverlay arginfo_class_GtkOverlay_addOverlay
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_getMeasureOverlay, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_OBJ_INFO(0, widget, GtkWidget, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_setMeasureOverlay, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, widget, GtkWidget, 0)
+	ZEND_ARG_TYPE_INFO(0, measure, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkOverlay_getClipOverlay arginfo_class_GtkOverlay_getMeasureOverlay
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_setClipOverlay, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, widget, GtkWidget, 0)
+	ZEND_ARG_TYPE_INFO(0, clipOverlay, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopoverMenuBar_newFromModel, 0, 1, GtkPopoverMenuBar, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
 ZEND_END_ARG_INFO()
@@ -358,6 +398,13 @@ ZEND_METHOD(GtkWidget, getMapped);
 ZEND_METHOD(GtkWidget, setVisible);
 ZEND_METHOD(GtkWidget, getOpacity);
 ZEND_METHOD(GtkWidget, setOpacity);
+ZEND_METHOD(GtkWidget, setCursorFromName);
+ZEND_METHOD(GtkWidget, setTooltipText);
+ZEND_METHOD(GtkWidget, getTooltipText);
+ZEND_METHOD(GtkWidget, getOverflow);
+ZEND_METHOD(GtkWidget, setOverflow);
+ZEND_METHOD(GtkWidget, getCanTarget);
+ZEND_METHOD(GtkWidget, setCanTarget);
 ZEND_METHOD(GtkWidget, getHexpand);
 ZEND_METHOD(GtkWidget, setHexpand);
 ZEND_METHOD(GtkWidget, getVexpand);
@@ -429,6 +476,10 @@ ZEND_METHOD(GtkOverlay, getChild);
 ZEND_METHOD(GtkOverlay, setChild);
 ZEND_METHOD(GtkOverlay, addOverlay);
 ZEND_METHOD(GtkOverlay, removeOverlay);
+ZEND_METHOD(GtkOverlay, getMeasureOverlay);
+ZEND_METHOD(GtkOverlay, setMeasureOverlay);
+ZEND_METHOD(GtkOverlay, getClipOverlay);
+ZEND_METHOD(GtkOverlay, setClipOverlay);
 ZEND_METHOD(GtkPopoverMenuBar, newFromModel);
 ZEND_METHOD(GtkPopoverMenuBar, getMenuModel);
 ZEND_METHOD(GtkPopoverMenuBar, setMenuModel);
@@ -474,6 +525,13 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setVisible, arginfo_class_GtkWidget_setVisible, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getOpacity, arginfo_class_GtkWidget_getOpacity, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setOpacity, arginfo_class_GtkWidget_setOpacity, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setCursorFromName, arginfo_class_GtkWidget_setCursorFromName, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setTooltipText, arginfo_class_GtkWidget_setTooltipText, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getTooltipText, arginfo_class_GtkWidget_getTooltipText, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getOverflow, arginfo_class_GtkWidget_getOverflow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setOverflow, arginfo_class_GtkWidget_setOverflow, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getCanTarget, arginfo_class_GtkWidget_getCanTarget, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setCanTarget, arginfo_class_GtkWidget_setCanTarget, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getHexpand, arginfo_class_GtkWidget_getHexpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setHexpand, arginfo_class_GtkWidget_setHexpand, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getVexpand, arginfo_class_GtkWidget_getVexpand, ZEND_ACC_PUBLIC)
@@ -577,6 +635,10 @@ static const zend_function_entry class_GtkOverlay_methods[] = {
 	ZEND_ME(GtkOverlay, setChild, arginfo_class_GtkOverlay_setChild, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkOverlay, addOverlay, arginfo_class_GtkOverlay_addOverlay, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkOverlay, removeOverlay, arginfo_class_GtkOverlay_removeOverlay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, getMeasureOverlay, arginfo_class_GtkOverlay_getMeasureOverlay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, setMeasureOverlay, arginfo_class_GtkOverlay_setMeasureOverlay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, getClipOverlay, arginfo_class_GtkOverlay_getClipOverlay, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkOverlay, setClipOverlay, arginfo_class_GtkOverlay_setClipOverlay, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 
@@ -708,6 +770,21 @@ static zend_class_entry *register_class_GtkDirectionType(void)
 	zval enum_case_RIGHT_value;
 	ZVAL_LONG(&enum_case_RIGHT_value, 5);
 	zend_enum_add_case_cstr(class_entry, "RIGHT", &enum_case_RIGHT_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkOverflow(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkOverflow", IS_LONG, NULL);
+
+	zval enum_case_VISIBLE_value;
+	ZVAL_LONG(&enum_case_VISIBLE_value, 0);
+	zend_enum_add_case_cstr(class_entry, "VISIBLE", &enum_case_VISIBLE_value);
+
+	zval enum_case_HIDDEN_value;
+	ZVAL_LONG(&enum_case_HIDDEN_value, 1);
+	zend_enum_add_case_cstr(class_entry, "HIDDEN", &enum_case_HIDDEN_value);
 
 	return class_entry;
 }

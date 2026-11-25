@@ -23,6 +23,40 @@ it('stacks overlay widgets over a main child', function (): void {
         ->and($overlay->getChild())->toBeNull();
 });
 
+it('keeps the measure and clip flags of an overlay child', function (): void {
+    $overlay = GtkOverlay::new();
+    $badge = GtkLabel::new('NEW');
+    $overlay->addOverlay($badge);
+
+    expect($overlay->getMeasureOverlay($badge))->toBeFalse()
+        ->and($overlay->getClipOverlay($badge))->toBeFalse();
+
+    $overlay->setMeasureOverlay($badge, true);
+    $overlay->setClipOverlay($badge, true);
+    expect($overlay->getMeasureOverlay($badge))->toBeTrue()
+        ->and($overlay->getClipOverlay($badge))->toBeTrue();
+
+    $overlay->setMeasureOverlay($badge, false);
+    $overlay->setClipOverlay($badge, false);
+    expect($overlay->getMeasureOverlay($badge))->toBeFalse()
+        ->and($overlay->getClipOverlay($badge))->toBeFalse();
+});
+
+it('counts an overlay child in its size only when it is measured', function (): void {
+    $overlay = GtkOverlay::new();
+    $overlay->setChild(GtkBox::new(GtkOrientation::VERTICAL, 0));
+    $badge = GtkBox::new(GtkOrientation::VERTICAL, 0);
+    $badge->setSizeRequest(200, 100);
+    $overlay->addOverlay($badge);
+
+    expect($overlay->measure(GtkOrientation::HORIZONTAL, -1)['natural'])->toBe(0)
+        ->and($overlay->measure(GtkOrientation::VERTICAL, -1)['natural'])->toBe(0);
+
+    $overlay->setMeasureOverlay($badge, true);
+    expect($overlay->measure(GtkOrientation::HORIZONTAL, -1)['natural'])->toBeGreaterThanOrEqual(200)
+        ->and($overlay->measure(GtkOrientation::VERTICAL, -1)['natural'])->toBeGreaterThanOrEqual(100);
+});
+
 it('shows a file in an image at the pixel size it is given', function (): void {
     $image = GtkImage::newFromIconName(null);
     $image->setFromFile(__DIR__.'/fixtures/no-such-image.png');
