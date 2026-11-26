@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-11-25T06:00:00Z }
+generated: { by: claude-opus/5.5, at: 2026-11-26T05:00:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -56,7 +56,7 @@ Naming, all fixed:
 | `GMenuModel`, `GMenu`, `GMenuItem` | n_items, is_mutable; append/append_item/append_section/append_submenu/prepend/insert/remove/remove_all/freeze; label, detailed action, action+target, attribute values (`accel` etc.), submenu, section |
 | `GMainContext` | `default`, `get_thread_default`, `iteration`, `pending`, `wakeup`, `acquire`, `release`, `is_owner`; `pointer()` |
 | `GtkWidget` | show/hide (`gtk_widget_show`/`hide`), set/get_visible, set/get_opacity (GTK clamps to 0..1 and keeps 8 bits: 0.25 reads back 64/255), `setCursorFromName(?string)` (null unsets), `setTooltipText(?string)` / `getTooltipText(): ?string`, realized, mapped, hexpand/vexpand, parent, `insert_action_group(string, ?GActionGroup)`, `activateActionVariant(string, ?GVariant): bool`, grab_focus, `childFocus(GtkDirectionType): bool` (GTK's Tab move inside the widget; on a window from its focus widget), has_focus, add/remove_controller, pick (GTK_PICK_*), get_display |
-| `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request, width/height, sensitive, `is_sensitive`, `get_color`, margins, add/remove/has_css_class, `measure`, `computePoint(target, GraphenePoint, ?GraphenePoint &$out): bool`, `computeBounds(target, ?GrapheneRect &$out): bool` (border box), first_child, next_sibling, `getNative(): ?GtkNative`, `getRoot(): ?GtkRoot`, overflow (`GtkOverflow`: VISIBLE, HIDDEN clips the children), can_target |
+| `GtkWidget` (layout) | `activate`, halign/valign (`GtkAlign`), size_request, width/height, sensitive, `is_sensitive`, `get_color`, margins, add/remove/has_css_class, `measure`, `computePoint(target, GraphenePoint, ?GraphenePoint &$out): bool`, `computeBounds(target, ?GrapheneRect &$out): bool` (border box), first_child, next_sibling, `getNative(): ?GtkNative`, `getRoot(): ?GtkRoot`, overflow (`GtkOverflow`: VISIBLE, HIDDEN clips the children), can_target, `getLayoutManager(): ?GtkLayoutManager` / `setLayoutManager(?GtkLayoutManager)` (the widget takes its own reference) |
 | `GtkNative`, `GtkRoot` | `getSurface(): ?GdkSurface`, `realize`, `getSurfaceTransform(?float &$x, ?float &$y)`, static `getForSurface`; implemented by windows and popovers |
 | `GraphenePoint`, `GrapheneSize`, `GrapheneRect` | the graphene structs (single-precision floats), built from their fields |
 | `GtkWindow` | `new(): ?GtkWindow` (transfer none: GTK keeps the toplevel), title, default size, child, present, close, destroy, is_active, transient_for, application, modal, hide_on_close, get_focus |
@@ -64,6 +64,7 @@ Naming, all fixed:
 | `GtkAboutDialog` | new; program name, version, copyright, comments, website |
 | `GtkBox`, `GtkPopoverMenuBar` | new(orientation, spacing), append/prepend/remove, insert_child_after, reorder_child_after, spacing, homogeneous; new_from_model, menu model |
 | `GtkGrid`, `GtkFixed` | new, `attach(child, column, row, width, height)`, remove, get_child_at, row/column spacing; new, put, move, remove, `get_child_position` |
+| `GtkConstraintLayout`, `GtkConstraint`, `GtkConstraintGuide` | layout new, `addConstraint`, `addGuide` (the layout takes its own reference to each); `GtkConstraint::new(?target, GtkConstraintAttribute, GtkConstraintRelation, ?source, GtkConstraintAttribute, multiplier, constant, int strength)` (null is the widget the layout belongs to; `GtkConstraintStrength` holds GTK's four strengths); guide new, `setNatSize`, `setMaxSize`. Interface `GtkConstraintTarget` (empty), implemented by `GtkWidget` and `GtkConstraintGuide`; base class `GtkLayoutManager` |
 | `GtkOverlay` | new, child, add_overlay, remove_overlay, `getMeasureOverlay(GtkWidget): bool` / `setMeasureOverlay(GtkWidget, bool)` (a measured overlay child counts in the overlay's size; unmeasured by default), `getClipOverlay(GtkWidget): bool` / `setClipOverlay(GtkWidget, bool)` |
 | `GtkPaned`, `GtkNotebook` | start/end child, position, resize/shrink, wide handle; append_page, remove_page, current page, nth_page, page_num, n_pages, tab label text, show_tabs, scrollable; `switch-page` |
 | `GtkPopover`, `GtkPopoverMenu` | `setPointingTo(?GdkRectangle)`, `getPointingTo(?GdkRectangle &$rect): bool`, has_arrow, popup, popdown, `setParent`/`unparent` (bound on popovers only: GtkWidget keeps no unparent, which leaves container child pointers dangling), signal `closed`; newFromModel, getMenuModel |

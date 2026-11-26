@@ -1,7 +1,7 @@
 # ext-gtk
 
 [![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/gtk/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/gtk/actions/workflows/ci.yml)
-[![GTK API](https://img.shields.io/badge/GTK_API-16.4%25_%28621%2F3798%29-blue?style=flat-square)](SUPPORT.md)
+[![GTK API](https://img.shields.io/badge/GTK_API-16.6%25_%28630%2F3798%29-blue?style=flat-square)](SUPPORT.md)
 
 1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
 in C against the Zend API. C functions keep their names (`g_timeout_add`,
@@ -23,12 +23,13 @@ and close windows, and build menu bars from menu models and actions:
 | `GObject` | `G_OBJECT_TYPE_NAME` |
 | `GApplication` | `g_application_id_is_valid`, `get_application_id`, `get_flags`, `get_is_registered`, `get_is_remote`, `register`, `activate`, `hold`, `release`, `quit`, `run`, `g_action_map_add/remove/lookup_action`, `g_action_group_has/list/activate_action` |
 | `GtkApplication` | `gtk_application_new`, `add_window`, `remove_window`, `get_active_window`, `get_windows`, `get_menubar`, `set_menubar`, `set_accels_for_action`, `get_accels_for_action` |
-| `GtkWidget` | `show`, `hide`, `get/set_visible`, `get_realized`, `get_mapped`, `get/set_hexpand`, `get/set_vexpand`, `get_parent`, `insert_action_group`, `activate_action_variant`, `activate`, `get/set_halign`, `get/set_valign`, `get/set_size_request`, `get_width`, `get_height`, `get/set_sensitive`, `is_sensitive`, `get_color`, `set_margin_start/end/top/bottom`, `add/remove/has_css_class`, `measure`, `compute_bounds`, `get_first_child`, `get_next_sibling`, `get_native`, `get_root`, `grab_focus`, `child_focus` (`GtkDirectionType`), `has_focus`, `set_cursor_from_name`, `get/set_tooltip_text`, `get/set_overflow` (`GtkOverflow`), `get/set_can_target` |
+| `GtkWidget` | `show`, `hide`, `get/set_visible`, `get_realized`, `get_mapped`, `get/set_hexpand`, `get/set_vexpand`, `get_parent`, `insert_action_group`, `activate_action_variant`, `activate`, `get/set_halign`, `get/set_valign`, `get/set_size_request`, `get_width`, `get_height`, `get/set_sensitive`, `is_sensitive`, `get_color`, `set_margin_start/end/top/bottom`, `add/remove/has_css_class`, `measure`, `compute_bounds`, `get_first_child`, `get_next_sibling`, `get_native`, `get_root`, `grab_focus`, `child_focus` (`GtkDirectionType`), `has_focus`, `set_cursor_from_name`, `get/set_tooltip_text`, `get/set_overflow` (`GtkOverflow`), `get/set_can_target`, `get/set_layout_manager` |
 | `GtkNative`, `GtkRoot` (windows, popovers) | `get_surface`, `get_surface_transform`, `get_for_surface`, `realize`, `unrealize`; `get_display`, `get/set_focus` |
 | `GtkWindow` | `new`, `get/set_title`, `get/set_default_size`, `get/set_child`, `present`, `close`, `destroy`, `is_active`, `get/set_transient_for`, `get/set_application`, `get/set_modal`, `get/set_hide_on_close`, `get_focus`, `get/set_default_widget`, `get_group` |
 | `GtkWindowGroup` | `new`, `add_window`, `remove_window` |
 | `GtkApplicationWindow` | `new`, `get/set_show_menubar`, `get_id` |
 | `GtkAboutDialog` | `new`, `get/set_program_name`, `get/set_version`, `get/set_copyright`, `get/set_comments`, `get/set_website` |
+| `GtkConstraintLayout`, `GtkConstraint`, `GtkConstraintGuide` | `gtk_constraint_layout_new`, `add_constraint`, `add_guide`; `gtk_constraint_new`; `gtk_constraint_guide_new`, `set_nat_size`, `set_max_size` |
 | `GtkBox` | `new`, `append`, `prepend`, `remove`, `insert_child_after`, `reorder_child_after`, `get/set_spacing`, `get/set_homogeneous` |
 | `GtkGrid`, `GtkFixed` | `new`, `attach`, `remove`, `get_child_at`, `get/set_row_spacing`, `get/set_column_spacing`; `new`, `put`, `move`, `remove`, `get_child_position` |
 | `GdkGLContext`, `GdkGLAPI`, `GtkGLArea` | `make_current`, `clear_current`, `get_current`, `realize`, `get_use_es`, `get_version`, `get_api`; `new`, `get_context`, `make_current`, `attach_buffers`, `queue_render`, `get/set_auto_render`, `get/set_has_depth_buffer`, `get/set_has_stencil_buffer`, `get/set_allowed_apis`, `set_required_version`, `get_error` (signal `render`) |

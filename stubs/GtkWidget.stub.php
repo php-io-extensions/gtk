@@ -72,10 +72,15 @@ final class GrapheneRect
     public function __construct(GraphenePoint $origin, GrapheneSize $size) {}
 }
 
+/** GtkConstraintTarget: what a GtkConstraint can bind, implemented by GtkWidget and GtkConstraintGuide. */
+interface GtkConstraintTarget
+{
+}
+
 /**
  * @not-serializable
  */
-class GtkWidget extends GObject
+class GtkWidget extends GObject implements GtkConstraintTarget
 {
     public function show(): void {}
 
@@ -101,6 +106,12 @@ class GtkWidget extends GObject
     public function setTooltipText(?string $text): void {}
 
     public function getTooltipText(): ?string {}
+
+    /** gtk_widget_get_layout_manager(): the widget's layout manager, null when it has none. */
+    public function getLayoutManager(): ?GtkLayoutManager {}
+
+    /** gtk_widget_set_layout_manager(): the widget takes its own reference; null removes it. */
+    public function setLayoutManager(?GtkLayoutManager $layoutManager): void {}
 
     public function getOverflow(): GtkOverflow {}
 

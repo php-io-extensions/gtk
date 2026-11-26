@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: f27817ff2b869c02277f3f51018f24f5bf247ce3 */
+ * Stub hash: 52c4faf1d17261018a6e45b8df1acb657d3d5496 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -48,6 +48,13 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setTooltipText, 
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_getTooltipText, 0, 0, IS_STRING, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getLayoutManager, 0, 0, GtkLayoutManager, 1)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkWidget_setLayoutManager, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, layoutManager, GtkLayoutManager, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkWidget_getOverflow, 0, 0, GtkOverflow, 0)
@@ -401,6 +408,8 @@ ZEND_METHOD(GtkWidget, setOpacity);
 ZEND_METHOD(GtkWidget, setCursorFromName);
 ZEND_METHOD(GtkWidget, setTooltipText);
 ZEND_METHOD(GtkWidget, getTooltipText);
+ZEND_METHOD(GtkWidget, getLayoutManager);
+ZEND_METHOD(GtkWidget, setLayoutManager);
 ZEND_METHOD(GtkWidget, getOverflow);
 ZEND_METHOD(GtkWidget, setOverflow);
 ZEND_METHOD(GtkWidget, getCanTarget);
@@ -528,6 +537,8 @@ static const zend_function_entry class_GtkWidget_methods[] = {
 	ZEND_ME(GtkWidget, setCursorFromName, arginfo_class_GtkWidget_setCursorFromName, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setTooltipText, arginfo_class_GtkWidget_setTooltipText, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getTooltipText, arginfo_class_GtkWidget_getTooltipText, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, getLayoutManager, arginfo_class_GtkWidget_getLayoutManager, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkWidget, setLayoutManager, arginfo_class_GtkWidget_setLayoutManager, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getOverflow, arginfo_class_GtkWidget_getOverflow, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, setOverflow, arginfo_class_GtkWidget_setOverflow, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkWidget, getCanTarget, arginfo_class_GtkWidget_getCanTarget, ZEND_ACC_PUBLIC)
@@ -857,12 +868,23 @@ static zend_class_entry *register_class_GrapheneRect(void)
 	return class_entry;
 }
 
-static zend_class_entry *register_class_GtkWidget(zend_class_entry *class_entry_GObject)
+static zend_class_entry *register_class_GtkConstraintTarget(void)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkConstraintTarget", NULL);
+	class_entry = zend_register_internal_interface(&ce);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkWidget(zend_class_entry *class_entry_GObject, zend_class_entry *class_entry_GtkConstraintTarget)
 {
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkWidget", class_GtkWidget_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GObject, ZEND_ACC_NOT_SERIALIZABLE);
+	zend_class_implements(class_entry, 1, class_entry_GtkConstraintTarget);
 
 	return class_entry;
 }

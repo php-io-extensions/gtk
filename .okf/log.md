@@ -1,5 +1,9 @@
 # Log
 
+## 2026-11-26
+
+* `GtkConstraintLayout` (new, addConstraint, addGuide), `GtkConstraint::new`, `GtkConstraintGuide` (new, setNatSize, setMaxSize), enums `GtkConstraintAttribute`, `GtkConstraintRelation`, `GtkConstraintStrength`, base class `GtkLayoutManager`, interface `GtkConstraintTarget` on `GtkWidget` and `GtkConstraintGuide`; `GtkWidget` getLayoutManager / setLayoutManager. The transfer-full parameters take a reference for GTK and leave the PHP object its own. No refusal. `tests/ConstraintLayoutTest.php`. SUPPORT.md regenerated: 630 / 3798.
+
 ## 2026-11-25
 
 * `GtkOverlay` getMeasureOverlay / setMeasureOverlay, getClipOverlay / setClipOverlay (per overlay child). `GtkWidget` getOverflow / setOverflow with enum `GtkOverflow` (VISIBLE, HIDDEN), getCanTarget / setCanTarget. No refusal. `tests/OverlayTest.php` (an unmeasured 200x100 overlay child leaves the natural size of an overlay with an empty main child 0; measured, it is at least 200x100), `tests/LayoutTest.php`. SUPPORT.md regenerated: 621 / 3798.

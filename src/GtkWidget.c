@@ -48,7 +48,10 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_interface_bodies(phpgtk_ce_GtkRoot, phpgtk_GtkRoot_bodies);
 	phpgtk_ce_GtkRoot->interface_gets_implemented = phpgtk_interface_native_only;
 
-	phpgtk_ce_GtkWidget = register_class_GtkWidget(phpgtk_ce_GObject);
+	phpgtk_ce_GtkConstraintTarget = register_class_GtkConstraintTarget();
+	phpgtk_ce_GtkConstraintTarget->interface_gets_implemented = phpgtk_interface_native_only;
+
+	phpgtk_ce_GtkWidget = register_class_GtkWidget(phpgtk_ce_GObject, phpgtk_ce_GtkConstraintTarget);
 	phpgtk_object_setup(phpgtk_ce_GtkWidget);
 	phpgtk_map_gtype("GtkWidget", phpgtk_ce_GtkWidget);
 
@@ -181,6 +184,27 @@ ZEND_METHOD(GtkWidget, getTooltipText)
 	ZEND_PARSE_PARAMETERS_NONE();
 
 	phpgtk_return_string(return_value, gtk_widget_get_tooltip_text(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, getLayoutManager)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_widget_get_layout_manager(THIS_WIDGET));
+}
+
+ZEND_METHOD(GtkWidget, setLayoutManager)
+{
+	zend_object *layout_manager;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(layout_manager, phpgtk_ce_GtkLayoutManager)
+	ZEND_PARSE_PARAMETERS_END();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+
+	/* gtk_widget_set_layout_manager() takes the caller's reference; the PHP object keeps its own. */
+	gtk_widget_set_layout_manager(THIS_WIDGET,
+		layout_manager != NULL ? GTK_LAYOUT_MANAGER(g_object_ref(PHPGTK_PTR(layout_manager))) : NULL);
 }
 
 ZEND_METHOD(GtkWidget, getOverflow)
