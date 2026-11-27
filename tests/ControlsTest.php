@@ -133,6 +133,33 @@ it('moves a scale and reports the value once', function (): void {
     expect($scale->getValue())->toBe(4.75);
 });
 
+it('draws a drop-down\'s selected item through its factory, and takes a list factory of its own', function (): void {
+    $drop = GtkDropDown::newFromStrings(['a', 'b']);
+    $drop->setSelected(1);
+    $bound = [];
+    $factory = GtkSignalListItemFactory::new();
+    g_signal_connect($factory, 'setup', function (GObject $f, GtkListItem $item): void { $item->setChild(GtkLabel::new(null)); });
+    g_signal_connect($factory, 'bind', function (GObject $f, GtkListItem $item) use (&$bound): void {
+        $bound[] = $item->getItem()->getString();
+        $item->getChild()->setText($item->getItem()->getString());
+    });
+
+    $drop->setFactory($factory);
+    $drop->setListFactory(GtkSignalListItemFactory::new());
+    // GTK binds the button's item once the drop-down is shown.
+    $window = GtkWindow::new();
+    $window->setChild($drop);
+    $window->present();
+    iterateFor(0.1);
+    $shown = $bound;
+    $drop->setListFactory(null);
+    $drop->setFactory(null);
+
+    expect($shown)->toBe(['b'])
+        ->and(fn () => $drop->setFactory(GMenu::new()))->toThrow(TypeError::class);
+    $window->destroy();
+});
+
 it('selects from a drop-down over a string list', function (): void {
     $drop = GtkDropDown::newFromStrings(['a', 'b']);
     $selected = [];
@@ -262,6 +289,12 @@ it('shows a themed icon and reads its name back', function (): void {
     expect($image)->toBeInstanceOf(GtkWidget::class)
         ->and($image->getIconName())->toBe('dialog-warning')
         ->and(GtkImage::newFromIconName(null)->getIconName())->toBeNull();
+
+    $image->setFromIconName('edit-copy');
+    expect($image->getIconName())->toBe('edit-copy');
+
+    $image->setFromIconName(null);
+    expect($image->getIconName())->toBeNull();
 });
 
 it('hosts a child in a scrolled window beside a separator', function (): void {

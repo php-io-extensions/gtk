@@ -5,7 +5,7 @@ description: Functions, classes, interfaces, enums and constants ext-gtk binds, 
 resource: stubs/
 tags: [gtk, glib, gio, api]
 status: draft
-generated: { by: claude-opus/5.5, at: 2026-11-26T05:00:00Z }
+generated: { by: claude-opus/5.5, at: 2026-11-27T02:30:00Z }
 sources:
   - id: stubs
     resource: stubs/
@@ -45,7 +45,7 @@ Naming, all fixed:
 | `g_signal_emit_by_name(GObject, string, mixed ...$params): mixed` | `g_signal_emitv` with the signal's own parameter types, each value of its GType's kind (bool, int or int-backed enum within the C type, float, ?string, GObjects of the type, GVariant, GParamSpec, a GtkTextIter / GBytes / address for boxed types, an address for pointers); count checked (ArgumentCountError), other kinds a TypeError; returns the signal's value |
 | `g_signal_handler_disconnect`, `g_signal_handler_is_connected` | same |
 | `g_object_get_property`, `g_object_set_property` | any GObject property by name, converted as signal arguments are; GLib warns about an unknown, read-only or invalid one |
-| `GObject::typeName()`, `pointer()` | `G_OBJECT_TYPE_NAME`, address (the pointer hand-off) |
+| `GObject::typeName()`, `pointer()`, `fromPointer()` | `G_OBJECT_TYPE_NAME`, address (the pointer hand-off, both ways) |
 | `GParamSpec` | name, nick, blurb, value type (`G_PARAM_SPEC_VALUE_TYPE`, by name); `notify::*` handlers receive it |
 | `GApplication` | `id_is_valid` (static), application id, flags, is_registered, is_remote, `register(?GCancellable)`, activate, hold, release, quit, `run(array $argv)`; implements GActionMap and GActionGroup |
 | `GtkApplication::new(?string, GApplicationFlags\|int): ?GtkApplication` | `gtk_application_new` (NULL for an invalid id) |
@@ -66,6 +66,7 @@ Naming, all fixed:
 | `GtkGrid`, `GtkFixed` | new, `attach(child, column, row, width, height)`, remove, get_child_at, row/column spacing; new, put, move, remove, `get_child_position` |
 | `GtkConstraintLayout`, `GtkConstraint`, `GtkConstraintGuide` | layout new, `addConstraint`, `addGuide` (the layout takes its own reference to each); `GtkConstraint::new(?target, GtkConstraintAttribute, GtkConstraintRelation, ?source, GtkConstraintAttribute, multiplier, constant, int strength)` (null is the widget the layout belongs to; `GtkConstraintStrength` holds GTK's four strengths); guide new, `setNatSize`, `setMaxSize`. Interface `GtkConstraintTarget` (empty), implemented by `GtkWidget` and `GtkConstraintGuide`; base class `GtkLayoutManager` |
 | `GtkOverlay` | new, child, add_overlay, remove_overlay, `getMeasureOverlay(GtkWidget): bool` / `setMeasureOverlay(GtkWidget, bool)` (a measured overlay child counts in the overlay's size; unmeasured by default), `getClipOverlay(GtkWidget): bool` / `setClipOverlay(GtkWidget, bool)` |
+| `GtkFlowBox`, `GtkFlowBoxChild` | new (a widget given to insert/append/prepend is wrapped in a `GtkFlowBoxChild`; a `GtkFlowBoxChild` is taken as is), insert(child, position), append, prepend, remove (the widget or its `GtkFlowBoxChild`), removeAll, `getChildAtIndex(int): ?GtkFlowBoxChild`, homogeneous, row/column spacing and min/max children per line (guints: an int outside C `guint` is a `ValueError`), selection mode (`GtkSelectionMode`: NONE, SINGLE, BROWSE, MULTIPLE); `GtkFlowBoxChild` new, child, isSelected, changed. `gtk_flow_box_child_get_index` is not bound: after the child left its box GTK reads a freed iter (SIGSEGV, probed) |
 | `GtkPaned`, `GtkNotebook` | start/end child, position, resize/shrink, wide handle; append_page, remove_page, current page, nth_page, page_num, n_pages, tab label text, show_tabs, scrollable; `switch-page` |
 | `GtkPopover`, `GtkPopoverMenu` | `setPointingTo(?GdkRectangle)`, `getPointingTo(?GdkRectangle &$rect): bool`, has_arrow, popup, popdown, `setParent`/`unparent` (bound on popovers only: GtkWidget keeps no unparent, which leaves container child pointers dangling), signal `closed`; newFromModel, getMenuModel |
 | `GtkCssProvider`, `GdkDisplay` | new, `load_from_string`; get_default, sync; `gtk_style_context_add/remove_provider_for_display(display, GtkStyleProvider, …)`; `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION` |
@@ -90,7 +91,7 @@ Naming, all fixed:
 | `GtkTextMark`, `GtkTextTag`, `GtkTextTagTable` | —; new(?name), properties via g_object_set_property; add, remove, lookup |
 | `GtkScale` | `newWithRange(…): ?GtkScale` (NULL for min ≥ max or step 0), value, set_range, set_increments, draw_value; `value-changed` |
 | `GtkStringList`, `GtkStringObject`, `GListModel` | `new(string[])`, append, remove, splice, `getString(int): ?string`; get_string; n_items, item |
-| `GtkDropDown` | new_from_strings, selected, selected item, `setModel(?GListModel)`; `notify::selected` |
+| `GtkDropDown` | new_from_strings, selected, selected item, `setModel(?GListModel)`, `setFactory(?GtkListItemFactory)` (the button's item, and the popup's while no list factory is set; GTK binds it once the drop-down is shown), `setListFactory(?GtkListItemFactory)`; `notify::selected` |
 | `GtkCalendar`, `GDateTime` | new, get_date, select_day; `day-selected`. GDateTime: `newLocal(…): ?GDateTime`, year, month, day_of_month, to_unix |
 | `GSettingsSchemaSource`, `GSettingsSchema`, `GSettings` | source: `getDefault(): ?GSettingsSchemaSource` (reference counted, one PHP object), `lookup(string, bool $recursive): ?GSettingsSchema`. Schema: `hasKey`. Settings (a `GObject`): `new(string $schemaId)`, `getBoolean`, `getInt`, `getUint`, `getDouble`, `getString(): ?string`. GIO only: no `gtk_init`. Refusals (`ValueError`): a schema that is not installed (`gsettings-schema-installed`), a schema without a path (`gsettings-schema-path`), a key the schema lacks (`gsettings-key-in-schema-boolean`, `-int`, `-uint`, `-double`, `-string`). A key of another type is GLib's critical, then 0 or null |
 | `GtkProgressBar`, `GtkSpinner`, `GtkSeparator`, `GtkScrolledWindow`, `GtkAdjustment` | fraction, pulse, pulse_step; spinning; new(orientation); child, policy, h/v adjustment; value, lower, upper, page_size, `value-changed` |
@@ -99,6 +100,7 @@ Naming, all fixed:
 | `GtkIMContext`, `GtkIMMulticontext` | new; client_widget, filter_keypress, focus_in/out, reset; `commit` |
 | `GtkSettings` | get_default (read with g_object_get_property) |
 | `GtkPicture` | new, new_for_filename, `set_filename(?string)`, content_fit, `getPaintable(): ?GdkPaintable`, `setPaintable(?GdkPaintable)`, can_shrink |
+| `GtkImage` | `newFromIconName(?string)` (null: empty), icon name, `setFromIconName(?string)` (null empties it), `setFromFile(?string)` (an unreadable file shows the broken-image icon), pixel size |
 | `GtkColumnView`, `GtkColumnViewColumn`, `GtkSignalListItemFactory`, `GtkListItem`, `GtkSingleSelection` | `new(?GtkSelectionModel)`, append/remove_column, model, separators; `new(?string, ?GtkListItemFactory)`, title, expand, resizable; `setup`/`bind`/`unbind`/`teardown`; position, item, child; `new(?GListModel)`, selected, autoselect, can_unselect; `GTK_INVALID_LIST_POSITION`; column view `scrollTo(pos, ?column, flags, ?GtkScrollInfo)` with `GTK_LIST_SCROLL_*` |
 | `GtkTreeListModel`, `GtkTreeListRow`, `GtkTreeExpander`, `GtkScrollInfo` | `new(GListModel, passthrough, autoexpand, callable)` (callable(GObject item): ?GListModel; anything else = leaf; held until finalize), getRow / getChildRow (null past the end); row item, expanded (+set), isExpandable, depth, position, parent, getChildRow (null while collapsed); expander `new()`, child, listRow; scroll info (boxed, refcounted) `new()`, enableHorizontal / enableVertical (+set) |
 | `GtkMediaStream`, `GtkMediaFile`, `GtkVideo` | play, pause, playing, ended, `get_error(): ?GError`, seek (µs), is_seekable, timestamp, duration, muted, loop, has_video; `notify::playing/ended/error`. MediaFile: `new()`, `new_for_filename` (both need GTK initialised), set_filename, clear. Video: new, media_stream, autoplay, loop. Without a media backend `GtkMediaFile::new()->typeName()` is `GtkNoMediaFile` |

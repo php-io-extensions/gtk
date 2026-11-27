@@ -179,6 +179,9 @@ class GtkImage extends GtkWidget
 
     public function getIconName(): ?string {}
 
+    /** A themed icon in place of what the image shows; null empties it. */
+    public function setFromIconName(?string $iconName): void {}
+
     /** A file GTK cannot read shows the broken-image icon. */
     public function setFromFile(?string $filename): void {}
 
@@ -477,6 +480,12 @@ class GtkDropDown extends GtkWidget
     public function getSelectedItem(): ?GObject {}
 
     public function setModel(?GListModel $model): void {}
+
+    /** The factory for the selected item on the button, and for the list too while no list factory is set. */
+    public function setFactory(?GtkListItemFactory $factory): void {}
+
+    /** The factory for the items in the popup; null: the button's factory. */
+    public function setListFactory(?GtkListItemFactory $factory): void {}
 }
 
 /**

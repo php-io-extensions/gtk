@@ -239,6 +239,7 @@ ZEND_METHOD(GtkImage, newFromIconName)
 }
 
 PHPGTK_GET_STRING(GtkImage, getIconName, GTK_IMAGE, gtk_image_get_icon_name)
+PHPGTK_SET_STRING_OR_NULL(GtkImage, setFromIconName, GTK_IMAGE, gtk_image_set_from_icon_name)
 PHPGTK_SET_STRING_OR_NULL(GtkImage, setFromFile, GTK_IMAGE, gtk_image_set_from_file)
 
 ZEND_METHOD(GtkImage, getPixelSize)
@@ -1120,6 +1121,28 @@ ZEND_METHOD(GtkDropDown, setModel)
 	}
 
 	gtk_drop_down_set_model(THIS(GTK_DROP_DOWN), (GListModel *) PHPGTK_OPTIONAL_PTR(model));
+}
+
+ZEND_METHOD(GtkDropDown, setFactory)
+{
+	zend_object *factory = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(factory, phpgtk_ce_GtkListItemFactory)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_drop_down_set_factory(THIS(GTK_DROP_DOWN), (GtkListItemFactory *) PHPGTK_OPTIONAL_PTR(factory));
+}
+
+ZEND_METHOD(GtkDropDown, setListFactory)
+{
+	zend_object *factory = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(factory, phpgtk_ce_GtkListItemFactory)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_drop_down_set_list_factory(THIS(GTK_DROP_DOWN), (GtkListItemFactory *) PHPGTK_OPTIONAL_PTR(factory));
 }
 
 /* ---- GtkCalendar ------------------------------------------------------- */

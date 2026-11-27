@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 9b268c46845a1c50feced65edb550b9237e2b51b */
+ * Stub hash: 9802658fb2cf46754455e4ec12405b453aed1121 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GObject___construct, 0, 0, 0)
 ZEND_END_ARG_INFO()
@@ -8,6 +8,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GObject_typeName, 0, 0, IS
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GObject_pointer, 0, 0, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GObject_fromPointer, 0, 1, GObject, 1)
+	ZEND_ARG_TYPE_INFO(0, pointer, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GParamSpec___construct arginfo_class_GObject___construct
@@ -24,6 +28,7 @@ ZEND_END_ARG_INFO()
 ZEND_METHOD(GObject, __construct);
 ZEND_METHOD(GObject, typeName);
 ZEND_METHOD(GObject, pointer);
+ZEND_METHOD(GObject, fromPointer);
 ZEND_METHOD(GParamSpec, __construct);
 ZEND_METHOD(GParamSpec, getName);
 ZEND_METHOD(GParamSpec, getNick);
@@ -34,6 +39,7 @@ static const zend_function_entry class_GObject_methods[] = {
 	ZEND_ME(GObject, __construct, arginfo_class_GObject___construct, ZEND_ACC_PRIVATE)
 	ZEND_ME(GObject, typeName, arginfo_class_GObject_typeName, ZEND_ACC_PUBLIC)
 	ZEND_ME(GObject, pointer, arginfo_class_GObject_pointer, ZEND_ACC_PUBLIC)
+	ZEND_ME(GObject, fromPointer, arginfo_class_GObject_fromPointer, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_FE_END
 };
 

@@ -42,6 +42,14 @@ enum GtkOverflow: int
     case HIDDEN = 1;
 }
 
+enum GtkSelectionMode: int
+{
+    case NONE = 0;
+    case SINGLE = 1;
+    case BROWSE = 2;
+    case MULTIPLE = 3;
+}
+
 /** graphene_point_t: a point, x and y. */
 final class GraphenePoint
 {
@@ -347,6 +355,69 @@ class GtkOverlay extends GtkWidget
     public function getClipOverlay(GtkWidget $widget): bool {}
 
     public function setClipOverlay(GtkWidget $widget, bool $clipOverlay): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkFlowBox extends GtkWidget
+{
+    public static function new(): GtkFlowBox {}
+
+    /** A widget that is not a GtkFlowBoxChild is wrapped in one. */
+    public function insert(GtkWidget $child, int $position): void {}
+
+    public function append(GtkWidget $child): void {}
+
+    public function prepend(GtkWidget $child): void {}
+
+    /** GTK 4.12. The child, or the GtkFlowBoxChild that wraps it. */
+    public function remove(GtkWidget $child): void {}
+
+    /** GTK 4.12. */
+    public function removeAll(): void {}
+
+    public function getChildAtIndex(int $idx): ?GtkFlowBoxChild {}
+
+    public function getHomogeneous(): bool {}
+
+    public function setHomogeneous(bool $homogeneous): void {}
+
+    public function getRowSpacing(): int {}
+
+    public function setRowSpacing(int $spacing): void {}
+
+    public function getColumnSpacing(): int {}
+
+    public function setColumnSpacing(int $spacing): void {}
+
+    public function getMinChildrenPerLine(): int {}
+
+    public function setMinChildrenPerLine(int $nChildren): void {}
+
+    public function getMaxChildrenPerLine(): int {}
+
+    public function setMaxChildrenPerLine(int $nChildren): void {}
+
+    public function getSelectionMode(): GtkSelectionMode {}
+
+    public function setSelectionMode(GtkSelectionMode $mode): void {}
+}
+
+/**
+ * @not-serializable
+ */
+class GtkFlowBoxChild extends GtkWidget
+{
+    public static function new(): GtkFlowBoxChild {}
+
+    public function getChild(): ?GtkWidget {}
+
+    public function setChild(?GtkWidget $child): void {}
+
+    public function isSelected(): bool {}
+
+    public function changed(): void {}
 }
 
 /**

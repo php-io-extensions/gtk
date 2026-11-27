@@ -206,8 +206,21 @@ static void phpgtk_box_new(zval *rv, zend_class_entry *ce, void *referenced, php
 
 static guint *phpgtk_buffer_generation(GtkTextBuffer *buffer);
 
+static void phpgtk_box_gobject_ref(zval *rv, gpointer object, bool sink);
+
 /* Takes PHP's own reference (sinking a floating one); the caller keeps whatever it held. */
 void phpgtk_box_gobject(zval *rv, gpointer object)
+{
+	phpgtk_box_gobject_ref(rv, object, true);
+}
+
+/* Takes PHP's own reference and leaves a floating one floating: the object belongs to another extension, which keeps the reference it holds. */
+void phpgtk_box_gobject_foreign(zval *rv, gpointer object)
+{
+	phpgtk_box_gobject_ref(rv, object, false);
+}
+
+static void phpgtk_box_gobject_ref(zval *rv, gpointer object, bool sink)
 {
 	if (object == NULL) {
 		ZVAL_NULL(rv);
@@ -230,7 +243,7 @@ void phpgtk_box_gobject(zval *rv, gpointer object)
 		}
 	}
 
-	phpgtk_box_new(rv, ce, g_object_ref_sink(object), PHPGTK_GOBJECT);
+	phpgtk_box_new(rv, ce, sink ? g_object_ref_sink(object) : g_object_ref(object), PHPGTK_GOBJECT);
 
 	/* PHP can only connect a handler once the buffer is a PHP object: count its text changes from then on, so no handler runs before the counter. */
 	if (GTK_IS_TEXT_BUFFER(object)) {

@@ -30,6 +30,17 @@ ZEND_METHOD(GObject, pointer)
 	RETURN_LONG((zend_long) (uintptr_t) PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)));
 }
 
+ZEND_METHOD(GObject, fromPointer)
+{
+	zend_long pointer;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(pointer)
+	ZEND_PARSE_PARAMETERS_END();
+
+	phpgtk_box_gobject_foreign(return_value, (gpointer) (uintptr_t) pointer);
+}
+
 /* ---- GParamSpec -------------------------------------------------------- */
 
 #define THIS_PSPEC ((GParamSpec *) PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))

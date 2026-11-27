@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 3b037b4de309638a4ce82dc9dbb0a75189f93596 */
+ * Stub hash: 26f0fa43f03d3feec9f9c86dfbf533a4eee0ccaf */
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkLabel_new, 0, 1, GtkLabel, 0)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 1)
@@ -139,6 +139,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkImage_newFromIconName, 0
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_GtkImage_getIconName arginfo_class_GtkLabel_getCurrentUri
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkImage_setFromIconName, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, iconName, IS_STRING, 1)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkImage_setFromFile, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 1)
@@ -424,6 +428,12 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkDropDown_setModel, 0, 1
 	ZEND_ARG_OBJ_INFO(0, model, GListModel, 1)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkDropDown_setFactory, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, factory, GtkListItemFactory, 1)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkDropDown_setListFactory arginfo_class_GtkDropDown_setFactory
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkCalendar_new, 0, 0, GtkCalendar, 0)
 ZEND_END_ARG_INFO()
 
@@ -643,6 +653,7 @@ ZEND_METHOD(GtkLinkButton, getVisited);
 ZEND_METHOD(GtkLinkButton, setVisited);
 ZEND_METHOD(GtkImage, newFromIconName);
 ZEND_METHOD(GtkImage, getIconName);
+ZEND_METHOD(GtkImage, setFromIconName);
 ZEND_METHOD(GtkImage, setFromFile);
 ZEND_METHOD(GtkImage, getPixelSize);
 ZEND_METHOD(GtkImage, setPixelSize);
@@ -727,6 +738,8 @@ ZEND_METHOD(GtkDropDown, getSelected);
 ZEND_METHOD(GtkDropDown, setSelected);
 ZEND_METHOD(GtkDropDown, getSelectedItem);
 ZEND_METHOD(GtkDropDown, setModel);
+ZEND_METHOD(GtkDropDown, setFactory);
+ZEND_METHOD(GtkDropDown, setListFactory);
 ZEND_METHOD(GtkCalendar, new);
 ZEND_METHOD(GtkCalendar, getDate);
 ZEND_METHOD(GtkCalendar, selectDay);
@@ -851,6 +864,7 @@ static const zend_function_entry class_GtkLinkButton_methods[] = {
 static const zend_function_entry class_GtkImage_methods[] = {
 	ZEND_ME(GtkImage, newFromIconName, arginfo_class_GtkImage_newFromIconName, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkImage, getIconName, arginfo_class_GtkImage_getIconName, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkImage, setFromIconName, arginfo_class_GtkImage_setFromIconName, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkImage, setFromFile, arginfo_class_GtkImage_setFromFile, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkImage, getPixelSize, arginfo_class_GtkImage_getPixelSize, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkImage, setPixelSize, arginfo_class_GtkImage_setPixelSize, ZEND_ACC_PUBLIC)
@@ -989,6 +1003,8 @@ static const zend_function_entry class_GtkDropDown_methods[] = {
 	ZEND_ME(GtkDropDown, setSelected, arginfo_class_GtkDropDown_setSelected, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkDropDown, getSelectedItem, arginfo_class_GtkDropDown_getSelectedItem, ZEND_ACC_PUBLIC)
 	ZEND_ME(GtkDropDown, setModel, arginfo_class_GtkDropDown_setModel, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkDropDown, setFactory, arginfo_class_GtkDropDown_setFactory, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkDropDown, setListFactory, arginfo_class_GtkDropDown_setListFactory, ZEND_ACC_PUBLIC)
 	ZEND_FE_END
 };
 

@@ -1,6 +1,14 @@
 # Log
 
+## 2026-11-27
+
+* `GObject::fromPointer()` (glue, Angel 2026-11-27): the object at another extension's address, boxed with PHP's own reference; a floating reference stays floating. `tests/GObjectTest.php`, with an ext-gstreamer playbin read through `g_object_get_property`. [object model](architecture/object-model.md), [surface](api/surface.md)
+* `GtkImage` setFromIconName, passed straight through; the `GtkImage` row the surface and README lacked. `tests/ControlsTest.php`. [surface](api/surface.md)
+* `GtkDropDown` setFactory and setListFactory, passed straight through. Measured: GTK binds the button's item once the drop-down is shown, not when the factory is set. `tests/ControlsTest.php`. [surface](api/surface.md)
+
 ## 2026-11-26
+
+* `GtkFlowBox` (new, insert, append, prepend, remove, removeAll, getChildAtIndex, homogeneous, row / column spacing, min / max children per line, selection mode) with enum `GtkSelectionMode`, and `GtkFlowBoxChild` (new, getChild / setChild, isSelected, changed). `gtk_flow_box_child_get_index` is left unbound: on a child that left its box GTK reads a freed iter and dies (SIGSEGV, probed through a script). No refusal yet. `GtkFlowBox::new` and `GtkFlowBoxChild::new` before `gtk_init()` are SIGSEGV (probed, exit 139): each refuses through its own site, `gtk-initialized-flow-box` and `gtk-initialized-flow-box-child`, with its case in `tests/Probes/InitializedTest.php`. `tests/FlowBoxTest.php`. SUPPORT.md regenerated: 654 / 3798.
 
 * `GtkConstraintLayout` (new, addConstraint, addGuide), `GtkConstraint::new`, `GtkConstraintGuide` (new, setNatSize, setMaxSize), enums `GtkConstraintAttribute`, `GtkConstraintRelation`, `GtkConstraintStrength`, base class `GtkLayoutManager`, interface `GtkConstraintTarget` on `GtkWidget` and `GtkConstraintGuide`; `GtkWidget` getLayoutManager / setLayoutManager. The transfer-full parameters take a reference for GTK and leave the PHP object its own. No refusal. `tests/ConstraintLayoutTest.php`. SUPPORT.md regenerated: 630 / 3798.
 

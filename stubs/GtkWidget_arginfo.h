@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 52c4faf1d17261018a6e45b8df1acb657d3d5496 */
+ * Stub hash: a19e8f67b7de4dd909043bdec41c19a6c6b0b80e */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_GraphenePoint___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, x, IS_DOUBLE, 0)
@@ -333,6 +333,66 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkOverlay_setClipOverlay,
 	ZEND_ARG_TYPE_INFO(0, clipOverlay, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkFlowBox_new, 0, 0, GtkFlowBox, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkFlowBox_insert, 0, 2, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, child, GtkWidget, 0)
+	ZEND_ARG_TYPE_INFO(0, position, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkFlowBox_append arginfo_class_GtkBox_append
+
+#define arginfo_class_GtkFlowBox_prepend arginfo_class_GtkBox_append
+
+#define arginfo_class_GtkFlowBox_remove arginfo_class_GtkBox_append
+
+#define arginfo_class_GtkFlowBox_removeAll arginfo_class_GtkWidget_show
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkFlowBox_getChildAtIndex, 0, 1, GtkFlowBoxChild, 1)
+	ZEND_ARG_TYPE_INFO(0, idx, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkFlowBox_getHomogeneous arginfo_class_GtkWidget_getVisible
+
+#define arginfo_class_GtkFlowBox_setHomogeneous arginfo_class_GtkBox_setHomogeneous
+
+#define arginfo_class_GtkFlowBox_getRowSpacing arginfo_class_GtkWidget_getWidth
+
+#define arginfo_class_GtkFlowBox_setRowSpacing arginfo_class_GtkBox_setSpacing
+
+#define arginfo_class_GtkFlowBox_getColumnSpacing arginfo_class_GtkWidget_getWidth
+
+#define arginfo_class_GtkFlowBox_setColumnSpacing arginfo_class_GtkBox_setSpacing
+
+#define arginfo_class_GtkFlowBox_getMinChildrenPerLine arginfo_class_GtkWidget_getWidth
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkFlowBox_setMinChildrenPerLine, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, nChildren, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkFlowBox_getMaxChildrenPerLine arginfo_class_GtkWidget_getWidth
+
+#define arginfo_class_GtkFlowBox_setMaxChildrenPerLine arginfo_class_GtkFlowBox_setMinChildrenPerLine
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkFlowBox_getSelectionMode, 0, 0, GtkSelectionMode, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_GtkFlowBox_setSelectionMode, 0, 1, IS_VOID, 0)
+	ZEND_ARG_OBJ_INFO(0, mode, GtkSelectionMode, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkFlowBoxChild_new, 0, 0, GtkFlowBoxChild, 0)
+ZEND_END_ARG_INFO()
+
+#define arginfo_class_GtkFlowBoxChild_getChild arginfo_class_GtkWidget_getParent
+
+#define arginfo_class_GtkFlowBoxChild_setChild arginfo_class_GtkOverlay_setChild
+
+#define arginfo_class_GtkFlowBoxChild_isSelected arginfo_class_GtkWidget_getVisible
+
+#define arginfo_class_GtkFlowBoxChild_changed arginfo_class_GtkWidget_show
+
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_GtkPopoverMenuBar_newFromModel, 0, 1, GtkPopoverMenuBar, 0)
 	ZEND_ARG_OBJ_INFO(0, model, GMenuModel, 1)
 ZEND_END_ARG_INFO()
@@ -489,6 +549,30 @@ ZEND_METHOD(GtkOverlay, getMeasureOverlay);
 ZEND_METHOD(GtkOverlay, setMeasureOverlay);
 ZEND_METHOD(GtkOverlay, getClipOverlay);
 ZEND_METHOD(GtkOverlay, setClipOverlay);
+ZEND_METHOD(GtkFlowBox, new);
+ZEND_METHOD(GtkFlowBox, insert);
+ZEND_METHOD(GtkFlowBox, append);
+ZEND_METHOD(GtkFlowBox, prepend);
+ZEND_METHOD(GtkFlowBox, remove);
+ZEND_METHOD(GtkFlowBox, removeAll);
+ZEND_METHOD(GtkFlowBox, getChildAtIndex);
+ZEND_METHOD(GtkFlowBox, getHomogeneous);
+ZEND_METHOD(GtkFlowBox, setHomogeneous);
+ZEND_METHOD(GtkFlowBox, getRowSpacing);
+ZEND_METHOD(GtkFlowBox, setRowSpacing);
+ZEND_METHOD(GtkFlowBox, getColumnSpacing);
+ZEND_METHOD(GtkFlowBox, setColumnSpacing);
+ZEND_METHOD(GtkFlowBox, getMinChildrenPerLine);
+ZEND_METHOD(GtkFlowBox, setMinChildrenPerLine);
+ZEND_METHOD(GtkFlowBox, getMaxChildrenPerLine);
+ZEND_METHOD(GtkFlowBox, setMaxChildrenPerLine);
+ZEND_METHOD(GtkFlowBox, getSelectionMode);
+ZEND_METHOD(GtkFlowBox, setSelectionMode);
+ZEND_METHOD(GtkFlowBoxChild, new);
+ZEND_METHOD(GtkFlowBoxChild, getChild);
+ZEND_METHOD(GtkFlowBoxChild, setChild);
+ZEND_METHOD(GtkFlowBoxChild, isSelected);
+ZEND_METHOD(GtkFlowBoxChild, changed);
 ZEND_METHOD(GtkPopoverMenuBar, newFromModel);
 ZEND_METHOD(GtkPopoverMenuBar, getMenuModel);
 ZEND_METHOD(GtkPopoverMenuBar, setMenuModel);
@@ -653,6 +737,38 @@ static const zend_function_entry class_GtkOverlay_methods[] = {
 	ZEND_FE_END
 };
 
+static const zend_function_entry class_GtkFlowBox_methods[] = {
+	ZEND_ME(GtkFlowBox, new, arginfo_class_GtkFlowBox_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkFlowBox, insert, arginfo_class_GtkFlowBox_insert, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, append, arginfo_class_GtkFlowBox_append, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, prepend, arginfo_class_GtkFlowBox_prepend, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, remove, arginfo_class_GtkFlowBox_remove, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, removeAll, arginfo_class_GtkFlowBox_removeAll, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getChildAtIndex, arginfo_class_GtkFlowBox_getChildAtIndex, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getHomogeneous, arginfo_class_GtkFlowBox_getHomogeneous, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setHomogeneous, arginfo_class_GtkFlowBox_setHomogeneous, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getRowSpacing, arginfo_class_GtkFlowBox_getRowSpacing, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setRowSpacing, arginfo_class_GtkFlowBox_setRowSpacing, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getColumnSpacing, arginfo_class_GtkFlowBox_getColumnSpacing, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setColumnSpacing, arginfo_class_GtkFlowBox_setColumnSpacing, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getMinChildrenPerLine, arginfo_class_GtkFlowBox_getMinChildrenPerLine, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setMinChildrenPerLine, arginfo_class_GtkFlowBox_setMinChildrenPerLine, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getMaxChildrenPerLine, arginfo_class_GtkFlowBox_getMaxChildrenPerLine, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setMaxChildrenPerLine, arginfo_class_GtkFlowBox_setMaxChildrenPerLine, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, getSelectionMode, arginfo_class_GtkFlowBox_getSelectionMode, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBox, setSelectionMode, arginfo_class_GtkFlowBox_setSelectionMode, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
+static const zend_function_entry class_GtkFlowBoxChild_methods[] = {
+	ZEND_ME(GtkFlowBoxChild, new, arginfo_class_GtkFlowBoxChild_new, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
+	ZEND_ME(GtkFlowBoxChild, getChild, arginfo_class_GtkFlowBoxChild_getChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBoxChild, setChild, arginfo_class_GtkFlowBoxChild_setChild, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBoxChild, isSelected, arginfo_class_GtkFlowBoxChild_isSelected, ZEND_ACC_PUBLIC)
+	ZEND_ME(GtkFlowBoxChild, changed, arginfo_class_GtkFlowBoxChild_changed, ZEND_ACC_PUBLIC)
+	ZEND_FE_END
+};
+
 static const zend_function_entry class_GtkPopoverMenuBar_methods[] = {
 	ZEND_ME(GtkPopoverMenuBar, newFromModel, arginfo_class_GtkPopoverMenuBar_newFromModel, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 	ZEND_ME(GtkPopoverMenuBar, getMenuModel, arginfo_class_GtkPopoverMenuBar_getMenuModel, ZEND_ACC_PUBLIC)
@@ -796,6 +912,29 @@ static zend_class_entry *register_class_GtkOverflow(void)
 	zval enum_case_HIDDEN_value;
 	ZVAL_LONG(&enum_case_HIDDEN_value, 1);
 	zend_enum_add_case_cstr(class_entry, "HIDDEN", &enum_case_HIDDEN_value);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkSelectionMode(void)
+{
+	zend_class_entry *class_entry = zend_register_internal_enum("GtkSelectionMode", IS_LONG, NULL);
+
+	zval enum_case_NONE_value;
+	ZVAL_LONG(&enum_case_NONE_value, 0);
+	zend_enum_add_case_cstr(class_entry, "NONE", &enum_case_NONE_value);
+
+	zval enum_case_SINGLE_value;
+	ZVAL_LONG(&enum_case_SINGLE_value, 1);
+	zend_enum_add_case_cstr(class_entry, "SINGLE", &enum_case_SINGLE_value);
+
+	zval enum_case_BROWSE_value;
+	ZVAL_LONG(&enum_case_BROWSE_value, 2);
+	zend_enum_add_case_cstr(class_entry, "BROWSE", &enum_case_BROWSE_value);
+
+	zval enum_case_MULTIPLE_value;
+	ZVAL_LONG(&enum_case_MULTIPLE_value, 3);
+	zend_enum_add_case_cstr(class_entry, "MULTIPLE", &enum_case_MULTIPLE_value);
 
 	return class_entry;
 }
@@ -944,6 +1083,26 @@ static zend_class_entry *register_class_GtkOverlay(zend_class_entry *class_entry
 	zend_class_entry ce, *class_entry;
 
 	INIT_CLASS_ENTRY(ce, "GtkOverlay", class_GtkOverlay_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkFlowBox(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkFlowBox", class_GtkFlowBox_methods);
+	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
+
+	return class_entry;
+}
+
+static zend_class_entry *register_class_GtkFlowBoxChild(zend_class_entry *class_entry_GtkWidget)
+{
+	zend_class_entry ce, *class_entry;
+
+	INIT_CLASS_ENTRY(ce, "GtkFlowBoxChild", class_GtkFlowBoxChild_methods);
 	class_entry = zend_register_internal_class_with_flags(&ce, class_entry_GtkWidget, ZEND_ACC_NOT_SERIALIZABLE);
 
 	return class_entry;

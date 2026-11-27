@@ -1,17 +1,113 @@
-# ext-gtk
+<div align="center" id="header">
+
+<h1>ext-gtk</h1>
+
+<h3>GTK 4 and the GLib main loop bound 1:1 into PHP 8.4+</h3>
+
 
 [![CI](https://img.shields.io/github/actions/workflow/status/php-io-extensions/gtk/ci.yml?style=flat-square&label=CI)](https://github.com/php-io-extensions/gtk/actions/workflows/ci.yml)
-[![GTK API](https://img.shields.io/badge/GTK_API-16.6%25_%28630%2F3798%29-blue?style=flat-square)](SUPPORT.md)
+[![GTK API](https://img.shields.io/badge/GTK_API-17.3%25_%28657%2F3798%29-blue?style=flat-square)](SUPPORT.md)
+[![Packagist](https://img.shields.io/packagist/v/php-io-extensions/gtk?style=flat-square)](https://packagist.org/packages/php-io-extensions/gtk)
+[![PHP](https://img.shields.io/packagist/dependency-v/php-io-extensions/gtk/php?style=flat-square&label=PHP)](https://packagist.org/packages/php-io-extensions/gtk)
+[![License](https://img.shields.io/github/license/php-io-extensions/gtk?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-linux_%7C_macos-blue?style=flat-square&logo=linux&logoColor=white)](#requirements)
+[![OKF](https://img.shields.io/badge/OKF-0.2-6f42c1?style=flat-square&label=knowledge%20bundle)](.okf/index.md)
+[![PIE](https://img.shields.io/badge/PIE-installable-4f5b93?style=flat-square&logo=php&logoColor=white)](https://github.com/php/pie)
 
-1:1 PHP bindings of GTK 4 and the GLib main loop GTK runs on, written directly
-in C against the Zend API. C functions keep their names (`g_timeout_add`,
-`g_signal_connect`); functions on a type are methods of the class named after it
-(`g_application_register(app, cancellable, &error)` is `$app->register($cancellable)`). No defaults, no
-composites: behaviour is composed by the caller.
+</div>
 
-Linux first, macOS too. GTK 4.12+, GLib 2.74+, PHP 8.4+, NTS and ZTS.
+A desktop app on Linux needs windows the compositor manages, a menu bar built from actions, controls that follow the system theme, keyboard focus and input methods, lists and trees that scroll, video, and a main loop that sleeps until a timer, a file descriptor or the display has something for it. Writing that against Wayland or X11 directly is a toolkit's worth of work before the first button.
 
-## What is bound
+<b>GTK</b> is that toolkit. GNOME and its applications are built on it: `GtkApplication` registers the app with the desktop, windows hold widget trees, layout managers place them, signals report what changed, and GLib's main context dispatches every source. It is written in C, and its documentation covers every call.
+
+<b>The only problem?</b> PHP can't reach it. This extension binds GTK 4 and the GLib main loop it runs on one to one in C against the Zend API, linked against the system's GTK and GLib. C functions keep their names (`g_timeout_add`, `g_signal_connect`); functions on a type are methods of the class named after it (`g_application_register(app, cancellable, &error)` is `$app->register($cancellable)`). Signal handlers and sources are PHP callables that run on the PHP thread, and GTK's criticals, warnings, NULLs and clamping reach PHP as GTK gives them. No defaults, no composites, no opinions: what GTK documents is what you call.
+
+## Basic usage
+
+Register an application, wait up to 16 ms for a source and dispatch it, and wake on a file descriptor:
+
+```php
+$app = GtkApplication::new('com.example.App', GApplicationFlags::DEFAULT_FLAGS);
+g_signal_connect($app, 'activate', fn (GtkApplication $app) => null);
+$app->register(null);   // startup: GTK initialises
+$app->hold();
+
+$ctx = GMainContext::default();
+
+// Sleep up to 16 ms, or until a source is ready, dispatching what is.
+$budget = g_timeout_add(16, fn (): bool => G_SOURCE_REMOVE);
+$ctx->iteration(true);
+
+// Wake on a descriptor (a kqueue or epoll fd works: it turns readable when its own events are pending).
+g_unix_fd_add($fd, GIOCondition::IN, fn (int $fd, int $condition): bool => G_SOURCE_CONTINUE);
+
+$app->release();
+```
+
+## Requirements
+
+- Linux or macOS. `composer.json` lists those two families.
+- PHP 8.4 or newer, NTS or ZTS, with `phpize` and `php-config`.
+- A C compiler and `pkg-config`.
+- GTK 4.12 or newer and GLib 2.74 or newer, with their development files (`gtk4`, `glib-2.0`, `gio-unix-2.0` through `pkg-config`).
+- For video, GTK's media backend module: `libgtk-4-media-gstreamer` on Debian (the Debian installer requires it). Homebrew's gtk4 ships none: the macOS installer warns, `GtkMediaFile::new()->typeName()` is `GtkNoMediaFile` and `GtkVideo` shows nothing.
+
+```bash
+# Debian, Ubuntu, Raspberry Pi OS
+sudo apt install build-essential pkg-config libgtk-4-dev php8.4-dev \
+    libgtk-4-media-gstreamer gstreamer1.0-plugins-good gstreamer1.0-plugins-bad
+
+# macOS: Xcode Command Line Tools, and Homebrew's PHP ships phpize and php-config
+xcode-select --install
+brew install pkgconf gtk4 php@8.4
+```
+
+## Installation
+
+### With PHP PIE (recommended)
+
+```bash
+pie install php-io-extensions/gtk
+```
+
+### Manually (install script)
+
+```bash
+git clone https://github.com/php-io-extensions/gtk.git
+cd gtk
+
+./install-debian-trixie.sh             # Debian Trixie, Ubuntu 24.04+, Raspberry Pi OS: the php on PATH
+./install-macos.sh                     # Homebrew php@8.4 and php@8.4-zts
+./install-macos.sh /path/to/bin/php    # the macOS script takes specific PHP binaries
+```
+
+### Manually (phpize)
+
+```bash
+git clone https://github.com/php-io-extensions/gtk.git
+cd gtk
+phpize
+./configure --enable-gtk
+make -j"$(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+sudo make install
+```
+
+Then add `extension=gtk.so` to your `php.ini`, or to a file in the scan directory `php --ini` reports.
+
+### Verify
+
+```console
+$ php --ri gtk
+
+gtk
+
+gtk support => enabled
+Version => 0.11.2
+GTK => 4.24.1 (built 4.24.1)
+GLib => 2.90.1 (built 2.90.1)
+```
+
+## API
 
 The calls that initialise GTK, register the application with the desktop, hold
 and release it, pump the main context, sleep with a budget, wake a sleep, open
@@ -32,6 +128,7 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkConstraintLayout`, `GtkConstraint`, `GtkConstraintGuide` | `gtk_constraint_layout_new`, `add_constraint`, `add_guide`; `gtk_constraint_new`; `gtk_constraint_guide_new`, `set_nat_size`, `set_max_size` |
 | `GtkBox` | `new`, `append`, `prepend`, `remove`, `insert_child_after`, `reorder_child_after`, `get/set_spacing`, `get/set_homogeneous` |
 | `GtkGrid`, `GtkFixed` | `new`, `attach`, `remove`, `get_child_at`, `get/set_row_spacing`, `get/set_column_spacing`; `new`, `put`, `move`, `remove`, `get_child_position` |
+| `GtkFlowBox`, `GtkFlowBoxChild`, `GtkSelectionMode` | `new`, `insert`, `append`, `prepend`, `remove`, `remove_all`, `get_child_at_index`, `get/set_homogeneous`, `get/set_row_spacing`, `get/set_column_spacing`, `get/set_min_children_per_line`, `get/set_max_children_per_line`, `get/set_selection_mode`; `new`, `get/set_child`, `is_selected`, `changed` |
 | `GdkGLContext`, `GdkGLAPI`, `GtkGLArea` | `make_current`, `clear_current`, `get_current`, `realize`, `get_use_es`, `get_version`, `get_api`; `new`, `get_context`, `make_current`, `attach_buffers`, `queue_render`, `get/set_auto_render`, `get/set_has_depth_buffer`, `get/set_has_stencil_buffer`, `get/set_allowed_apis`, `set_required_version`, `get_error` (signal `render`) |
 | `GtkCssProvider`, `GdkDisplay`, `GdkSurface` | `new`, `load_from_string`; `get_default`, `sync`, `get_clipboard`; `get_width`, `get_height` (signal `layout`); functions `gtk_style_context_add/remove_provider_for_display` |
 | `GtkLabel` | `new`, `get/set_text`, `get/set_wrap`, `set_ellipsize`, `get/set_xalign`, `set_justify`, `set_markup`, `get/set_use_markup`, `get_current_uri` |
@@ -44,7 +141,7 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkTextView`, `GtkTextBuffer` | `new`, `get_buffer`, `get/set_editable`, `set_wrap_mode`, `get/set_monospace`, `get/set_cursor_visible`, `get_line_yrange`; `set_text`, `get_text` (between two iters), `begin/end_user_action`, `get_tag_table`, `get_iter_at_line`, `get_iter_at_line_offset`, `get_start/end_iter`, `apply/remove_tag`, `get_selection_bounds`, `select_range`, `get_insert`, `get_iter_at_mark`, `get_line_count` |
 | `GtkTextIter`, `GtkTextMark`, `GtkTextTag`, `GtkTextTagTable`, `GtkAdjustment` | iter (a copy that keeps its buffer alive; stale once the text changes: `GtkException`) `get_line`, `get_line_offset`, `get_offset`, `has_tag`, `get_tags`; —; `new`; `add`, `remove`, `lookup`; `get/set_value`, `get_lower`, `get_upper`, `get_page_size` (signal `value-changed`) |
 | `GtkScale` | `new_with_range`, `gtk_range_get/set_value`, `gtk_range_set_range`, `gtk_range_set_increments`, `get/set_draw_value` |
-| `GtkDropDown`, `GtkStringList`, `GtkStringObject` | `new_from_strings`, `get/set_selected`, `get_selected_item`, `set_model`; `new`, `append`, `remove`, `splice`, `get_string`, `g_list_model_get_n_items`; `get_string` |
+| `GtkDropDown`, `GtkStringList`, `GtkStringObject` | `new_from_strings`, `get/set_selected`, `get_selected_item`, `set_model`, `set_factory`, `set_list_factory`; `new`, `append`, `remove`, `splice`, `get_string`, `g_list_model_get_n_items`; `get_string` |
 | `GtkCalendar`, `GDateTime` | `new`, `get_date`, `select_day`; `new_local`, `get_year`, `get_month`, `get_day_of_month`, `to_unix` |
 | `GSettingsSchemaSource`, `GSettingsSchema`, `GSettings` | `g_settings_schema_source_get_default`, `g_settings_schema_source_lookup`; `g_settings_schema_has_key`; `g_settings_new`, `g_settings_get_boolean`, `get_int`, `get_uint`, `get_double`, `get_string` |
 | `GtkProgressBar`, `GtkSpinner` | `new`, `get/set_fraction`, `pulse`, `set_pulse_step`; `new`, `get/set_spinning` |
@@ -55,6 +152,7 @@ and close windows, and build menu bars from menu models and actions:
 | `GtkWidget` controllers, coordinates | `add_controller`, `remove_controller`, `compute_point`, `pick` (`GTK_PICK_*`); `GtkWindow` `get_surface_transform` (`gtk_native_get_surface_transform`) |
 | `GtkSettings`, properties | `get_default`; `g_object_get_property`, `g_object_set_property`, `g_object_new_with_properties` (any GObject property, as a signal argument converts) |
 | Keyvals | `gdk_keyval_to_unicode`, `gdk_keyval_to_lower`; `GDK_*_MASK` constants, enums `GtkPropagationPhase`, `GdkScrollUnit`, `GdkScrollRelativeDirection` (4.20+) |
+| `GtkImage` | `new_from_icon_name`, `get_icon_name`, `set_from_icon_name`, `set_from_file`, `get/set_pixel_size` |
 | `GtkPicture`, `GtkSeparator`, `GtkScrolledWindow` | `new`, `new_for_filename`, `set_filename`, `get/set_content_fit`, `get/set_paintable`, `get/set_can_shrink`; `new`; `new`, `get/set_child`, `set_policy`, `get_hadjustment`, `get_vadjustment` |
 | `GtkPaned`, `GtkNotebook` | `new(GtkOrientation)`, `get/set_start_child`, `get/set_end_child` (a child parented elsewhere → `ValueError`), `get/set_position` (negative unsets it), `get/set_resize_start_child`, `get/set_resize_end_child`, `get/set_shrink_start_child`, `get/set_shrink_end_child`, `get/set_wide_handle`; `new`, `append_page`, `remove_page`, `page_num`, `get_n_pages`, `get/set_current_page`, `get_nth_page`, `set/get_tab_label_text`, `get/set_show_tabs`, `get/set_scrollable` (GTK's own indexes: -1 the last page, past the end nothing; a tab label set on a child that is not a page, which GTK asserts on, → `ValueError`); signals `notify::position`, `switch-page` |
 | `GBytes`, `GdkTexture`, `GdkMemoryTexture`, `GdkMemoryTextureBuilder` | `new` (a string's bytes, or an address and a size), `get_size`, `get_data`; `get_width`, `get_height`; `new` from a `GBytes` in a `GdkMemoryFormat` (null when the bytes cannot hold the image); GTK 4.16+ builder: setters returning nothing, `set_bytes(GBytes)`, an update texture and an update region (`CairoRegion`), `build` (null when unset) |
@@ -81,6 +179,8 @@ Enums: `GApplicationFlags`, `GIOCondition`, `GtkOrientation`, `GtkAlign`,
 returns), `GtkException` (a call refused because making it crashes; see below). The stubs in
 `stubs/` are the full declaration.
 
+### Errors
+
 GTK answers for itself: its criticals, warnings, NULLs and clamping reach PHP
 as GTK gives them. The extension refuses a call only where making it was shown
 to crash the process or read freed memory, each such site with a probe in
@@ -96,11 +196,7 @@ class's GType does. A PHP int with no form in the C parameter's type is a
 `ValueError`. `./configure --enable-gtk-probes` builds the switch the probes use
 (env `PHPGTK_PROBE_OFF=<site>` turns one site off); never for a release.
 
-Video needs GTK's media backend module: `libgtk-4-media-gstreamer` on Debian
-(the installer checks), none in Homebrew's gtk4 (the installer warns;
-`GtkMediaFile::new()->typeName()` is `GtkNoMediaFile` and `GtkVideo` shows nothing).
-
-## Coverage
+### Coverage
 
 [SUPPORT.md](SUPPORT.md) lists every constructor, method and function of GTK 4, GDK and GSK that
 the installed GIR files declare and do not mark deprecated, each marked bound or not; the API badge
@@ -111,48 +207,19 @@ php84 scripts/support.php           # writes SUPPORT.md and the badge
 php84 scripts/support.php --check   # exits 1 when either is stale
 ```
 
-## Example
-
-```php
-$app = GtkApplication::new('com.example.App', GApplicationFlags::DEFAULT_FLAGS);
-g_signal_connect($app, 'activate', fn (GtkApplication $app) => null);
-$app->register(null);   // startup: GTK initialises
-$app->hold();
-
-$ctx = GMainContext::default();
-
-// Sleep up to 16 ms, or until a source is ready, dispatching what is.
-$budget = g_timeout_add(16, fn (): bool => G_SOURCE_REMOVE);
-$ctx->iteration(true);
-
-// Wake on a descriptor (a kqueue or epoll fd works: it turns readable when its own events are pending).
-g_unix_fd_add($fd, GIOCondition::IN, fn (int $fd, int $condition): bool => G_SOURCE_CONTINUE);
-
-$app->release();
-```
-
-## Install
-
-```bash
-bash install-debian-trixie.sh   # Debian, Ubuntu, Raspberry Pi OS (needs libgtk-4-dev)
-bash install-macos.sh           # Homebrew php@8.4 and php@8.4-zts (needs brew install gtk4)
-```
-
-Or with PIE: `pie install php-io-extensions/gtk`.
-
-## Test
+## Running the test suite
 
 ```bash
 composer install
-php vendor/bin/pest
+XDEBUG_MODE=off php -d memory_limit=128M vendor/bin/pest
 php examples/smoke.php          # bridge: register, pump, sleep, wake; prints SMOKE_OK
 php examples/window-smoke.php   # window, menu bar, actions, close-request; prints SMOKE_OK
 ```
 
-On Linux over SSH, export the session's `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR` and
+Tests open windows: run them in a logged-in GUI session. On Linux over SSH, export the session's `WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR` and
 `DBUS_SESSION_BUS_ADDRESS` first. The video playback test runs where a media
 backend is installed and is skipped elsewhere. Design notes live in the OKF bundle under `.okf/`.
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE). GTK and GLib are LGPL-2.1-or-later; they are linked, not shipped.

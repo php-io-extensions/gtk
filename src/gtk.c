@@ -52,6 +52,8 @@ zend_class_entry *phpgtk_ce_GtkBox;
 zend_class_entry *phpgtk_ce_GtkGrid;
 zend_class_entry *phpgtk_ce_GtkFixed;
 zend_class_entry *phpgtk_ce_GtkOverlay;
+zend_class_entry *phpgtk_ce_GtkFlowBox;
+zend_class_entry *phpgtk_ce_GtkFlowBoxChild;
 zend_class_entry *phpgtk_ce_GtkConstraintTarget;
 zend_class_entry *phpgtk_ce_GtkLayoutManager;
 zend_class_entry *phpgtk_ce_GtkConstraintLayout;

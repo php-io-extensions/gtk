@@ -29,7 +29,7 @@ it('refuses a media file before GTK is initialised, which the media backend look
 });
 
 // Sites gtk-initialized-popover, -menu-button, -list-view, -scrollbar and -image: each constructor goes
-// through the gtk-initialized check.
+// through the gtk-initialized check. So do -flow-box and -flow-box-child.
 it('refuses a widget made through its own site before GTK is initialised, which GTK dies on (SIGSEGV) without the refusal', function (string $code): void {
     $kept = gtkChild($code, null, init: false);
     $off = gtkChild($code, 'gtk-initialized', init: false);
@@ -46,6 +46,8 @@ it('refuses a widget made through its own site before GTK is initialised, which 
     'gtk-initialized-grid-view' => ['GtkGridView::new(null, null); return "built";'],
     'gtk-initialized-header-bar' => ['GtkHeaderBar::new(); return "built";'],
     'gtk-initialized-overlay' => ['GtkOverlay::new(); return "built";'],
+    'gtk-initialized-flow-box' => ['GtkFlowBox::new(); return "built";'],
+    'gtk-initialized-flow-box-child' => ['GtkFlowBoxChild::new(); return "built";'],
 ]);
 
 // Site gtk-initialized-media-file: GtkMediaFile::new goes through the gtk-initialized check.

@@ -14,6 +14,7 @@ ZEND_METHOD(GtkRoot, getFocus);
 
 static zend_class_entry *phpgtk_ce_GtkDirectionType;
 static zend_class_entry *phpgtk_ce_GtkOverflow;
+static zend_class_entry *phpgtk_ce_GtkSelectionMode;
 
 static const phpgtk_interface_method phpgtk_GtkNative_bodies[] = {
 	{"getForSurface", zim_GtkNative_getForSurface},
@@ -37,6 +38,7 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_ce_GtkAlign = register_class_GtkAlign();
 	phpgtk_ce_GtkDirectionType = register_class_GtkDirectionType();
 	phpgtk_ce_GtkOverflow = register_class_GtkOverflow();
+	phpgtk_ce_GtkSelectionMode = register_class_GtkSelectionMode();
 	phpgtk_ce_GraphenePoint = register_class_GraphenePoint();
 	phpgtk_ce_GrapheneSize = register_class_GrapheneSize();
 	phpgtk_ce_GrapheneRect = register_class_GrapheneRect();
@@ -70,6 +72,14 @@ void phpgtk_register_GtkWidget(void)
 	phpgtk_ce_GtkOverlay = register_class_GtkOverlay(phpgtk_ce_GtkWidget);
 	phpgtk_object_setup(phpgtk_ce_GtkOverlay);
 	phpgtk_map_gtype("GtkOverlay", phpgtk_ce_GtkOverlay);
+
+	phpgtk_ce_GtkFlowBox = register_class_GtkFlowBox(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkFlowBox);
+	phpgtk_map_gtype("GtkFlowBox", phpgtk_ce_GtkFlowBox);
+
+	phpgtk_ce_GtkFlowBoxChild = register_class_GtkFlowBoxChild(phpgtk_ce_GtkWidget);
+	phpgtk_object_setup(phpgtk_ce_GtkFlowBoxChild);
+	phpgtk_map_gtype("GtkFlowBoxChild", phpgtk_ce_GtkFlowBoxChild);
 
 	phpgtk_ce_GtkPopoverMenuBar = register_class_GtkPopoverMenuBar(phpgtk_ce_GtkWidget);
 	phpgtk_object_setup(phpgtk_ce_GtkPopoverMenuBar);
@@ -1181,6 +1191,177 @@ ZEND_METHOD(GtkOverlay, setClipOverlay)
 	ZEND_PARSE_PARAMETERS_END();
 
 	gtk_overlay_set_clip_overlay(THIS_OVERLAY, GTK_WIDGET(PHPGTK_PTR(widget)), clip_overlay);
+}
+
+/* ---- GtkFlowBox -------------------------------------------------------- */
+
+#define THIS_FLOW_BOX GTK_FLOW_BOX(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkFlowBox, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-flow-box */
+
+	phpgtk_box_gobject(return_value, gtk_flow_box_new());
+}
+
+ZEND_METHOD(GtkFlowBox, insert)
+{
+	zend_object *child;
+	zend_long position;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget)
+		Z_PARAM_LONG(position)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(position, G_MININT, G_MAXINT, 2)) {
+		RETURN_THROWS();
+	}
+
+	gtk_flow_box_insert(THIS_FLOW_BOX, GTK_WIDGET(PHPGTK_PTR(child)), (int) position);
+}
+
+#define PHPGTK_FLOW_BOX_CHILD_METHOD(name, call) \
+ZEND_METHOD(GtkFlowBox, name) \
+{ \
+	zend_object *child; \
+	ZEND_PARSE_PARAMETERS_START(1, 1) \
+		Z_PARAM_OBJ_OF_CLASS(child, phpgtk_ce_GtkWidget) \
+	ZEND_PARSE_PARAMETERS_END(); \
+	call(THIS_FLOW_BOX, GTK_WIDGET(PHPGTK_PTR(child))); \
+}
+
+PHPGTK_FLOW_BOX_CHILD_METHOD(append, gtk_flow_box_append)
+PHPGTK_FLOW_BOX_CHILD_METHOD(prepend, gtk_flow_box_prepend)
+PHPGTK_FLOW_BOX_CHILD_METHOD(remove, gtk_flow_box_remove)
+
+ZEND_METHOD(GtkFlowBox, removeAll)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_flow_box_remove_all(THIS_FLOW_BOX);
+}
+
+ZEND_METHOD(GtkFlowBox, getChildAtIndex)
+{
+	zend_long idx;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_LONG(idx)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (!phpgtk_long_in_range(idx, G_MININT, G_MAXINT, 1)) {
+		RETURN_THROWS();
+	}
+
+	phpgtk_box_gobject(return_value, gtk_flow_box_get_child_at_index(THIS_FLOW_BOX, (int) idx));
+}
+
+ZEND_METHOD(GtkFlowBox, getHomogeneous)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_flow_box_get_homogeneous(THIS_FLOW_BOX));
+}
+
+ZEND_METHOD(GtkFlowBox, setHomogeneous)
+{
+	bool homogeneous;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_BOOL(homogeneous)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_flow_box_set_homogeneous(THIS_FLOW_BOX, homogeneous);
+}
+
+/* The spacings and the per-line counts are guints. */
+#define PHPGTK_FLOW_BOX_UINT_PROPERTY(getter, setter, get_call, set_call) \
+ZEND_METHOD(GtkFlowBox, getter) \
+{ \
+	ZEND_PARSE_PARAMETERS_NONE(); \
+	RETURN_LONG((zend_long) get_call(THIS_FLOW_BOX)); \
+} \
+ZEND_METHOD(GtkFlowBox, setter) \
+{ \
+	zend_long value; \
+	ZEND_PARSE_PARAMETERS_START(1, 1) \
+		Z_PARAM_LONG(value) \
+	ZEND_PARSE_PARAMETERS_END(); \
+	if (!phpgtk_long_in_range(value, 0, (zend_long) G_MAXUINT, 1)) { \
+		RETURN_THROWS(); \
+	} \
+	set_call(THIS_FLOW_BOX, (guint) value); \
+}
+
+PHPGTK_FLOW_BOX_UINT_PROPERTY(getRowSpacing, setRowSpacing, gtk_flow_box_get_row_spacing, gtk_flow_box_set_row_spacing)
+PHPGTK_FLOW_BOX_UINT_PROPERTY(getColumnSpacing, setColumnSpacing, gtk_flow_box_get_column_spacing, gtk_flow_box_set_column_spacing)
+PHPGTK_FLOW_BOX_UINT_PROPERTY(getMinChildrenPerLine, setMinChildrenPerLine, gtk_flow_box_get_min_children_per_line, gtk_flow_box_set_min_children_per_line)
+PHPGTK_FLOW_BOX_UINT_PROPERTY(getMaxChildrenPerLine, setMaxChildrenPerLine, gtk_flow_box_get_max_children_per_line, gtk_flow_box_set_max_children_per_line)
+
+ZEND_METHOD(GtkFlowBox, getSelectionMode)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_return_enum(return_value, phpgtk_ce_GtkSelectionMode, (zend_long) gtk_flow_box_get_selection_mode(THIS_FLOW_BOX));
+}
+
+ZEND_METHOD(GtkFlowBox, setSelectionMode)
+{
+	zend_object *mode;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS(mode, phpgtk_ce_GtkSelectionMode)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_flow_box_set_selection_mode(THIS_FLOW_BOX, (GtkSelectionMode) phpgtk_enum_value(mode, 0));
+}
+
+/* ---- GtkFlowBoxChild --------------------------------------------------- */
+
+#define THIS_FLOW_BOX_CHILD GTK_FLOW_BOX_CHILD(PHPGTK_PTR(Z_OBJ_P(ZEND_THIS)))
+
+ZEND_METHOD(GtkFlowBoxChild, new)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+	PHPGTK_REQUIRE_MAIN_THREAD();
+	PHPGTK_REQUIRE_INITIALIZED(); /* binding:gtk-initialized-flow-box-child */
+
+	phpgtk_box_gobject(return_value, gtk_flow_box_child_new());
+}
+
+ZEND_METHOD(GtkFlowBoxChild, getChild)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	phpgtk_box_gobject(return_value, gtk_flow_box_child_get_child(THIS_FLOW_BOX_CHILD));
+}
+
+ZEND_METHOD(GtkFlowBoxChild, setChild)
+{
+	zend_object *child = NULL;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_OBJ_OF_CLASS_OR_NULL(child, phpgtk_ce_GtkWidget)
+	ZEND_PARSE_PARAMETERS_END();
+
+	gtk_flow_box_child_set_child(THIS_FLOW_BOX_CHILD, (GtkWidget *) PHPGTK_OPTIONAL_PTR(child));
+}
+
+ZEND_METHOD(GtkFlowBoxChild, isSelected)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	RETURN_BOOL(gtk_flow_box_child_is_selected(THIS_FLOW_BOX_CHILD));
+}
+
+ZEND_METHOD(GtkFlowBoxChild, changed)
+{
+	ZEND_PARSE_PARAMETERS_NONE();
+
+	gtk_flow_box_child_changed(THIS_FLOW_BOX_CHILD);
 }
 
 /* ---- GtkPopoverMenuBar ------------------------------------------------- */
